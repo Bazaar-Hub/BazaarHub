@@ -212,6 +212,7 @@ const searchFilterNode = document.getElementById('searchFilterNode');
 const categorySelectorNode = document.getElementById('categorySelectorNode');
 
 function triggerStorefrontFilters() {
+    if (!searchFilterNode || !categorySelectorNode) return;
     const queryStr = searchFilterNode.value.toLowerCase();
     const category = categorySelectorNode.value;
     const filtered = products.filter(p => {
