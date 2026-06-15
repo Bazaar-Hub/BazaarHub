@@ -3,47 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BazaarHub - Authentication Gate</title>
+    <title>BazaarHub - Secure Access</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="auth-wrapper">
         <div class="auth-card">
             <div class="auth-tabs">
-                <button id="loginTab" class="tab-btn active">Login</button>
-                <button id="registerTab" class="tab-btn">Register</button>
+                <button id="loginTab" class="tab-btn active">CLIENT LOGIN</button>
+                <button id="registerTab" class="tab-btn">REGISTER NOW</button>
             </div>
-            
-            <form id="loginForm">
-                <div class="form-group">
+
+            <form id="loginForm" class="auth-form">
+                <div class="input-group">
                     <label>Email Address</label>
-                    <input type="email" id="loginEmail" required placeholder="Enter registered email">
+                    <input type="email" id="loginEmail" placeholder="example@mail.com" required>
                 </div>
-                <div class="form-group">
-                    <label>Password Verification</label>
-                    <input type="password" id="loginPass" required placeholder="Enter password">
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPass" placeholder="••••••••" required>
                 </div>
-                <button type="submit" class="form-btn bg-yellow">LOG IN TO ECOSYSTEM</button>
+                <button type="submit" class="form-btn bg-yellow">SECURE LOGIN</button>
             </form>
 
-            <form id="registerForm" class="hidden">
-                <div class="form-group">
-                    <label>Full Identity Name</label>
-                    <input type="text" id="regName" required placeholder="e.g., Hamza Ali">
+            <form id="registerForm" class="auth-form hidden">
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" id="regName" placeholder="Your Name" required>
                 </div>
-                <div class="form-group">
+                <div class="input-group">
                     <label>Email Address</label>
-                    <input type="email" id="regEmail" required placeholder="Enter your email">
+                    <input type="email" id="regEmail" placeholder="example@mail.com" required>
                 </div>
-                <div class="form-group">
+                <div class="input-group">
                     <label>Phone Number</label>
-                    <input type="tel" id="regPhone" required placeholder="e.g., 03001234567">
+                    <input type="tel" id="regPhone" placeholder="03XXXXXXXXX" required>
                 </div>
-                <div class="form-group">
-                    <label>Password (Min 6 Characters)</label>
-                    <input type="password" id="regPass" required placeholder="Minimum 6 characters">
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="regPass" placeholder="Min 6 characters" required>
                 </div>
-                <button type="submit" class="form-btn bg-yellow">CREATE RECORDBASE LINK</button>
+                <button type="submit" class="form-btn bg-yellow">CREATE ACCOUNT</button>
             </form>
         </div>
     </div>
