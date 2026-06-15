@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BazaarHub - Authentication Gate</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-tabs">
+                <button id="loginTab" class="tab-btn active">Login</button>
+                <button id="registerTab" class="tab-btn">Register</button>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" required placeholder="Enter registered email">
+                </div>
+                <div class="form-group">
+                    <label>Password Verification</label>
+                    <input type="password" id="loginPass" required placeholder="Enter password">
+                </div>
+                <button type="submit" class="form-btn bg-yellow">LOG IN TO ECOSYSTEM</button>
+            </form>
+
+            <form id="registerForm" class="hidden">
+                <div class="form-group">
+                    <label>Full Identity Name</label>
+                    <input type="text" id="regName" required placeholder="e.g., Hamza Ali">
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="regEmail" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="regPhone" required placeholder="e.g., 03001234567">
+                </div>
+                <div class="form-group">
+                    <label>Password (Min 6 Characters)</label>
+                    <input type="password" id="regPass" required placeholder="Minimum 6 characters">
+                </div>
+                <button type="submit" class="form-btn bg-yellow">CREATE RECORDBASE LINK</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
