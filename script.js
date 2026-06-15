@@ -2,8 +2,8 @@
 // FIREBASE LIFETIME MULTI-DEVICE LOGIN & REGISTER SYSTEM (INTEGRATED)
 // =========================================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, addDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, collection, query, where, getDocs, addDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
 // Your web app's Firebase configuration (FINAL CORRECTED WITH DATABASE URL)
 const firebaseConfig = {
@@ -125,7 +125,7 @@ if(loginForm) {
                 window.location.href = 'index.html';
             })
             .catch((error) => {
-                alert("Login Failed: Password galat hai ya account majood nahi hai.");
+                alert("Login Failed: Email ya Password galat hai ya account majood nahi hai.");
             });
     });
 }
