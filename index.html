@@ -493,6 +493,7 @@
 </head>
 <body>
 
+    <!-- REGISTER SCREEN -->
     <div id="registerScreen" class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
@@ -519,17 +520,18 @@
         </div>
     </div>
 
+    <!-- LOGIN SCREEN -->
     <div id="loginScreen" class="auth-container hidden">
         <div class="auth-card">
             <div class="auth-header">
                 <h2>CLIENT <span class="accent-yellow">LOGIN</span></h2>
-                <p>Transmit telephone identity logs</p>
+                <p>Transmit security credentials</p>
             </div>
             <form id="loginForm" onsubmit="handleLogin(event)">
-                <label style="font-size:12px;">Phone Number</label>
-                <input type="tel" id="loginPhone" placeholder="Enter registered phone number" required>
+                <label style="font-size:12px;">Email Address</label>
+                <input type="email" id="loginEmail" placeholder="name@domain.com" required>
                 
-                <label style="font-size:12px;">Secret Key</label>
+                <label style="font-size:12px;">Secret Key (Password)</label>
                 <input type="password" id="loginPass" placeholder="••••••••" required>
                 
                 <button type="submit" class="auth-btn bg-yellow">Secure Login</button>
@@ -538,6 +540,7 @@
         </div>
     </div>
 
+    <!-- ADMIN SCREEN -->
     <div id="adminScreen" class="auth-container hidden">
         <div class="auth-card">
             <div class="auth-header">
@@ -557,6 +560,7 @@
         </div>
     </div>
 
+    <!-- MAIN APP APP HUB -->
     <div id="mainAppHub" class="hidden">
         <nav>
             <div class="nav-logo-box" onclick="showSection('catalog')">
@@ -598,6 +602,7 @@
                 </main>
             </div>
 
+            <!-- CHECKOUT PAGE -->
             <div id="checkoutPage" class="container hidden">
                 <h2 class="section-title">Logistics Dispatch Terminal</h2>
                 <div class="checkout-grid">
@@ -795,6 +800,7 @@
         </footer>
     </div>
 
+    <!-- JAVA SCRIPT ENGINE ENGINE -->
     <script>
         let PRODUCT_DATABASE = JSON.parse(localStorage.getItem('bazaar_products')) || [
             { id: 1, title: "ndz Smart Watch", category: "ZHZSFB", desc: "Premium Black Silicone Edition Tech Wear", price: 5432, img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=80" },
@@ -827,30 +833,36 @@
 
         function handleRegister(e) {
             e.preventDefault();
+            // Data ko alag alag keys me store kar rahay hain taake login validation asan ho
+            localStorage.setItem('storedUserName', document.getElementById('regName').value.trim());
+            localStorage.setItem('storedUserEmail', document.getElementById('regEmail').value.trim());
             localStorage.setItem('storedUserPhone', document.getElementById('regPhone').value.trim());
             localStorage.setItem('storedUserPass', document.getElementById('regPass').value);
-            alert('User profile identity verified & linked inside terminal registry.');
+            
+            alert('User profile identity verified & logged inside terminal registry.');
             switchScreen('login');
         }
 
-        // index.html ke andar sirf is handleLogin function ko replace karein:
-function handleLogin(e) {
-    e.preventDefault();
-    const phone = document.getElementById('loginPhone').value;
-    const pass = document.getElementById('loginPass').value;
-
-    // Agar admin credentials hain toh direct admin panel khol do
-    if (phone === "03001234567" && pass === "admin123") {
-        localStorage.setItem("adminToken", "granted_hub_master");
-        alert("Access Granted: Admin Control Matrix Node Activated");
-        window.location.href = "admin.html";
-        return;
-    }
-
-    // Baaki normal users ko seedha Firebase waale auth.html page par bhej do
-    alert("Redirecting to Secure Firebase Authentication Gateway...");
-    window.location.href = "auth.html";
-}
+        function handleLogin(e) {
+            e.preventDefault();
+            const emailInput = document.getElementById('loginEmail').value.trim();
+            const passInput = document.getElementById('loginPass').value;
+            
+            const savedEmail = localStorage.getItem('storedUserEmail');
+            const savedPass = localStorage.getItem('storedUserPass');
+            const savedPhone = localStorage.getItem('storedUserPhone');
+            
+            if(emailInput === savedEmail && passInput === savedPass) {
+                LOGGED_IN_USER_PHONE = savedPhone;
+                IS_ADMIN_MODE = false;
+                
+                // Alert trigger hone ke baad seedha dashboard load hoga, infinite register loop khatam
+                alert('Access Granted! Booting System Node Hub.');
+                bootAppFramework();
+            } else {
+                alert('Access Error! Identity email string or pass cipher mismatch.');
+            }
+        }
 
         function handleAdminLogin(e) {
             e.preventDefault();
@@ -896,7 +908,20 @@ function handleLogin(e) {
             document.getElementById('supportPage').classList.add('hidden');
             
             if(sectionId === 'catalog') document.getElementById('catalogPage').classList.remove('hidden');
-            if(sectionId === 'checkout') document.getElementById('checkoutPage').classList.remove('hidden');
+            if(sectionId === 'checkout') {
+                document.getElementById('checkoutPage').classList.remove('hidden');
+                // Auto fill system parameters from active local database nodes
+                if(!IS_ADMIN_MODE) {
+                    document.getElementById('billEmail').value = localStorage.getItem('storedUserEmail') || "";
+                    document.getElementById('billPhone').value = LOGGED_IN_USER_PHONE || "";
+                    const fullName = localStorage.getItem('storedUserName') || "";
+                    if(fullName) {
+                        const nameParts = fullName.split(" ");
+                        document.getElementById('billFirst').value = nameParts[0] || "";
+                        document.getElementById('billLast').value = nameParts.slice(1).join(" ") || "Client";
+                    }
+                }
+            }
             if(sectionId === 'my-orders') { document.getElementById('myOrdersPage').classList.remove('hidden'); renderMyOrdersTable(); }
             if(sectionId === 'admin-panel') { document.getElementById('adminPanelPage').classList.remove('hidden'); renderAdminGlobalTable(); renderAdminProductsVault(); }
             if(sectionId === 'support') document.getElementById('supportPage').classList.remove('hidden');
@@ -1026,11 +1051,9 @@ function handleLogin(e) {
             const totalParticles = 70;
             const colors = ['#facc15', '#ef4444', '#3b82f6', '#10b981', '#a855f7', '#ff7849'];
             
-            // Left Popper Source Node Location
             for (let i = 0; i < totalParticles; i++) {
                 createPopperNode(0, window.innerHeight * 0.7, 45);
             }
-            // Right Popper Source Node Location
             for (let i = 0; i < totalParticles; i++) {
                 createPopperNode(window.innerWidth, window.innerHeight * 0.7, 135);
             }
@@ -1039,14 +1062,13 @@ function handleLogin(e) {
                 const particle = document.createElement('div');
                 particle.classList.add('popper-particle');
                 
-                // Random configuration matrix metrics
                 const color = colors[Math.floor(Math.random() * colors.length)];
                 const size = Math.floor(Math.random() * 8) + 6;
                 const radians = (angleBase + (Math.random() * 60 - 30)) * Math.PI / 180;
                 const velocity = Math.random() * 400 + 200;
                 
                 const xDrift = Math.cos(radians) * velocity;
-                const yDrift = -Math.sin(radians) * velocity + 150; // Add gravity compensation factor
+                const yDrift = -Math.sin(radians) * velocity + 150; 
                 const rDrift = Math.floor(Math.random() * 720) + 360;
 
                 particle.style.backgroundColor = color;
@@ -1056,7 +1078,7 @@ function handleLogin(e) {
                 particle.style.top = y + 'px';
                 
                 if (Math.random() > 0.5) {
-                    particle.style.borderRadius = '0%'; // Make some particles squares
+                    particle.style.borderRadius = '0%'; 
                 }
 
                 particle.style.setProperty('--x-drift', xDrift + 'px');
@@ -1092,7 +1114,7 @@ function handleLogin(e) {
                 cost: totalCost,
                 address: addressVal,
                 status: "Pending Verification",
-                rating: 0 // New default schema matrix parameter for interactive stars
+                rating: 0 
             };
 
             CENTRAL_ORDERS_DB.push(orderPayload);
@@ -1100,16 +1122,11 @@ function handleLogin(e) {
             SYSTEM_CART = [];
             updateLiveCartUI();
             
-            // Trigger both sides cinematic celebration
             triggerPartyPoppersAnimation();
-
-            alert(`Order ${orderId} has been successfully verified via COD pipeline and pushed to dispatch logs.`);
-            
-            LOGGED_IN_USER_PHONE = phoneVal; 
+            alert(`Order ${orderId} has been successfully verified via COD pipeline.`);
             showSection('my-orders');
         }
 
-        /* CLIENT INTERACTIVE RATING DISPATCH HANDLER */
         function saveUserRatingLog(orderId, stars) {
             const orderIdx = CENTRAL_ORDERS_DB.findIndex(o => o.id === orderId);
             if(orderIdx !== -1) {
@@ -1132,7 +1149,6 @@ function handleLogin(e) {
                 if(o.status === "Placed") badgeClass = "badge-placed";
                 if(o.status === "Delivered") badgeClass = "badge-delivered";
                 
-                // Construct Interactive Stars Node layout only if order delivery state is resolved
                 let ratingInterfaceHtml = "";
                 if(o.status === "Delivered") {
                     const currentRating = o.rating || 0;
@@ -1180,7 +1196,7 @@ function handleLogin(e) {
             } else {
                 const newId = PRODUCT_DATABASE.length > 0 ? Math.max(...PRODUCT_DATABASE.map(p => p.id)) + 1 : 1;
                 PRODUCT_DATABASE.push({ id: newId, title, category, price, img, desc });
-                alert("New product payload records successfully injected inside storage data matrix.");
+                alert("New product payload records successfully injected.");
             }
             
             saveDatabasesToLocalStorage();
@@ -1275,7 +1291,5 @@ function handleLogin(e) {
 
         function toggleWhatsAppWidget() { document.getElementById('whatsappChatCard').classList.toggle('active'); }
     </script>
-
-    <script type="module" src="script.js"></script>
 </body>
 </html>
