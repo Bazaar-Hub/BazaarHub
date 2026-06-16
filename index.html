@@ -833,19 +833,24 @@
             switchScreen('login');
         }
 
-        function handleLogin(e) {
-            e.preventDefault();
-            const phone = document.getElementById('loginPhone').value.trim();
-            const pass = document.getElementById('loginPass').value;
-            
-            if(phone === localStorage.getItem('storedUserPhone') && pass === localStorage.getItem('storedUserPass')) {
-                LOGGED_IN_USER_PHONE = phone;
-                IS_ADMIN_MODE = false;
-                bootAppFramework();
-            } else {
-                alert('Access Error! Identity phone string or pass cipher mismatch.');
-            }
-        }
+        // index.html ke andar sirf is handleLogin function ko replace karein:
+function handleLogin(e) {
+    e.preventDefault();
+    const phone = document.getElementById('loginPhone').value;
+    const pass = document.getElementById('loginPass').value;
+
+    // Agar admin credentials hain toh direct admin panel khol do
+    if (phone === "03001234567" && pass === "admin123") {
+        localStorage.setItem("adminToken", "granted_hub_master");
+        alert("Access Granted: Admin Control Matrix Node Activated");
+        window.location.href = "admin.html";
+        return;
+    }
+
+    // Baaki normal users ko seedha Firebase waale auth.html page par bhej do
+    alert("Redirecting to Secure Firebase Authentication Gateway...");
+    window.location.href = "auth.html";
+}
 
         function handleAdminLogin(e) {
             e.preventDefault();
