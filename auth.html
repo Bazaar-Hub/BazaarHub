@@ -14,7 +14,7 @@
                 <button id="registerTab" class="tab-btn">REGISTER NOW</button>
             </div>
 
-            <form id="loginForm" class="auth-form">
+<form id="loginForm" class="auth-form" onsubmit="window.loginUserPortal(event)">
                 <div class="input-group">
                     <label>Email Address</label>
                     <input type="email" id="loginEmail" placeholder="example@mail.com" required>
@@ -26,7 +26,7 @@
                 <button type="submit" class="form-btn bg-yellow">SECURE LOGIN</button>
             </form>
 
-            <form id="registerForm" class="auth-form hidden">
+            <form id="registerForm" class="auth-form hidden" onsubmit="window.registerUserAccount(event)">
                 <div class="input-group">
                     <label>Full Name</label>
                     <input type="text" id="regName" placeholder="Your Name" required>
@@ -44,7 +44,7 @@
                     <input type="password" id="regPass" placeholder="Min 6 characters" required>
                 </div>
                 <button type="submit" class="form-btn bg-yellow">CREATE ACCOUNT</button>
-            </form>
+            </form>        
         </div>
     </div>
 
