@@ -19,640 +19,512 @@
         }
 
         body {
-            /* Immersive Futuristic Cyber-Grid Background Canvas */
             background-color: #040509;
             background-image: 
                 linear-gradient(rgba(250, 204, 21, 0.02) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(250, 204, 21, 0.02) 1px, transparent 1px),
-                radial-gradient(circle at 50% 50%, #0c0f1d 0%, #040509 100%);
-            background-size: 40px 40px, 40px 40px, 100% 100%;
+                radial-gradient(circle at 50% 20%, #0d1527 0%, #040509 70%);
+            background-size: 30px 30px, 30px 30px, 100% 100%;
             color: #ffffff;
+            line-height: 1.5;
             overflow-x: hidden;
-            font-size: 14px;
         }
 
-        /* Ambient Plasma Glow Effects */
-        .plasma-glow-orbs {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(250, 204, 21, 0.08) 0%, transparent 70%);
-            top: 15%;
-            left: -100px;
-            pointer-events: none;
-            z-index: 0;
-            animation: floatingOrbs 12s infinite alternate ease-in-out;
-        }
+        a { color: inherit; text-decoration: none; }
+        button { cursor: pointer; border: none; background: none; }
 
-        @keyframes floatingOrbs {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(80px, 50px) scale(1.2); }
-        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #040509; }
+        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #facc15; }
 
-        /* TOP ADVANCED HUD TELEMETRY DISPATCH STRIP */
-        .telemetry-hud-strip {
-            background: linear-gradient(90deg, #090d16 0%, #05070c 100%);
-            border-bottom: 1px solid rgba(250, 204, 21, 0.15);
-            padding: 6px 6%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 11px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-weight: 600;
-            color: #9ca3af;
-            z-index: 100;
-            position: relative;
-        }
+        /* Utility Accents */
+        .accent-yellow { color: #facc15; text-shadow: 0 0 15px rgba(250, 204, 21, 0.3); }
+        .bg-yellow { background-color: #facc15 !important; color: #000000 !important; font-weight: 700; }
+        .bg-yellow:hover { background-color: #e2b80d !important; transform: translateY(-2px); box-shadow: 0 5px 20px rgba(250, 204, 21, 0.4); }
 
-        .hud-live-tag {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #facc15;
-            text-shadow: 0 0 8px rgba(250, 204, 21, 0.4);
-        }
-
-        .hud-live-tag::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            background-color: #facc15;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 10px #facc15;
-            animation: pulseSystem 1.5s infinite;
-        }
-
-        @keyframes pulseSystem {
-            0% { opacity: 0.3; }
-            50% { opacity: 1; }
-            100% { opacity: 0.3; }
-        }
-
-        /* PREMIUM DYNAMIC RESPONSIVE NAVIGATION HEADER CONTROL */
+        /* CORE VIEWPORT HERO GRID CONFIGURATIONS */
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 18px 6%;
+            padding: 20px 6%;
             background: rgba(4, 5, 9, 0.85);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             position: sticky;
             top: 0;
-            z-index: 99;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 1000;
         }
 
         .nav-logo-box {
             display: flex;
             align-items: center;
             gap: 12px;
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
             cursor: pointer;
         }
 
         .logo-badge {
-            background: linear-gradient(135deg, #facc15 0%, #ca8a04 100%);
-            color: #000000;
+            background: linear-gradient(135deg, #facc15, #e2b80d);
+            color: #000;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
             font-weight: 900;
-            font-size: 20px;
-            padding: 4px 14px;
-            border-radius: 8px;
-            box-shadow: 0 0 20px rgba(250, 204, 21, 0.3);
-            transform: skewX(-10deg);
+            box-shadow: 0 4px 15px rgba(250, 204, 21, 0.3);
         }
 
-        .logo-text {
-            font-size: 18px;
-            font-weight: 800;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-        }
+        .logo-text span { color: #facc15; font-weight: 400; margin-left: 2px;}
 
-        .logo-text span { color: #facc15; }
-
-        .nav-link-hub {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-        }
-
-        .nav-link-hub a {
-            color: #d1d5db;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .nav-actions { display: flex; align-items: center; gap: 20px; }
+        
+        .icon-btn-wrapper {
             position: relative;
-            padding: 6px 0;
-        }
-
-        .nav-link-hub a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background-color: #facc15;
-            transition: width 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-
-        .nav-link-hub a:hover { color: #ffffff; }
-        .nav-link-hub a:hover::after { width: 100%; }
-
-        .nav-action-center {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-        }
-
-        .cart-trigger-container {
-            position: relative;
+            color: #9ca3af;
+            font-size: 19px;
             cursor: pointer;
-            background: rgba(255,255,255,0.03);
-            padding: 10px 14px;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.05);
+            padding: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
-
-        .cart-trigger-container:hover {
-            background: rgba(250, 204, 21, 0.08);
-            border-color: rgba(250, 204, 21, 0.3);
-        }
-
-        .cart-counter-badge {
+        .icon-btn-wrapper:hover { color: #facc15; background: rgba(250, 204, 21, 0.05); border-color: rgba(250, 204, 21, 0.2); }
+        
+        .badge-count {
             position: absolute;
-            top: -6px;
-            right: -6px;
-            background-color: #facc15;
-            color: #000000;
+            top: -4px;
+            right: -4px;
+            background: #ef4444;
+            color: white;
             font-size: 10px;
             font-weight: 800;
             width: 18px;
             height: 18px;
             border-radius: 50%;
             display: flex;
-            justify-content: center;
             align-items: center;
-            box-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
         }
 
-        /* MASTER CINEMATIC HERO SLIDER MATRIX SYSTEM */
-        .hero-viewport-slider {
-            width: 100%;
-            height: 480px;
-            position: relative;
-            overflow: hidden;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        }
-
-        .hero-slide-node {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            z-index: 1;
+        .user-profile-identity {
             display: flex;
             align-items: center;
-            padding: 0 8%;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            background: rgba(255,255,255,0.03);
+            padding: 6px 14px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* BANNER SLIDER PRESTIGE COMPONENT */
+        .hero-banner-viewport {
+            margin: 25px 6% 40px 6%;
+            height: 380px;
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .banner-track {
+            display: flex;
+            width: 300%;
+            height: 100%;
+            animation: cinematicSlider 15s infinite ease-in-out;
+        }
+
+        .banner-slide {
+            width: 33.333%;
+            height: 100%;
             background-size: cover;
             background-position: center;
-            transform: scale(1.05);
-            transition: opacity 1.2s ease-in-out, transform 1.2s ease-in-out;
+            position: relative;
         }
 
-        .hero-slide-node.active {
-            opacity: 1;
-            z-index: 2;
-            transform: scale(1);
-        }
-
-        .hero-slide-node::before {
-            content: '';
+        .banner-overlay-matrix {
             position: absolute;
-            top:0; left:0; width:100%; height:100%;
-            background: linear-gradient(90deg, rgba(4,5,9,0.95) 0%, rgba(4,5,9,0.7) 40%, transparent 100%);
-            z-index: 1;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(4,5,9,0.95) 0%, rgba(4,5,9,0.4) 60%, transparent 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 8%;
         }
 
-        .hero-text-manifest {
-            position: relative;
-            z-index: 3;
-            max-width: 550px;
-        }
-
-        .hero-pre-tag {
+        .banner-tag {
+            background: rgba(250, 204, 21, 0.1);
+            border: 1px solid rgba(250, 204, 21, 0.3);
             color: #facc15;
+            padding: 4px 12px;
+            border-radius: 30px;
             font-size: 11px;
-            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 12px;
-        }
-
-        .hero-main-title {
-            font-size: 42px;
-            font-weight: 900;
-            line-height: 1.1;
-            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            width: fit-content;
             margin-bottom: 15px;
-            letter-spacing: -0.5px;
         }
 
-        .hero-caption {
-            color: #9ca3af;
+        .banner-title { font-size: 42px; font-weight: 900; line-height: 1.1; margin-bottom: 12px; letter-spacing: -1px; }
+        .banner-desc { color: #9ca3af; font-size: 15px; max-width: 480px; margin-bottom: 25px; }
+        
+        .action-cta-button {
+            width: fit-content;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-weight: 700;
             font-size: 14px;
-            line-height: 1.5;
-            margin-bottom: 25px;
-        }
-
-        /* CORE GRID CONTAINER DISPATCH MECHANISM */
-        .main-storefront-wrapper {
-            max-width: 1400px;
-            margin: 40px auto;
-            padding: 0 4%;
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            gap: 30px;
-            position: relative;
-            z-index: 5;
-        }
-
-        /* STREAMLINED ARCHITECTURAL FILTER PANEL SIDEBAR */
-        .filter-architecture-sidebar {
-            background-color: #090c15;
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 24px;
-            height: fit-content;
-            position: sticky;
-            top: 100px;
-        }
-
-        .filter-section-title {
-            font-size: 13px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #facc15;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-
-        .filter-category-node {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 10px 12px;
-            margin-bottom: 6px;
-            border-radius: 8px;
-            cursor: pointer;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        @keyframes cinematicSlider {
+            0%, 28% { transform: translateX(0); }
+            33%, 61% { transform: translateX(-33.333%); }
+            66%, 95% { transform: translateX(-66.666%); }
+            100% { transform: translateX(0); }
+        }
+
+        /* VITRINE CATEGORY FILTER RIBBON */
+        .category-scroll-ribbon {
+            display: flex;
+            gap: 12px;
+            padding: 0 6% 30px 6%;
+            overflow-x: auto;
+        }
+        .category-scroll-ribbon::-webkit-scrollbar { display: none; }
+
+        .category-pill {
+            padding: 10px 24px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            font-size: 13px;
             font-weight: 600;
-            font-size: 12px;
             color: #9ca3af;
-            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .category-pill:hover, .category-pill.active {
+            background: #ffffff;
+            color: #000000;
+            border-color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255,255,255,0.1);
         }
 
-        .filter-category-node:hover, .filter-category-node.active {
-            background: rgba(250, 204, 21, 0.08);
-            color: #ffffff;
-        }
+        /* GRID RENDER COMPONENT SYSTEM */
+        .showcase-container { padding: 0 6% 60px 6%; }
+        .section-headline { font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .section-headline::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
 
-        /* 3D PRODUCT VIEWGRID INTERACTIVE PIPELINES */
-        .store-viewgrid-engine {
+        .products-isometric-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             gap: 25px;
         }
 
-        .product-3d-card-node {
-            background-color: #090c15;
-            border: 1px solid rgba(255,255,255,0.04);
-            border-radius: 16px;
+        /* 3D LUXURY PREMIUM GLASS PRODUCT CARDS */
+        .luxury-product-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 15px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .luxury-product-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            border-color: rgba(250, 204, 21, 0.2);
+            background: rgba(13, 21, 39, 0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(250,204,21,0.02);
+        }
+
+        .card-media-wrapper {
+            width: 100%;
+            height: 200px;
+            border-radius: 14px;
+            background-color: #0d0e12;
             overflow: hidden;
             position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.03);
         }
-
-        .product-3d-card-node:hover {
-            transform: translateY(-8px);
-            border-color: rgba(250, 204, 21, 0.25);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-        }
-
-        .card-media-canvas {
-            width: 100%;
-            height: 220px;
-            overflow: hidden;
-            position: relative;
-            background-color: #040509;
-        }
-
-        .card-media-canvas img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .product-3d-card-node:hover .card-media-canvas img {
-            transform: scale(1.08);
-        }
-
-        .card-info-deck {
-            padding: 18px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .card-routing-tag {
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            color: #facc15;
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
-        }
-
-        .card-header-title {
-            font-size: 15px;
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 8px;
-            text-transform: capitalize;
-        }
-
-        .card-pricing-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255,255,255,0.04);
-        }
-
-        .matrix-price-display {
-            font-size: 16px;
-            font-weight: 800;
-            color: #facc15;
-        }
-
-        /* INTERACTIVE CART DRAWER HUD FLYOVER OVERLAY */
-        .cart-flyover-drawer {
-            position: fixed;
-            top: 0; right: -400px;
-            width: 400px;
-            height: 100%;
-            background-color: #070911;
-            border-left: 1px solid rgba(250, 204, 21, 0.15);
-            z-index: 1000;
-            box-shadow: -15px 0 40px rgba(0,0,0,0.7);
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            visibility: hidden;
-        }
-
-        .cart-flyover-drawer.active {
-            right: 0;
-            visibility: visible;
-        }
-
-        .cart-drawer-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-
-        .cart-stream-node {
-            display: grid;
-            grid-template-columns: 60px 1fr auto;
-            gap: 12px;
-            align-items: center;
-            background: rgba(255,255,255,0.02);
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            border: 1px solid rgba(255,255,255,0.04);
-        }
-
-        /* STANDARDIZED ACTION BUTTON ENGINE MATRICES */
-        .action-btn {
-            background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
-            color: #000000;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 11px;
-            letter-spacing: 0.5px;
-            padding: 8px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(250, 204, 21, 0.2);
-        }
-
-        .action-btn:hover {
-            transform: scale(1.03);
-            box-shadow: 0 6px 18px rgba(250, 204, 21, 0.35);
-        }
-
-        /* INTEGRATED INTERACTIVE SYSTEM WHATSAPP CHAT MODULE WIDGET */
-        .whatsapp-system-fabric-trigger {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
-            color: white;
-            width: 55px;
-            height: 55px;
+        .card-media-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .card-wishlist-trigger {
+            position: absolute;
+            top: 10px; right: 10px;
+            background: rgba(4,5,9,0.6);
+            backdrop-filter: blur(10px);
+            width: 32px; height: 32px;
             border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            cursor: pointer;
-            z-index: 999;
-            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+            display: flex; align-items: center; justify-content: center;
+            color: #9ca3af; font-size: 13px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
+        .card-wishlist-trigger:hover { color: #ef4444; background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.2); }
+
+        .product-meta-category { font-size: 10px; color: #facc15; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .product-meta-title { font-size: 15px; font-weight: 700; color: #ffffff; margin-bottom: 6px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .product-meta-desc { font-size: 12px; color: #9ca3af; margin-bottom: 15px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 36px; line-height: 1.5; }
+
+        .card-action-row { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.04); }
+        .product-price-node { font-size: 16px; font-weight: 800; color: #ffffff; }
+        .product-price-node span { font-size: 11px; color: #facc15; margin-right: 2px; }
+
+        .card-purchase-btn {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: white; width: 36px; height: 36px;
+            border-radius: 10px; display: flex;
+            align-items: center; justify-content: center; font-size: 13px;
+        }
+        .card-purchase-btn:hover { background: #facc15; color: #000; border-color: #facc15; box-shadow: 0 4px 15px rgba(250,204,21,0.3); }
+
+        /* PRESTIGE SIDEBAR DRAWER OVERLAY MATRIX */
+        .glass-panel-drawer {
+            position: fixed;
+            inset: 0; z-index: 2000;
+            background: rgba(4,5,9,0.4);
+            backdrop-filter: blur(8px);
+            visibility: hidden; opacity: 0;
+        }
+        .glass-panel-drawer.active { visibility: visible; opacity: 1; }
+
+        .drawer-surface-box {
+            position: absolute;
+            top: 0; right: 0; bottom: 0;
+            width: 100%; max-width: 400px;
+            background: rgba(10, 11, 16, 0.95);
+            backdrop-filter: blur(30px);
+            border-left: 1px solid rgba(255,255,255,0.06);
+            padding: 30px;
+            display: flex; flex-direction: column;
+            transform: translateX(100%);
+        }
+        .glass-panel-drawer.active .drawer-surface-box { transform: translateX(0); }
+
+        .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .drawer-title { font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .drawer-close-trigger { color: #9ca3af; font-size: 18px; }
+        .drawer-close-trigger:hover { color: #ef4444; }
+
+        /* LISTING CONTAINER IN CART */
+        .cart-items-flow-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding-right: 5px; }
+        
+        .cart-modular-card {
+            display: flex; gap: 15px; background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 14px; align-items: center;
+        }
+        .cart-card-media { width: 65px; height: 65px; border-radius: 8px; object-fit: cover; background: #0d0e12; border: 1px solid rgba(255,255,255,0.04); }
+        .cart-card-details { flex: 1; min-width: 0; }
+        .cart-card-title { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .cart-card-price { font-size: 13px; color: #facc15; font-weight: 700; margin-top: 2px; }
+        
+        .cart-qty-cluster { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+        .qty-adjust-action { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); width: 22px; height: 22px; border-radius: 4px; color: white; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+        .qty-adjust-action:hover { background: #facc15; color: black; border-color: #facc15; }
+        .qty-value-node { font-size: 12px; font-weight: 700; }
+
+        .cart-remove-trash-action { color: #6b7280; font-size: 14px; margin-left: auto; padding: 5px; }
+        .cart-remove-trash-action:hover { color: #ef4444; }
+
+        .drawer-footer-anchor { margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .drawer-summary-row { display: flex; justify-content: space-between; font-weight: 800; font-size: 16px; margin-bottom: 15px; }
+
+        .form-btn {
+            width: 100%; padding: 14px; border-radius: 10px; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; display: block; margin-top: 10px;
+        }
+
+        /* WHATSAPP CORE DEEP WIDGET INTEGRATION */
+        .whatsapp-floating-trigger {
+            position: fixed; bottom: 30px; left: 30px; z-index: 5000;
+            background: #25d366; color: white; width: 56px; height: 56px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 26px; box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
+            cursor: pointer;
+        }
+        .whatsapp-floating-trigger:hover { transform: scale(1.1) rotate(10deg); }
 
         .whatsapp-chat-card-panel {
-            position: fixed;
-            bottom: 100px;
-            right: 30px;
-            width: 320px;
-            background-color: #ffffff;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
-            z-index: 999;
-            display: none;
-            color: #333333;
+            position: fixed; bottom: 100px; left: 30px; z-index: 5000;
+            width: 320px; background: #ffffff; border-radius: 12px;
+            overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            display: none; flex-direction: column;
+            transform-origin: bottom left; animation: widgetPop 0.4s cubic-bezier(0.19, 1, 0.22, 1);
         }
+        .whatsapp-chat-card-panel.active { display: flex; }
 
-        .whatsapp-chat-card-panel.active { display: block; }
+        @keyframes widgetPop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+
+        .wa-card-header { background: #075e54; padding: 15px; display: flex; align-items: center; gap: 12px; color: white; }
+        .wa-avatar { width: 38px; height: 38px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; }
+        .wa-profile-info h4 { font-size: 14px; font-weight: 700; }
+        .wa-profile-info p { font-size: 11px; opacity: 0.8; }
+        
+        .wa-card-body { background: #e5ddd5; padding: 15px; max-height: 200px; overflow-y: auto; }
+        .wa-incoming-bubble { background: white; padding: 10px 12px; border-radius: 0 8px 8px 8px; color: #000000; font-size: 13px; max-width: 85%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        .wa-card-footer { padding: 10px; background: #f0f0f0; }
+        .wa-send-action-btn { background: #25d366; color: white; font-weight: 700; font-size: 13px; padding: 10px; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+
+        /* FOOTER */
+        footer { background-color: #000000; border-top: 1px solid #1f2937; padding: 30px 5%; margin-top: 40px; }
+        .footer-grid { display: grid; grid-template-columns: 1fr; gap: 25px; }
+        @media(min-width: 600px){ .footer-grid { grid-template-columns: repeat(3, 1fr); } }
+        .footer-col h3 { font-size: 14px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; color: #facc15; }
+        .footer-col p, .footer-col li { font-size: 13px; color: #9ca3af; list-style: none; margin-bottom: 6px; }
     </style>
 </head>
 <body>
-
-    <div class="plasma-glow-orbs"></div>
-
-    <div class="telemetry-hud-strip">
-        <div class="hud-live-tag">BazaarHub Central Core Engine Connected</div>
-        <div id="telemetryClockHUD">SYSTEM DATE TELEMETRY LOADED</div>
-    </div>
 
     <nav>
         <div class="nav-logo-box" onclick="window.location.href='index.html'">
             <div class="logo-badge">B</div>
             <div class="logo-text">BAZAAR<span>HUB</span></div>
         </div>
-        <div class="nav-link-hub">
-            <a href="index.html">Vault Core</a>
-            <a href="admin.html" style="color: #facc15; font-weight:800;">Admin Engine</a>
-        </div>
-        <div class="nav-action-center">
-            <div id="authActionBtnSlot">
-                <button onclick="window.location.href='auth.html'" class="action-btn">SECURE AUTHORIZATION</button>
-            </div>
-            <div class="cart-trigger-container" onclick="window.toggleCartDrawerFlyover()">
-                <i class="fas fa-shopping-basket" style="font-size: 16px;"></i>
-                <div class="cart-counter-badge" id="globalCartTelemetryBadge">0</div>
+        <div class="nav-actions">
+            <button onclick="window.location.href='admin.html'" class="icon-btn-wrapper" title="Admin Control Matrix">
+                <i class="fas fa-sliders-h"></i>
+            </button>
+            
+            <button onclick="toggleCartDrawerMatrix(true)" class="icon-btn-wrapper" style="margin-right: 10px;">
+                <i class="fas fa-shopping-bag"></i>
+                <div class="badge-count" id="cartGlobalBadgeDisplay">0</div>
+            </button>
+
+            <div id="userStateProfileSection">
+                <button onclick="window.location.href='auth.html'" class="form-btn bg-yellow" style="width:auto; padding: 8px 18px; margin-top:0; font-size:12px;">SECURE PORTAL</button>
             </div>
         </div>
     </nav>
 
-    <div class="hero-viewport-slider" id="heroViewportSlider">
-        <div class="hero-slide-node active" style="background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1400');">
-            <div class="hero-text-manifest">
-                <div class="hero-pre-tag">PREMIUM LAUNCH HARDWARE</div>
-                <h1 class="hero-main-title">Next-Gen Cyber Apparatus Matrix</h1>
-                <p class="hero-caption">Unlock immersive visual fidelity modules and ergonomic structural layouts synced down securely from cloud storage infrastructure networks.</p>
-                <button class="action-btn" onclick="window.smoothScrollToStorefront()">Provision Database Items</button>
-            </div>
-        </div>
-        <div class="hero-slide-node" style="background-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=1400');">
-            <div class="hero-text-manifest">
-                <div class="hero-pre-tag">VAULT ECOSYSTEM UPDATE</div>
-                <h1 class="hero-main-title">Advanced Logistics Pipeline Arrays</h1>
-                <p class="hero-caption">Track custom checkout vectors seamlessly across decentralized storage nodes with real-time push tracking status synchronization updates.</p>
-                <button class="action-btn" onclick="window.smoothScrollToStorefront()">Inspect Catalog</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="main-storefront-wrapper" id="mainStorefrontAnchorPoint">
-        <aside class="filter-architecture-sidebar">
-            <h3 class="filter-section-title">Ecosystem Routers</h3>
-            <div id="categoryFiltersContainerSlot">
-                <div class="filter-category-node active" onclick="window.applyCategoryFilterRoute('ALL')">All Vault Items</div>
-                <div class="filter-category-node" onclick="window.applyCategoryFilterRoute('Electronics')">Electronics</div>
-                <div class="filter-category-node" onclick="window.applyCategoryFilterRoute('Clothing')">Clothing</div>
-                <div class="filter-category-node" onclick="window.applyCategoryFilterRoute('Accessories')">Accessories</div>
-                <div class="filter-category-node" onclick="window.applyCategoryFilterRoute('Home Decor')">Home Decor</div>
-            </div>
-        </aside>
-
-        <main>
-            <div class="store-viewgrid-engine" id="storefrontDynamicViewgridEngine">
+    <div class="hero-banner-viewport">
+        <div class="banner-track">
+            <div class="banner-slide" style="background-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80');">
+                <div class="banner-overlay-matrix">
+                    <div class="banner-tag">Quantum Engine Hardware</div>
+                    <h1 class="banner-title">Cybernetic Tech<br>Vault Framework</h1>
+                    <p class="banner-desc">Integrate top-tier computational aesthetics into your workspace layout pipeline array setup environments instantly.</p>
+                    <button onclick="smoothScrollToCatalogGrid()" class="action-cta-button bg-yellow">DISPATCH VAULT ACCESS <i class="fas fa-arrow-right"></i></button>
                 </div>
-        </main>
-    </div>
-
-    <div class="cart-flyover-drawer" id="cartFlyoverDrawerHUD">
-        <div>
-            <div class="cart-drawer-header">
-                <h3 style="font-weight: 800; font-size: 15px; letter-spacing:0.5px;">PROVISIONING CART VECTOR</h3>
-                <i class="fas fa-times" style="cursor:pointer;" onclick="window.toggleCartDrawerFlyover()"></i>
             </div>
-            <div id="cartDrawerStreamItemsContainer" style="max-height: 400px; overflow-y:auto; padding-right:5px;">
+            <div class="banner-slide" style="background-image: url('https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=80');">
+                <div class="banner-overlay-matrix">
+                    <div class="banner-tag">Streetwear Logistics Grid</div>
+                    <h1 class="banner-title">Hyper-Objects<br>Aesthetic Modules</h1>
+                    <p class="banner-desc">Premium tactical items and everyday gear built with performance physics and computational layout structural durability.</p>
+                    <button onclick="smoothScrollToCatalogGrid()" class="action-cta-button bg-yellow">EXPLORE MODULES <i class="fas fa-arrow-right"></i></button>
                 </div>
-        </div>
-        <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 20px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom: 20px; font-weight:800; font-size:15px;">
-                <span>AGGREGATE VALUATION:</span>
-                <span class="accent-yellow" id="cartDrawerTotalValuationDisplay">Rs. 0</span>
             </div>
-            <button class="action-btn" style="width: 100%; padding:12px; text-align:center;" onclick="window.location.href='checkout.html'">Route Pipeline To Checkout</button>
+            <div class="banner-slide" style="background-image: url('https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1200&q=80');">
+                <div class="banner-overlay-matrix">
+                    <div class="banner-tag">Robotic Smart Nodes</div>
+                    <h1 class="banner-title">Autonomous Living<br>Automation Arrays</h1>
+                    <p class="banner-desc">Next-generation hardware nodes that synthesize seamless workspace task workflows via integrated wireless protocols.</p>
+                    <button onclick="smoothScrollToCatalogGrid()" class="action-cta-button bg-yellow">INITIALIZE DISCOVERY <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="whatsapp-system-fabric-trigger" onclick="window.toggleWhatsAppWidget()">
-        <i class="fab fa-whatsapp"></i>
+    <div class="category-scroll-ribbon" id="dynamicCategoryRibbonContainer">
+        <button class="category-pill active" onclick="filterCatalogStreamByCategory('ALL')">ALL VAULT DATA</button>
+        <button class="category-pill" onclick="filterCatalogStreamByCategory('Electronics')">ELECTRONICS</button>
+        <button class="category-pill" onclick="filterCatalogStreamByCategory('Wearables')">WEARABLES</button>
+        <button class="category-pill" onclick="filterCatalogStreamByCategory('Accessories')">ACCESSORIES</button>
     </div>
 
+    <main class="showcase-container" id="catalogViewSectionAnchor">
+        <h2 class="section-headline"><i class="fas fa-project-diagram accent-yellow"></i> Verified Inventory Matrix Node Pipeline</h2>
+        <div class="products-isometric-grid" id="globalCatalogProductsGridContainer">
+            </div>
+    </main>
+
+    <div class="glass-panel-drawer" id="globalCartDrawerMatrixElement">
+        <div class="drawer-surface-box">
+            <div class="drawer-header">
+                <h3 class="drawer-title"><i class="fas fa-terminal accent-yellow"></i> Allocation Manifest</h3>
+                <button onclick="toggleCartDrawerMatrix(false)" class="drawer-close-trigger"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="cart-items-flow-container" id="cartDrawerItemsDataFlowContainer">
+                </div>
+
+            <div class="drawer-footer-anchor">
+                <div class="drawer-summary-row">
+                    <span>AGREED OUTLAY:</span>
+                    <span class="accent-yellow" id="cartDrawerTotalValueDisplay">Rs. 0</span>
+                </div>
+                <button onclick="routeUserToCheckoutPipeline()" class="form-btn bg-yellow">INITIALIZE TRANSMISSION LINK</button>
+                <button onclick="clearCartManifestPool()" class="form-btn" style="background:rgba(239,68,68,0.1); color:#ef4444; border:1px solid rgba(239,68,68,0.2);">WIPE SELECTION MANIFEST</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="whatsapp-floating-trigger" onclick="toggleWhatsAppWidgetPanel()"><i class="fab fa-whatsapp"></i></div>
     <div class="whatsapp-chat-card-panel" id="whatsappChatCard">
-        <div style="background-color: #075e54; color:white; padding:15px; display:flex; align-items:center; gap:10px;">
-            <i class="fab fa-whatsapp" style="font-size:24px;"></i>
-            <div>
-                <h4 style="font-size:14px; font-weight:700;">BazaarHub Helpdesk</h4>
-                <p style="font-size:11px; opacity:0.8;">Live Technical Support Node</p>
+        <div class="wa-card-header">
+            <div class="wa-avatar">BH</div>
+            <div class="wa-profile-info">
+                <h4>BazaarHub Support Matrix</h4>
+                <p style="margin-top:2px; font-size:11px;">System Operational • Online</p>
             </div>
         </div>
-        <div style="padding:15px; background-color:#e5ddd5; max-height:200px; overflow-y:auto;">
-            <div style="background-color:white; padding:10px; border-radius:8px; font-size:12px; max-width:85%; box-shadow:0 1px 2px rgba(0,0,0,0.15);">
-                Assalam-o-Alaikum! Welcome to BazaarHub Secure Telemetry Chat Support. How can we optimize your digital payload today?
-            </div>
+        <div class="wa-card-body">
+            <div class="wa-incoming-bubble">Greetings Client Hub. Transmit configuration queries or order processing issues directly to our terminal operator node.</div>
         </div>
-        <div style="padding:10px; background-color:#f0f0f0;">
-            <button onclick="window.open('https://wa.me/923001234567?text=Hello%20BazaarHub%20Support')" style="width:100%; background-color:#25d366; color:white; padding:8px; border-radius:6px; font-weight:700; text-align:center;">
-                START TELEGRAM LIVE DISPATCH
+        <div class="wa-card-footer">
+            <button onclick="window.open('https://wa.me/923001234567?text=BazaarHub%20Protocol%20Terminal%20Query', '_blank')" class="wa-send-action-btn">
+                <i class="fab fa-whatsapp"></i> CONSOLE LIVE CONNECT
             </button>
         </div>
     </div>
 
-    <script>
-        // Synchronous Telemetry Clock System HUD
-        function updateTelemetryHUDClock() {
-            const timeObj = new Date();
-            const slot = document.getElementById('telemetryClockHUD');
-            if (slot) {
-                slot.innerText = `NODE TIME MATRIX: ${timeObj.toLocaleDateString()} // ${timeObj.toLocaleTimeString()}`;
-            }
-        }
-        setInterval(updateTelemetryHUDClock, 1000);
-        updateTelemetryHUDClock();
-
-        // Premium Structural Sliders Matrix Core Transitions Routine
-        let currentSlideMatrixIndex = 0;
-        const totalSlideNodes = 2;
-        setInterval(() => {
-            const viewport = document.getElementById('heroViewportSlider');
-            if (viewport) {
-                const elements = viewport.getElementsByClassName('hero-slide-node');
-                if (elements.length >= totalSlideNodes) {
-                    elements[currentSlideMatrixIndex].classList.remove('active');
-                    currentSlideMatrixIndex = (currentSlideMatrixIndex + 1) % totalSlideNodes;
-                    elements[currentSlideMatrixIndex].classList.add('active');
-                }
-            }
-        }, 5000);
-
-        function toggleWhatsAppWidget() {
-            const node = document.getElementById('whatsappChatCard');
-            if(node) node.classList.toggle('active');
-        }
-        window.toggleWhatsAppWidget = toggleWhatsAppWidget;
-
-        function smoothScrollToStorefront() {
-            const anchor = document.getElementById('mainStorefrontAnchorPoint');
-            if (anchor) anchor.scrollIntoView({ behavior: 'smooth' });
-        }
-        window.smoothScrollToStorefront = smoothScrollToStorefront;
-    </script>
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>BAZAAR<span>HUB</span></h3>
+                <p>Advanced multi-device client node ecommerce pipeline linked with real-time distributed document storage systems.</p>
+            </div>
+            <div class="footer-col">
+                <h3>System Nodes</h3>
+                <li>• Firestore Clusters</li>
+                <li>• Realtime Database</li>
+                <li>• Cryptographic Auth</li>
+            </div>
+            <div class="footer-col">
+                <h3>Terminal Interface</h3>
+                <p>Location: Karachi Terminal Hub, Pakistan<br>Status: Operational [2026]</p>
+            </div>
+        </div>
+    </footer>
 
     <script type="module" src="script.js"></script>
+    <script>
+        // Inline layout transitions helper methods
+        function smoothScrollToCatalogGrid() {
+            document.getElementById('catalogViewSectionAnchor').scrollIntoView({ behavior: 'smooth' });
+        }
+        function toggleWhatsAppWidgetPanel() {
+            document.getElementById('whatsappChatCard').classList.toggle('active');
+        }
+    </script>
 </body>
 </html>
