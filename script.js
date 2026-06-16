@@ -5,7 +5,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebas
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, collection, query, where, getDocs, addDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-// Your web app's NEW Firebase configuration 
+// Your web app's NEW Firebase configuration (Bazaarhubnew)
 const firebaseConfig = {
   apiKey: "AIzaSyAPlpnfGWTiUQlyl2vH6uM_Ae6_EQ8YW5E",
   authDomain: "bazaarhubnew-79dee.firebaseapp.com",
@@ -20,12 +20,13 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// iske niche aapka baki ka saara code (auth functions, product functions, etc.) waise ka waisa hi rahega...
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+// -------------------------------------------------------------------------
+// YAHA SE AAPKA BAKI KA SAARA CODE (STATE RECONCILIATION, PRODUCTS, CART, ORDERS) 
+// WAISA KA WAISA HI RAHEGA, KOI BHI LINE CHANGE YA DELETE NAHI KARNI HAI.
+// -------------------------------------------------------------------------
+let currentUserNode = null;
+let products = [];
+// ... baki saara code iske niche chalta rahega ...
 
 // Global Variables
 let products = [];
