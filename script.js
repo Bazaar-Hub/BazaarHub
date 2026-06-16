@@ -49,6 +49,8 @@ onAuthStateChanged(auth, (user) => {
         localStorage.removeItem('loggedInUser');
         systemCartCache = [];
         if (typeof renderEcomCartWorkspace === 'function') renderEcomCartWorkspace();
+        
+        // CHANGED: Yahan jo direct redirect loop laga hua tha, usay remove kar diya hai taake naye browser me page wapis na bhage.
     }
 });
 
