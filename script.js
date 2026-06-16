@@ -41,7 +41,7 @@ onAuthStateChanged(auth, (user) => {
             if (typeof renderEcomCartWorkspace === 'function') renderEcomCartWorkspace();
         });
 
-        // Authorization Gateway Redirects
+        // FIXED AUTHORIZATION GATEWAY: Sirf auth page par redirect karega taake dussre browser me login block na ho
         if(window.location.pathname.includes('auth.html')) {
             if (user.email === "admin@bazaarhub.com") {
                 window.location.href = 'admin.html';
@@ -54,7 +54,7 @@ onAuthStateChanged(auth, (user) => {
         systemCartCache = [];
         if (typeof renderEcomCartWorkspace === 'function') renderEcomCartWorkspace();
     }
-});        
+});    
 
 // --- 2. AUTH CARD TAB SWITCHING LOGIC ---
 const loginTab = document.getElementById('loginTab');
