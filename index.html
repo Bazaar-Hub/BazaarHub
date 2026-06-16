@@ -801,99 +801,495 @@
     </div>
 
     <!-- JAVA SCRIPT ENGINE ENGINE -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+    <script>
+        let PRODUCT_DATABASE = JSON.parse(localStorage.getItem('bazaar_products')) || [
+            { id: 1, title: "ndz Smart Watch", category: "ZHZSFB", desc: "Premium Black Silicone Edition Tech Wear", price: 5432, img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=80" },
+            { id: 2, title: "znjfzndjx Orange", category: "ZBZDHF", desc: "Strap Tactical Active High Response Watch", price: 7654, img: "https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?w=500&auto=format&fit=crop&q=80" },
+            { id: 3, title: "cxbzv Tech Wear", category: "KJNBHGVFWA", desc: "Luxury Executive Limited Carbon Model", price: 87654, img: "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=500&auto=format&fit=crop&q=80" },
+            { id: 4, title: "Phoenix Alpha Node", category: "ZHZSFB", desc: "Amoled Always-On Pro Sports Watch", price: 12500, img: "https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=500&auto=format&fit=crop&q=80" },
+            { id: 5, title: "Cyber Horizon KJH", category: "KJHGFD", desc: "Rugged Outdoor Weatherproof GPS Tracker", price: 9300, img: "https://images.unsplash.com/photo-1517502884422-41eaaced0168?w=500&auto=format&fit=crop&q=80" }
+        ];
 
-        // Firebase Configuration (Same as your secure script.js)
-        const firebaseConfig = {
-          apiKey: "AIzaSyBQ5JXRZUqW75b78Lf90SgsncohByPHaoE",
-          authDomain: "bazaarhub-7fad9.firebaseapp.com",
-          projectId: "bazaarhub-7fad9",
-          storageBucket: "bazaarhub-7fad9.firebasestorage.app",
-          messagingSenderId: "234144258685",
-          appId: "1:234144258685:web:01743589d514f78a64ef14",
-          databaseURL: "https://bazaarhub-7fad9-default-rtdb.asia-southeast1.firebasedatabase.app"
-        };
+        let CENTRAL_ORDERS_DB = JSON.parse(localStorage.getItem('bazaar_orders')) || [];
+        let SYSTEM_CART = [];
+        let SELECTED_CATEGORY = "ALL";
+        let SEARCH_QUERY = "";
+        let LOGGED_IN_USER_PHONE = "";
+        let IS_ADMIN_MODE = false;
 
-        // Initialize Firebase Backend Instance
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // Security Authentication Router Matrix Control
-        onAuthStateChanged(auth, (user) => {
-            const authStateBtn = document.getElementById('authStateActionBtn');
-            const gatewayConsoleLink = document.getElementById('gatewayConsoleLink');
-
-            if (user) {
-                // User logged in hai
-                if (authStateBtn) {
-                    authStateBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> LOGOUT';
-                    authStateBtn.onclick = () => {
-                        signOut(auth).then(() => {
-                            window.location.reload();
-                        });
-                    };
-                }
-                if (gatewayConsoleLink) {
-                    gatewayConsoleLink.style.display = 'flex'; // Authorized view enable
-                }
-                
-                // If user is admin, allow full tracking access
-                if(user.email === "admin@bazaarhub.com") {
-                    setupLiveOrdersRealtimeStream();
-                }
-            } else {
-                // User logged out hai
-                if (authStateBtn) {
-                    authStateBtn.innerHTML = '<i class="fas fa-user-shield"></i> CLIENT ACCESS';
-                    authStateBtn.onclick = () => {
-                        window.location.href = 'auth.html';
-                    };
-                }
-                if (gatewayConsoleLink) {
-                    gatewayConsoleLink.style.display = 'none'; // Unauthenticated hidden node
-                }
-            }
-        });
-
-        // Realtime Firebase Orders Sync (No more LocalStorage resets)
-        function setupLiveOrdersRealtimeStream() {
-            const adminOrdersList = document.getElementById('adminOrdersList');
-            if (!adminOrdersList) return;
-
-            const q = query(collection(db, "orders"));
-            onSnapshot(q, (snapshot) => {
-                let ordersHTML = "";
-                snapshot.forEach((doc) => {
-                    const o = doc.data();
-                    const docId = doc.id;
-                    ordersHTML += `
-                        <tr>
-                            <td style="font-size:11px;">M: ${o.user || 'N/A'}<br>A: ${o.address || 'N/A'}</td>
-                            <td>${o.items || 'No Items'}</td>
-                            <td style="font-weight:700; color:#facc15;">Rs. ${o.cost || 0}</td>
-                            <td>
-                                <select onchange="window.changeStatusAction('${docId}', this.value)" style="margin:0; padding:5px; font-size:11px; background:#14141c; color:white; border-color:#374151;">
-                                    <option value="Pending Verification" ${o.status === 'Pending Verification' ? 'selected' : ''}>Pending</option>
-                                    <option value="Placed" ${o.status === 'Placed' ? 'selected' : ''}>Placed</option>
-                                    <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-                                </select>
-                            </td>
-                        </tr>
-                    `;
-                });
-                adminOrdersList.innerHTML = ordersHTML;
-            });
+        function saveDatabasesToLocalStorage() {
+            localStorage.setItem('bazaar_products', JSON.stringify(PRODUCT_DATABASE));
+            localStorage.setItem('bazaar_orders', JSON.stringify(CENTRAL_ORDERS_DB));
         }
 
-        // WhatsApp Floating Card Toggle Action
-        window.toggleWhatsAppWidget = function() {
-            const widget = document.getElementById('whatsappChatCard');
-            if(widget) widget.classList.toggle('active');
-        };
+        function switchScreen(type) {
+            document.getElementById('registerScreen').classList.add('hidden');
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('adminScreen').classList.add('hidden');
+            if(type === 'register') document.getElementById('registerScreen').classList.remove('hidden');
+            if(type === 'login') document.getElementById('loginScreen').classList.remove('hidden');
+            if(type === 'admin') document.getElementById('adminScreen').classList.remove('hidden');
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            // Data ko alag alag keys me store kar rahay hain taake login validation asan ho
+            localStorage.setItem('storedUserName', document.getElementById('regName').value.trim());
+            localStorage.setItem('storedUserEmail', document.getElementById('regEmail').value.trim());
+            localStorage.setItem('storedUserPhone', document.getElementById('regPhone').value.trim());
+            localStorage.setItem('storedUserPass', document.getElementById('regPass').value);
+            
+            alert('User profile identity verified & logged inside terminal registry.');
+            switchScreen('login');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const emailInput = document.getElementById('loginEmail').value.trim();
+            const passInput = document.getElementById('loginPass').value;
+            
+            const savedEmail = localStorage.getItem('storedUserEmail');
+            const savedPass = localStorage.getItem('storedUserPass');
+            const savedPhone = localStorage.getItem('storedUserPhone');
+            
+            if(emailInput === savedEmail && passInput === savedPass) {
+                LOGGED_IN_USER_PHONE = savedPhone;
+                IS_ADMIN_MODE = false;
+                
+                // Alert trigger hone ke baad seedha dashboard load hoga, infinite register loop khatam
+                alert('Access Granted! Booting System Node Hub.');
+                bootAppFramework();
+            } else {
+                alert('Access Error! Identity email string or pass cipher mismatch.');
+            }
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('adminUser').value.trim();
+            const pass = document.getElementById('adminPass').value;
+
+            if(user === "OwnerBH" && pass === "bh777!@") {
+                IS_ADMIN_MODE = true;
+                LOGGED_IN_USER_PHONE = "ADMIN-MASTER-TOKEN";
+                bootAppFramework();
+            } else {
+                alert('Root Protocol Denied! Access keys invalid.');
+            }
+        }
+
+        function bootAppFramework() {
+            document.getElementById('registerScreen').classList.add('hidden');
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('adminScreen').classList.add('hidden');
+            document.getElementById('mainAppHub').classList.remove('hidden');
+
+            if(IS_ADMIN_MODE) {
+                document.getElementById('clientNavLinks').classList.add('hidden');
+                document.getElementById('navCartWidget').classList.add('hidden');
+                document.getElementById('adminNavLinks').classList.remove('hidden');
+                showSection('admin-panel');
+            } else {
+                document.getElementById('clientNavLinks').classList.remove('hidden');
+                document.getElementById('navCartWidget').classList.remove('hidden');
+                document.getElementById('adminNavLinks').classList.add('hidden');
+                showSection('catalog');
+            }
+            initWorkspaceEngine();
+        }
+
+        function handleLogout() { location.reload(); }
+
+        function showSection(sectionId) {
+            document.getElementById('catalogPage').classList.add('hidden');
+            document.getElementById('checkoutPage').classList.add('hidden');
+            document.getElementById('myOrdersPage').classList.add('hidden');
+            document.getElementById('adminPanelPage').classList.add('hidden');
+            document.getElementById('supportPage').classList.add('hidden');
+            
+            if(sectionId === 'catalog') document.getElementById('catalogPage').classList.remove('hidden');
+            if(sectionId === 'checkout') {
+                document.getElementById('checkoutPage').classList.remove('hidden');
+                // Auto fill system parameters from active local database nodes
+                if(!IS_ADMIN_MODE) {
+                    document.getElementById('billEmail').value = localStorage.getItem('storedUserEmail') || "";
+                    document.getElementById('billPhone').value = LOGGED_IN_USER_PHONE || "";
+                    const fullName = localStorage.getItem('storedUserName') || "";
+                    if(fullName) {
+                        const nameParts = fullName.split(" ");
+                        document.getElementById('billFirst').value = nameParts[0] || "";
+                        document.getElementById('billLast').value = nameParts.slice(1).join(" ") || "Client";
+                    }
+                }
+            }
+            if(sectionId === 'my-orders') { document.getElementById('myOrdersPage').classList.remove('hidden'); renderMyOrdersTable(); }
+            if(sectionId === 'admin-panel') { document.getElementById('adminPanelPage').classList.remove('hidden'); renderAdminGlobalTable(); renderAdminProductsVault(); }
+            if(sectionId === 'support') document.getElementById('supportPage').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function scrollToShop() {
+            showSection('catalog');
+            setTimeout(() => {
+                document.getElementById('shopCatalogSection').scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+
+        function initWorkspaceEngine() {
+            renderCategoryCapsules();
+            renderDynamicProducts();
+            updateLiveCartUI();
+        }
+
+        function renderCategoryCapsules() {
+            const categories = ["ALL", ...new Set(PRODUCT_DATABASE.map(p => p.category))];
+            document.getElementById('categoryChipsBox').innerHTML = categories.map(cat => `
+                <button class="capsule ${SELECTED_CATEGORY === cat ? 'active' : ''}" onclick="filterByCategory('${cat}')">${cat}</button>
+            `).join('');
+        }
+
+        function filterByCategory(cat) { SELECTED_CATEGORY = cat; renderCategoryCapsules(); renderDynamicProducts(); }
+        function handleSearch() { SEARCH_QUERY = document.getElementById('storeSearch').value.toLowerCase(); renderDynamicProducts(); }
+
+        function renderDynamicProducts() {
+            const grid = document.getElementById('productsGrid');
+            const items = PRODUCT_DATABASE.filter(p => {
+                return (SELECTED_CATEGORY === "ALL" || p.category === SELECTED_CATEGORY) && (p.title.toLowerCase().includes(SEARCH_QUERY) || p.desc.toLowerCase().includes(SEARCH_QUERY));
+            });
+            if(items.length === 0) {
+                grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:#9ca3af; padding:40px;">No operational item tags match your search index.</p>`;
+                return;
+            }
+            grid.innerHTML = items.map((p, index) => `
+                <div class="product-card" style="animation: cardRevealMove 0.6s cubic-bezier(0.19, 1, 0.22, 1) ${index * 0.05}s both;">
+                    <img src="${p.img}" class="product-img">
+                    <div><div class="product-title">${p.title}</div><div class="product-desc">${p.desc}</div></div>
+                    <div><div class="product-price">Rs. ${parseFloat(p.price).toLocaleString()}</div><button class="bg-yellow card-btn" onclick="addItemToCart(${p.id})">Add to Basket</button></div>
+                </div>
+            `).join('');
+        }
+
+        // Keyframe injector logic for dynamic stagger cards loading animation
+        const styleSheet = document.styleSheets[0];
+        styleSheet.insertRule(`
+            @keyframes cardRevealMove {
+                0% { opacity: 0; transform: translateY(40px) scale(0.96); filter: blur(5px); }
+                100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+            }
+        `, styleSheet.cssRules.length);
+
+        function addItemToCart(id) {
+            const prod = PRODUCT_DATABASE.find(p => p.id === id);
+            const inside = SYSTEM_CART.find(item => item.id === id);
+            if(inside) inside.qty++; else SYSTEM_CART.push({ ...prod, qty: 1 });
+            updateLiveCartUI();
+            toggleCartSidebar(true);
+        }
+
+        function modifyQty(id, modifier) {
+            const target = SYSTEM_CART.find(item => item.id === id);
+            if(!target) return;
+            target.qty += modifier;
+            if(target.qty <= 0) SYSTEM_CART = SYSTEM_CART.filter(item => item.id !== id);
+            updateLiveCartUI();
+        }
+
+        function updateLiveCartUI() {
+            document.getElementById('cartCount').innerText = SYSTEM_CART.reduce((acc, i) => acc + i.qty, 0);
+            const box = document.getElementById('cartItemsContainer');
+            if(SYSTEM_CART.length === 0) {
+                box.innerHTML = `<p style="text-align:center; color:#9ca3af; margin-top:50px; font-size:13px;">Your workspace cart allocation stream is empty.</p>`;
+                document.getElementById('cartAggregatedTotal').innerText = "Rs. 0";
+                return;
+            }
+            let computedSum = 0;
+            box.innerHTML = SYSTEM_CART.map(item => {
+                computedSum += (item.price * item.qty);
+                return `
+                    <div class="cart-item">
+                        <img src="${item.img}" class="cart-item-img">
+                        <div class="cart-item-details"><div class="cart-item-name">${item.title}</div><div class="cart-item-price">Rs. ${parseFloat(item.price).toLocaleString()}</div></div>
+                        <div class="qty-control">
+                            <button class="qty-btn" onclick="modifyQty(${item.id}, -1)">-</button>
+                            <span class="qty-val">${item.qty}</span>
+                            <button class="qty-btn" onclick="modifyQty(${item.id}, 1)">+</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('cartAggregatedTotal').innerText = "Rs. " + computedSum.toLocaleString();
+        }
+
+        function toggleCartSidebar(state) {
+            const sidebar = document.getElementById('cartSidebarOverlay');
+            const waWidget = document.getElementById('whatsappFloatingWidget');
+            if(state) {
+                sidebar.classList.add('open');
+                waWidget.style.display = "none"; 
+            } else {
+                sidebar.classList.remove('open');
+                waWidget.style.display = "flex"; 
+            }
+        }
+
+        function goToCheckout() {
+            if(SYSTEM_CART.length === 0) return;
+            toggleCartSidebar(false);
+            let grandTotal = 0;
+            document.getElementById('checkoutSummaryItems').innerHTML = SYSTEM_CART.map(item => {
+                grandTotal += (item.price * item.qty);
+                return `<div class="summary-item"><div><div class="summary-name">${item.title}</div><div class="summary-qty">Qty: ${item.qty}x</div></div><div class="summary-price">Rs. ${(item.price * item.qty).toLocaleString()}</div></div>`;
+            }).join('');
+            document.getElementById('checkoutTotalDue').innerText = "Rs. " + grandTotal.toLocaleString();
+            showSection('checkout');
+        }
+
+        /* ==========================================================================
+           DYNAMIC CONFETTI PARTY POPPER ENGINE (LEFT & RIGHT BURST)
+           ========================================================================== */
+        function triggerPartyPoppersAnimation() {
+            const totalParticles = 70;
+            const colors = ['#facc15', '#ef4444', '#3b82f6', '#10b981', '#a855f7', '#ff7849'];
+            
+            for (let i = 0; i < totalParticles; i++) {
+                createPopperNode(0, window.innerHeight * 0.7, 45);
+            }
+            for (let i = 0; i < totalParticles; i++) {
+                createPopperNode(window.innerWidth, window.innerHeight * 0.7, 135);
+            }
+
+            function createPopperNode(x, y, angleBase) {
+                const particle = document.createElement('div');
+                particle.classList.add('popper-particle');
+                
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const size = Math.floor(Math.random() * 8) + 6;
+                const radians = (angleBase + (Math.random() * 60 - 30)) * Math.PI / 180;
+                const velocity = Math.random() * 400 + 200;
+                
+                const xDrift = Math.cos(radians) * velocity;
+                const yDrift = -Math.sin(radians) * velocity + 150; 
+                const rDrift = Math.floor(Math.random() * 720) + 360;
+
+                particle.style.backgroundColor = color;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                
+                if (Math.random() > 0.5) {
+                    particle.style.borderRadius = '0%'; 
+                }
+
+                particle.style.setProperty('--x-drift', xDrift + 'px');
+                particle.style.setProperty('--y-drift', yDrift + 'px');
+                particle.style.setProperty('--r-drift', rDrift + 'deg');
+
+                document.body.appendChild(particle);
+                setTimeout(() => { particle.remove(); }, 2500);
+            }
+        }
+
+        function executeCheckoutOrder(e) {
+            e.preventDefault();
+
+            const nameVal = (document.getElementById('billFirst').value.trim() + " " + document.getElementById('billLast').value.trim()).trim();
+            const phoneVal = document.getElementById('billPhone').value.trim();
+            const emailVal = document.getElementById('billEmail').value.trim();
+            const addressVal = document.getElementById('billAddress').value.trim();
+
+            if(!nameVal || !phoneVal || !emailVal || !addressVal) {
+                alert("Core Error: Identity Verification Failed! Name, Phone, Email, and Location metrics are absolutely mandatory to proceed.");
+                return;
+            }
+
+            const orderId = "BZH-" + Math.floor(100000 + Math.random() * 900000);
+            const itemsString = SYSTEM_CART.map(i => `${i.title} (${i.qty}x)`).join(', ');
+            const totalCost = document.getElementById('checkoutTotalDue').innerText;
+
+            const orderPayload = {
+                id: orderId,
+                user: phoneVal,
+                items: itemsString,
+                cost: totalCost,
+                address: addressVal,
+                status: "Pending Verification",
+                rating: 0 
+            };
+
+            CENTRAL_ORDERS_DB.push(orderPayload);
+            saveDatabasesToLocalStorage();
+            SYSTEM_CART = [];
+            updateLiveCartUI();
+            
+            triggerPartyPoppersAnimation();
+            alert(`Order ${orderId} has been successfully verified via COD pipeline.`);
+            showSection('my-orders');
+        }
+
+        function saveUserRatingLog(orderId, stars) {
+            const orderIdx = CENTRAL_ORDERS_DB.findIndex(o => o.id === orderId);
+            if(orderIdx !== -1) {
+                CENTRAL_ORDERS_DB[orderIdx].rating = stars;
+                saveDatabasesToLocalStorage();
+                alert(`Thank you for rating this device module entry with ${stars} Stars!`);
+                renderMyOrdersTable();
+            }
+        }
+
+        function renderMyOrdersTable() {
+            const tbody = document.getElementById('myOrdersTableBody');
+            const userOrders = CENTRAL_ORDERS_DB.filter(o => o.user === LOGGED_IN_USER_PHONE);
+            if(userOrders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:#9ca3af;">No tracking matrices linked to your phone token.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = userOrders.map(o => {
+                let badgeClass = "badge-pending";
+                if(o.status === "Placed") badgeClass = "badge-placed";
+                if(o.status === "Delivered") badgeClass = "badge-delivered";
+                
+                let ratingInterfaceHtml = "";
+                if(o.status === "Delivered") {
+                    const currentRating = o.rating || 0;
+                    ratingInterfaceHtml = `<div class="rating-interactive-box"><span style="font-size:11px; color:#9ca3af; margin-right:4px;">Rate:</span>`;
+                    for(let star = 1; star <= 5; star++) {
+                        ratingInterfaceHtml += `
+                            <i class="fas fa-star star-node ${star <= currentRating ? 'selected' : ''}" 
+                               onclick="saveUserRatingLog('${o.id}', ${star})"></i>`;
+                    }
+                    ratingInterfaceHtml += `</div>`;
+                } else {
+                    ratingInterfaceHtml = `<div style="font-size:11px; color:#9ca3af; margin-top:4px;">Rating available after dispatch arrival.</div>`;
+                }
+
+                return `
+                    <tr>
+                        <td style="font-weight:bold; color:#facc15;">${o.id}</td>
+                        <td>${o.items}</td>
+                        <td>${o.address}</td>
+                        <td style="font-weight:700;">${o.cost}</td>
+                        <td>
+                            <span class="status-badge ${badgeClass}">${o.status}</span>
+                            ${ratingInterfaceHtml}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function handleProductSubmit(e) {
+            e.preventDefault();
+            const idVal = document.getElementById('crudProductId').value;
+            const title = document.getElementById('crudTitle').value.trim();
+            const category = document.getElementById('crudCategory').value.trim();
+            const price = parseFloat(document.getElementById('crudPrice').value);
+            const img = document.getElementById('crudImg').value.trim();
+            const desc = document.getElementById('crudDesc').value.trim();
+
+            if(idVal) {
+                const targetIdx = PRODUCT_DATABASE.findIndex(p => p.id == idVal);
+                if(targetIdx !== -1) {
+                    PRODUCT_DATABASE[targetIdx] = { id: parseInt(idVal), title, category, price, img, desc };
+                    alert("Component structural attributes modified successfully.");
+                }
+            } else {
+                const newId = PRODUCT_DATABASE.length > 0 ? Math.max(...PRODUCT_DATABASE.map(p => p.id)) + 1 : 1;
+                PRODUCT_DATABASE.push({ id: newId, title, category, price, img, desc });
+                alert("New product payload records successfully injected.");
+            }
+            
+            saveDatabasesToLocalStorage();
+            resetCrudForm();
+            renderAdminProductsVault();
+            initWorkspaceEngine();
+        }
+
+        function editProductConsole(id) {
+            const item = PRODUCT_DATABASE.find(p => p.id == id);
+            if(!item) return;
+
+            document.getElementById('crudProductId').value = item.id;
+            document.getElementById('crudTitle').value = item.title;
+            document.getElementById('crudCategory').value = item.category;
+            document.getElementById('crudPrice').value = item.price;
+            document.getElementById('crudImg').value = item.img;
+            document.getElementById('crudDesc').value = item.desc;
+
+            document.getElementById('adminFormTitle').innerHTML = `<i class="fas fa-edit"></i> Modify Product Target Node: ${item.id}`;
+            document.getElementById('crudSubmitBtn').innerText = "Update Structural Node";
+            document.getElementById('crudCancelBtn').classList.remove('hidden');
+        }
+
+        function deleteProductConsole(id) {
+            if(confirm("Are you absolutely sure you want to remove this product matrix asset record?")) {
+                PRODUCT_DATABASE = PRODUCT_DATABASE.filter(p => p.id != id);
+                saveDatabasesToLocalStorage();
+                renderAdminProductsVault();
+                initWorkspaceEngine();
+            }
+        }
+
+        function resetCrudForm() {
+            document.getElementById('productCrudForm').reset();
+            document.getElementById('crudProductId').value = "";
+            document.getElementById('adminFormTitle').innerHTML = `<i class="fas fa-plus-circle"></i> Injection New Product Struct`;
+            document.getElementById('crudSubmitBtn').innerText = "Save Asset Data";
+            document.getElementById('crudCancelBtn').classList.add('hidden');
+        }
+
+        function renderAdminProductsVault() {
+            const wrapper = document.getElementById('adminProductsVaultList');
+            if(PRODUCT_DATABASE.length === 0) {
+                wrapper.innerHTML = `<p style="text-align:center; padding:15px; color:#9ca3af;">Vault is currently empty.</p>`;
+                return;
+            }
+            wrapper.innerHTML = PRODUCT_DATABASE.map(p => `
+                <div class="admin-inline-list-item">
+                    <div>
+                        <div style="font-weight:600; font-size:13px;">${p.title}</div>
+                        <div style="font-size:11px; color:#9ca3af;">ID: ${p.id} | Key: ${p.category} | Rs. ${p.price}</div>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button onclick="editProductConsole(${p.id})" style="color:#facc15; font-size:14px;" title="Edit Node"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteProductConsole(${p.id})" style="color:#ef4444; font-size:14px;" title="Delete Node"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminGlobalTable() {
+            const tbody = document.getElementById('adminGlobalOrdersBody');
+            if(CENTRAL_ORDERS_DB.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:#9ca3af;">Global logistics streams are fully idle.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = CENTRAL_ORDERS_DB.map((o, idx) => `
+                <tr>
+                    <td style="font-weight:bold; color:#ef4444;">${o.id}</td>
+                    <td style="font-size:11px;">M: ${o.user}<br>A: ${o.address}</td>
+                    <td>${o.items}</td>
+                    <td style="font-weight:700; color:#facc15;">${o.cost}</td>
+                    <td>
+                        <select onchange="updateOrderStatusWorkflow(${idx}, this.value)" style="margin:0; padding:5px; font-size:11px; background:#14141c; color:white; border-color:#374151;">
+                            <option value="Pending Verification" ${o.status === 'Pending Verification' ? 'selected' : ''}>Pending</option>
+                            <option value="Placed" ${o.status === 'Placed' ? 'selected' : ''}>Placed</option>
+                            <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                        </select>
+                        <div style="font-size:11px; color:#9ca3af; margin-top:4px;">User Rating: ${o.rating ? o.rating + ' ★' : 'None yet'}</div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateOrderStatusWorkflow(index, newStatus) {
+            CENTRAL_ORDERS_DB[index].status = newStatus;
+            saveDatabasesToLocalStorage();
+            alert(`Logistics Order Node updated status parameter successfully to: ${newStatus}`);
+            renderAdminGlobalTable();
+        }
+
+        function toggleWhatsAppWidget() { document.getElementById('whatsappChatCard').classList.toggle('active'); }
     </script>
 </body>
 </html>

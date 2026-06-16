@@ -25,7 +25,6 @@ const db = getFirestore(app);
 let products = [];
 let orders = [];
 let systemCartCache = [];
-
 // --- 1. REALTIME AUTH & CART SYNC (Cross-Browser Fix) ---
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -42,6 +41,7 @@ onAuthStateChanged(auth, (user) => {
             if (typeof renderEcomCartWorkspace === 'function') renderEcomCartWorkspace();
         });
 
+        // Authorization Gateway Redirects
         if(window.location.pathname.includes('auth.html')) {
             if (user.email === "admin@bazaarhub.com") {
                 window.location.href = 'admin.html';
@@ -54,104 +54,7 @@ onAuthStateChanged(auth, (user) => {
         systemCartCache = [];
         if (typeof renderEcomCartWorkspace === 'function') renderEcomCartWorkspace();
     }
-});
-
-// Global Window Functions for Auth Tabs Toggle (Fixed for Module Engine)
-window.switchAuthTabToLogin = function() {
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-    const loginTab = document.getElementById('loginTab');
-    const registerTab = document.getElementById('registerTab');
-    
-    if(loginForm && registerForm) {
-        loginForm.classList.remove('hidden');
-        registerForm.classList.add('hidden');
-        if(loginTab && registerTab) {
-            loginTab.classList.add('active');
-            registerTab.classList.remove('active');
-        }
-    }
-};
-
-window.switchAuthTabToRegister = function() {
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-    const loginTab = document.getElementById('loginTab');
-    const registerTab = document.getElementById('registerTab');
-    
-    if(loginForm && registerForm) {
-        registerForm.classList.remove('hidden');
-        loginForm.classList.add('hidden');
-        if(loginTab && registerTab) {
-            registerTab.classList.add('active');
-            loginTab.classList.remove('active');
-        }
-    }
-};
-
-// DOM Content Loaded to bind events safely without breaking other pages
-document.addEventListener('DOMContentLoaded', () => {
-    const loginTab = document.getElementById('loginTab');
-    const registerTab = document.getElementById('registerTab');
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-
-    // Tab Event listeners setup
-    if(loginTab) loginTab.addEventListener('click', window.switchAuthTabToLogin);
-    if(registerTab) registerTab.addEventListener('click', window.switchAuthTabToRegister);
-
-    // Login Form Submission Trigger
-    if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const pass = document.getElementById('loginPass').value;
-
-            signInWithEmailAndPassword(auth, email, pass)
-                .then((userCredential) => {
-                    alert("Authentication successful. Routing system entry node...");
-                    if (email === "admin@bazaarhub.com") {
-                        window.location.href = 'admin.html';
-                    } else {
-                        window.location.href = 'index.html';
-                    }
-                })
-                .catch((error) => {
-                    alert("Authentication failed: " + error.message);
-                });
-        });
-    }
-
-    // Register Form Submission Trigger
-    if (registerForm) {
-        registerForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = document.getElementById('regName').value;
-            const email = document.getElementById('regEmail').value;
-            const phone = document.getElementById('regPhone').value;
-            const pass = document.getElementById('regPass').value;
-
-            createUserWithEmailAndPassword(auth, email, pass)
-                .then(async (userCredential) => {
-                    const user = userCredential.user;
-                    // Save additional meta data to Firestore
-                    await setDoc(doc(db, "users", user.uid), {
-                        uid: user.uid,
-                        name: name,
-                        email: email,
-                        phone: phone,
-                        role: "client",
-                        timestamp: new Date().toISOString()
-                    });
-                    alert("Account configuration complete. Routing gateway login...");
-                    window.location.href = 'index.html';
-                })
-                .catch((error) => {
-                    alert("Registration block error: " + error.message);
-                });
-        });
-    }
-});
+});        
 
 // --- 2. AUTH CARD TAB SWITCHING LOGIC ---
 const loginTab = document.getElementById('loginTab');
@@ -475,56 +378,18 @@ function renderAdminConsole() {
                 <td style="font-size:12px; color:#9ca3af;">${o.items}</td>
                 <td><span style="padding:4px 8px; font-size:11px; border-radius:4px; font-weight:bold; background:${o.status === 'Delivered' ? '#10b981' : o.status === 'Placed' ? '#3b82f6' : '#facc15'}; color:#000;">${o.status}</span></td>
                 <td>
-                    <select onchange="changeStatusAction('${o.docId}', this.value)" style="padding:4px; font-size:11px; width:auto; display:inline-block; background:#14141c; color:#fff; border:1px solid #374151;">
+                    <select onchange="changeStatusAction('${o.docId}', this.value)" style="padding:4px; font-size:11px; width:auto; display:inline-block;">
                         <option value="Pending Verification" ${o.status==='Pending Verification'?'selected':''}>Pending</option>
                         <option value="Placed" ${o.status==='Placed'?'selected':''}>Placed</option>
                         <option value="Delivered" ${o.status==='Delivered'?'selected':''}>Delivered</option>
                     </select>
-                    <button onclick="eraseOrderAction('${o.docId}')" style="color:#ef4444; font-size:12px; margin-left:8px; background:none; border:none; cursor:pointer;">X</button>
+                    <button onclick="eraseOrderAction('${o.docId}')" style="color:#ef4444; font-size:12px; margin-left:8px;">X</button>
                 </td>
             </tr>
         `).join('');
     }
 }
 
-// GLOBAL WINDOW ATTACHMENTS (Fixed scoping so actions work across all dashboards)
-window.editProductConsole = function(id) {
-    const itemRef = products.find(p => p.id === id);
-    if(!itemRef) return;
-    if(document.getElementById('editIndex')) document.getElementById('editIndex').value = id;
-    if(document.getElementById('pName')) document.getElementById('pName').value = itemRef.name; 
-    if(document.getElementById('pCategory')) document.getElementById('pCategory').value = itemRef.category;
-    if(document.getElementById('pPrice')) document.getElementById('pPrice').value = itemRef.price; 
-    if(document.getElementById('pImage')) document.getElementById('pImage').value = itemRef.image;
-    if(document.getElementById('pDesc')) document.getElementById('pDesc').value = itemRef.description || ''; 
-    if(document.getElementById('formSubmitBtn')) document.getElementById('formSubmitBtn').innerText = "UPDATE PRODUCT";
-};
-
-window.deleteProductConsole = async function(id) { 
-    if(confirm("Confirm asset record removal?")) { 
-        await deleteDoc(doc(db, "products", id));
-    } 
-};
-
-window.changeStatusAction = async function(docId, newStatus) { 
-    try {
-        await setDoc(doc(db, "orders", docId), { status: newStatus }, { merge: true });
-    } catch(err) {
-        console.error("Status update error: ", err);
-    }
-};
-
-window.eraseOrderAction = async function(docId) { 
-    if(confirm("Erase order record?")) { 
-        try {
-            await deleteDoc(doc(db, "orders", docId));
-        } catch(err) {
-            console.error("Order deletion error: ", err);
-        }
-    } 
-};
-
-// Form submission handler block
 if (document.getElementById('addProductForm')) {
     const addProductForm = document.getElementById('addProductForm');
 
@@ -548,4 +413,32 @@ if (document.getElementById('addProductForm')) {
         }
         addProductForm.reset(); 
     });
+
+    window.editProductConsole = function(id) {
+        const itemRef = products.find(p => p.id === id);
+        if(!itemRef) return;
+        document.getElementById('editIndex').value = id;
+        document.getElementById('pName').value = itemRef.name; 
+        document.getElementById('pCategory').value = itemRef.category;
+        document.getElementById('pPrice').value = itemRef.price; 
+        document.getElementById('pImage').value = itemRef.image;
+        document.getElementById('pDesc').value = itemRef.description || ''; 
+        document.getElementById('formSubmitBtn').innerText = "UPDATE PRODUCT";
+    };
+
+    window.deleteProductConsole = async function(id) { 
+        if(confirm("Confirm asset record removal?")) { 
+            await deleteDoc(doc(db, "products", id));
+        } 
+    };
+    
+    window.changeStatusAction = async function(docId, newStatus) { 
+        await setDoc(doc(db, "orders", docId), { status: newStatus }, { merge: true });
+    };
+    
+    window.eraseOrderAction = async function(docId) { 
+        if(confirm("Erase order record?")) { 
+            await deleteDoc(doc(db, "orders", docId));
+        } 
+    };
 }
