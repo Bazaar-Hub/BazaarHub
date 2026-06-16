@@ -5,25 +5,22 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebas
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, collection, query, where, getDocs, addDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+// Your web app's NEW Firebase configuration 
+const firebaseConfig = {
+  apiKey: "AIzaSyAPlpnfGWTiUQlyl2vH6uM_Ae6_EQ8YW5E",
+  authDomain: "bazaarhubnew-79dee.firebaseapp.com",
+  projectId: "bazaarhubnew-79dee",
+  storageBucket: "bazaarhubnew-79dee.firebasestorage.app",
+  messagingSenderId: "452492018395",
+  appId: "1:452492018395:web:6c3cf8d956ce7fe45b42fe"
+};
 
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyAPlpnfGWTiUQlyl2vH6uM_Ae6_EQ8YW5E",
-    authDomain: "bazaarhubnew-79dee.firebaseapp.com",
-    projectId: "bazaarhubnew-79dee",
-    storageBucket: "bazaarhubnew-79dee.firebasestorage.app",
-    messagingSenderId: "452492018395",
-    appId: "1:452492018395:web:6c3cf8d956ce7fe45b42fe"
-  };
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-</script>
+// iske niche aapka baki ka saara code (auth functions, product functions, etc.) waise ka waisa hi rahega...
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
