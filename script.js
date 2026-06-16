@@ -2,9 +2,10 @@
 // FIREBASE LIFETIME MULTI-DEVICE LOGIN & REGISTER SYSTEM (INTEGRATED)
 // =========================================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, collection, query, where, getDocs, addDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
+// Your web app's Firebase configuration (FINAL CORRECTED WITH DATABASE URL)
 const firebaseConfig = {
   apiKey: "AIzaSyBQ5JXRZUqW75b78Lf90SgsncohByPHaoE",
   authDomain: "bazaarhub-7fad9.firebaseapp.com",
@@ -15,330 +16,393 @@ const firebaseConfig = {
   databaseURL: "https://bazaarhub-7fad9-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// GLOBAL MEMORY STATES SYSTEM
+// Global Variables
 let products = [];
-let cart = JSON.parse(localStorage.getItem('bazaarCartPool')) || [];
-let currentCategoryFilter = 'ALL';
-let currentUserRef = null;
+let orders = [];
+let systemCartCache = [];
 
-// ELEMENT LOOKUPS (FAIL-SAFE TO SUPPORT ALL PAGES SHARING SCRIPT)
+// --- 1. REALTIME AUTH & CART SYNC (Cross-Browser Fix) ---
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        localStorage.setItem('loggedInUser', user.email);
+        
+        // Listen to Cart changes in Realtime from Cloud
+        onSnapshot(doc(db, "carts", user.uid), (cartSnap) => {
+            if (cartSnap.exists()) {
+                systemCartCache = cartSnap.data().items || [];
+            } else {
+                systemCartCache = [];
+            }
+            localStorage.setItem('systemCartCache', JSON.stringify(systemCartCache));
+            if (typeof renderEcomCartWorkspace === 'function') renderEcomCartWorkspace();
+        });
+
+        if(window.location.pathname.includes('auth.html')) {
+            window.location.href = 'index.html';
+        }
+    } else {
+        localStorage.removeItem('loggedInUser');
+        systemCartCache = [];
+        if (typeof renderEcomCartWorkspace === 'function') renderEcomCartWorkspace();
+        
+        // CHANGED: Yahan jo direct redirect loop laga hua tha, usay remove kar diya hai taake naye browser me page wapis na bhage.
+    }
+});
+
+// --- 2. AUTH CARD TAB SWITCHING LOGIC ---
+const loginTab = document.getElementById('loginTab');
+const registerTab = document.getElementById('registerTab');
 const loginForm = document.getElementById('loginForm');
 const registerForm = document.getElementById('registerForm');
-const globalCatalogProductsGridContainer = document.getElementById('globalCatalogProductsGridContainer');
-const adminProductsList = document.getElementById('adminProductsList');
-const adminOrdersList = document.getElementById('adminOrdersList');
-const checkoutSummaryItemsContainer = document.getElementById('checkoutSummaryItemsContainer');
 
-// =========================================================================
-// IDENTITY CORE AUTH ROUTINES
-// =========================================================================
-if(loginForm) {
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('loginEmail').value.trim();
-        const pass = document.getElementById('loginPass').value;
-        try {
-            await signInWithEmailAndPassword(auth, email, pass);
-            alert("Cryptographic Signature Verified. Redirecting node...");
-            window.location.href = 'index.html';
-        } catch(err) {
-            alert(`Authentication Error Node: ${err.message}`);
-        }
+if (loginTab && registerTab && loginForm && registerForm) {
+    loginTab.addEventListener('click', () => {
+        loginTab.classList.add('active');
+        registerTab.classList.remove('active');
+        loginForm.classList.remove('hidden');
+        registerForm.classList.add('hidden');
+    });
+
+    registerTab.addEventListener('click', () => {
+        registerTab.classList.add('active');
+        loginTab.classList.remove('active');
+        registerForm.classList.remove('hidden');
+        loginForm.classList.add('hidden');
     });
 }
 
+// --- 3. CLOUD RECORDBASE REGISTRATION HANDLING ---
 if(registerForm) {
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const name = document.getElementById('regName').value.trim();
-        const email = document.getElementById('regEmail').value.trim();
-        const phone = document.getElementById('regPhone').value.trim();
-        const pass = document.getElementById('regPass').value;
-        
+        const name = document.getElementById('regName').value;
+        const email = document.getElementById('regEmail').value;
+        const phone = document.getElementById('regPhone').value;
+        const password = document.getElementById('regPass').value;
+
         try {
-            const credential = await createUserWithEmailAndPassword(auth, email, pass);
-            await setDoc(doc(db, "users", credential.user.uid), {
-                uid: credential.user.uid, name, email, phone, role: 'client'
+            const q = query(collection(db, "users"), where("phone", "==", phone));
+            const querySnapshot = await getDocs(q);
+            
+            if (!querySnapshot.empty) {
+                alert("Yeh Phone Number pehle se register hai! Baraye meharbani dusra number istemal karein.");
+                return;
+            }
+
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            await setDoc(doc(db, "users", user.uid), {
+                uid: user.uid,
+                name: name,
+                email: email,
+                phone: phone,
+                createdAt: new Date().toISOString()
             });
-            alert("Identity registered successfully onto Cloud Node Cluster!");
-            window.location.href = 'index.html';
-        } catch(err) {
-            alert(`Registration Pipeline Aborted: ${err.message}`);
+
+            alert("Account Lifetime ke liye register ho gaya hai! Ab kisi bhi browser se login chalega.");
+            window.location.href = 'index.html'; 
+        } catch (error) {
+            alert("Registration Failed: " + error.message);
         }
     });
 }
 
-// REALTIME IDENTITY LIFECYCLE MONITOR
-onAuthStateChanged(auth, async (user) => {
-    const displayArea = document.getElementById('userStateProfileSection');
-    if (user) {
-        currentUserRef = user;
-        const uDoc = await getDocs(query(collection(db, "users"), where("uid", "==", user.uid)));
-        let userData = { name: user.email };
-        uDoc.forEach(d => userData = d.data());
+// --- 4. MULTI-DEVICE LOGIN HANDLING ---
+if(loginForm) {
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPass').value;
+
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                localStorage.setItem('loggedInUser', email);
+                alert("Login Successful! Access Granted.");
+                window.location.href = 'index.html';
+            })
+            .catch((error) => {
+                alert("Login Failed: Email ya Password galat hai ya account majood nahi hai.");
+            });
+    });
+}
+
+// =========================================================================
+// REALTIME CLOUD SYNC FOR PRODUCTS & ORDERS (Works Globally Across Browsers)
+// =========================================================================
+function setupRealtimeCloudListeners() {
+    // Realtime Products Sync
+    onSnapshot(collection(db, "products"), (snapshot) => {
+        products = [];
+        snapshot.forEach(doc => {
+            products.push({ id: doc.id, ...doc.data() });
+        });
         
-        if(displayArea) {
-            displayArea.innerHTML = `
-                <div class="user-profile-identity">
-                    <i class="fas fa-user-shield accent-yellow"></i>
-                    <span>${userData.name.toUpperCase()}</span>
-                    <i class="fas fa-sign-out-alt" id="authLogoutTriggerAction" style="cursor:pointer; margin-left:8px; color:#ef4444;" title="Terminate Session"></i>
-                </div>
-            `;
-            document.getElementById('authLogoutTriggerAction').addEventListener('click', () => {
-                signOut(auth).then(() => window.location.reload());
+        // If Database is empty, inject default nodes
+        if (products.length === 0) {
+            const defaultProducts = [
+                { name: "uefe Running Shoes", category: "shoes", price: 545, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff", description: "Premium tracking sports wear edition." },
+                { name: "Alpha Cyber Hoodie", category: "clothes", price: 3200, image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7", description: "Heavy knit tailored futuristic variant fabric core." },
+                { name: "Chrono Gold Edition", category: "watches", price: 8900, image: "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3", description: "Water resistant tactical luxury configuration metrics." }
+            ];
+            defaultProducts.forEach(async (p) => {
+                await addDoc(collection(db, "products"), p);
             });
         }
-    } else {
-        currentUserRef = null;
-        if(displayArea) {
-            displayArea.innerHTML = `<button onclick="window.location.href='auth.html'" class="form-btn bg-yellow" style="width:auto; padding: 8px 18px; margin-top:0; font-size:12px;">SECURE PORTAL</button>`;
-        }
-    }
-});
 
-// =========================================================================
-// REALTIME DATA MATRIX LISTENERS
-// =========================================================================
-onSnapshot(collection(db, "products"), (snapshot) => {
-    products = [];
-    snapshot.forEach(doc => {
-        products.push({ id: doc.id, ...doc.data() });
+        if (document.getElementById('productCatalogGridPulse')) renderStorefrontCatalog();
+        if (document.getElementById('addProductForm')) renderAdminConsole();
     });
-    renderMainCatalogViewInterface();
-    renderAdminProductsConsoleList();
-});
 
-onSnapshot(collection(db, "orders"), (snapshot) => {
-    let ordersArr = [];
-    snapshot.forEach(doc => ordersArr.push({ id: doc.id, ...doc.data() }));
-    renderAdminOrdersTrackingMatrix(ordersArr);
-});
+    // Realtime Orders Sync
+    onSnapshot(collection(db, "orders"), (snapshot) => {
+        orders = [];
+        snapshot.forEach(doc => {
+            orders.push({ docId: doc.id, ...doc.data() });
+        });
+        if (document.getElementById('addProductForm')) renderAdminConsole();
+    });
+}
+
+async function saveCartToCloud() {
+    if (auth.currentUser) {
+        await setDoc(doc(db, "carts", auth.currentUser.uid), { items: systemCartCache });
+    } else {
+        localStorage.setItem('systemCartCache', JSON.stringify(systemCartCache));
+    }
+}
+
+// Initialize listeners
+setupRealtimeCloudListeners();
 
 // =========================================================================
-// LUXURY MODERN PRESENTATION DESIGN RENDER ENGINES
+// RENDER: PRODUCTS CATALOG SYSTEM GRID
 // =========================================================================
-function renderMainCatalogViewInterface() {
-    if(!globalCatalogProductsGridContainer) return;
+function renderStorefrontCatalog(filteredArray = products) {
+    const catalogGrid = document.getElementById('productCatalogGridPulse');
+    if (!catalogGrid) return;
     
-    const targetPool = (currentCategoryFilter === 'ALL') 
-        ? products 
-        : products.filter(p => p.category === currentCategoryFilter);
-        
-    if(targetPool.length === 0) {
-        globalCatalogProductsGridContainer.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:#6b7280; font-size:13px;">No asset clusters detected for category index [${currentCategoryFilter}]</div>`;
+    if(filteredArray.length === 0) {
+        catalogGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:#9ca3af;">No matching items found.</div>`;
         return;
     }
-    
-    globalCatalogProductsGridContainer.innerHTML = targetPool.map(p => `
-        <div class="luxury-product-card">
-            <div>
-                <div class="card-media-wrapper">
-                    <img src="${p.image || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=400&q=80'}" alt="Vault Asset Profile">
-                    <button class="card-wishlist-trigger"><i class="far fa-heart"></i></button>
+    catalogGrid.innerHTML = filteredArray.map(p => {
+        const globalIdx = products.findIndex(item => item.name === p.name);
+        return `
+            <div class="product-card">
+                <div class="card-badge">${p.category.toUpperCase()}</div>
+                <img src="${p.image}" alt="${p.name}" class="product-image">
+                <div class="card-details">
+                    <h3 class="product-title">${p.name}</h3>
+                    <p class="product-description">${p.description || 'No description available.'}</p>
+                    <div class="price-row">
+                        <span class="product-price">Rs. ${p.price}</span>
+                        <button onclick="appendItemToCartWorkspace(${globalIdx})" class="form-btn bg-yellow" style="width:auto; margin:0; padding:6px 12px; font-size:12px;">Add to Cart</button>
+                    </div>
                 </div>
-                <div class="product-meta-category">${p.category}</div>
-                <h3 class="product-meta-title">${p.name}</h3>
-                <p class="product-meta-desc">${p.description || 'No alternative meta descriptors structural array mapped to record.'}</p>
             </div>
-            <div class="card-action-row">
-                <div class="product-price-node"><span>Rs.</span>${Number(p.price).toLocaleString()}</div>
-                <button class="card-purchase-btn" data-id="${p.id}" title="Allocate to Payload Matrix">
-                    <i class="fas fa-plus"></i>
-                </button>
+        `;
+    }).join('');
+}
+
+const searchFilterNode = document.getElementById('searchFilterNode');
+const categorySelectorNode = document.getElementById('categorySelectorNode');
+
+function triggerStorefrontFilters() {
+    if (!searchFilterNode || !categorySelectorNode) return;
+    const queryStr = searchFilterNode.value.toLowerCase();
+    const category = categorySelectorNode.value;
+    const filtered = products.filter(p => {
+        const matchesSearch = p.name.toLowerCase().includes(queryStr) || (p.description && p.description.toLowerCase().includes(queryStr));
+        const matchesCategory = category === 'all' || p.category === category;
+        return matchesSearch && matchesCategory;
+    });
+    renderStorefrontCatalog(filtered);
+}
+
+if(searchFilterNode) searchFilterNode.addEventListener('input', triggerStorefrontFilters);
+if(categorySelectorNode) categorySelectorNode.addEventListener('change', triggerStorefrontFilters);
+
+window.appendItemToCartWorkspace = function(idx) {
+    const targetItem = products[idx];
+    const existing = systemCartCache.find(c => c.name === targetItem.name);
+    if (existing) { existing.quantity += 1; } 
+    else { systemCartCache.push({ ...targetItem, quantity: 1 }); }
+    saveCartToCloud(); 
+    renderEcomCartWorkspace();
+    alert(`${targetItem.name} added to cart.`);
+};
+
+// =========================================================================
+// CART MANIFEST SIDEBAR WORKSPACE SYSTEM
+// =========================================================================
+const cartSidebar = document.getElementById('shoppingCartSidebarNode');
+const cartItemsContainer = document.getElementById('cartItemsListContainer');
+const cartTotalDisplay = document.getElementById('cartTotalCounterDisplay');
+const cartCountBadge = document.getElementById('cartCountBadge');
+
+function renderEcomCartWorkspace() {
+    if(!cartItemsContainer) return;
+    
+    const totalQty = systemCartCache.reduce((acc, c) => acc + c.quantity, 0);
+    if(cartCountBadge) cartCountBadge.innerText = totalQty;
+
+    if (systemCartCache.length === 0) {
+        cartItemsContainer.innerHTML = `<div style="text-align:center; color:#9ca3af; padding:30px;">Your cart is empty.</div>`;
+        if(cartTotalDisplay) cartTotalDisplay.innerText = "Rs. 0";
+        return;
+    }
+
+    cartItemsContainer.innerHTML = systemCartCache.map((c, idx) => `
+        <div class="cart-item">
+            <img src="${c.image}" alt="${c.name}">
+            <div class="cart-item-details">
+                <h4>${c.name}</h4>
+                <p>Rs. ${c.price} x ${c.quantity}</p>
+                <div style="display:flex; gap:5px; margin-top:5px;">
+                    <button onclick="alterCartQtyAction(${idx}, -1)" style="color:#facc15; font-weight:bold; font-size:16px;">-</button>
+                    <button onclick="alterCartQtyAction(${idx}, 1)" style="color:#facc15; font-weight:bold; font-size:16px;">+</button>
+                    <button onclick="alterCartQtyAction(${idx}, 0)" style="color:#ef4444; margin-left:auto; font-size:11px;">Remove</button>
+                </div>
             </div>
         </div>
     `).join('');
 
-    // Dynamic Binding hooks for purchases
-    globalCatalogProductsGridContainer.querySelectorAll('.card-purchase-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const itemId = btn.getAttribute('data-id');
-            allocateAssetToCartPool(itemId);
-        });
-    });
+    const totalCost = systemCartCache.reduce((acc, c) => acc + (c.price * c.quantity), 0);
+    if(cartTotalDisplay) cartTotalDisplay.innerText = `Rs. ${totalCost}`;
 }
 
-// Filter Navigation Trigger Matrix
-window.filterCatalogStreamByCategory = function(categoryName) {
-    currentCategoryFilter = categoryName;
-    const ribbon = document.getElementById('dynamicCategoryRibbonContainer');
-    if(ribbon) {
-        ribbon.querySelectorAll('.category-pill').forEach(pill => {
-            if(pill.innerText.toUpperCase().includes(categoryName.toUpperCase())) pill.classList.add('active');
-            else pill.classList.remove('active');
-        });
+window.toggleCartSidebarView = function() { if(cartSidebar) cartSidebar.classList.toggle('active'); };
+window.clearCartWorkspaceCache = function() { systemCartCache = []; saveCartToCloud(); renderEcomCartWorkspace(); };
+
+window.alterCartQtyAction = function(idx, delta) {
+    if (delta === 0) { systemCartCache.splice(idx, 1); } 
+    else {
+        systemCartCache[idx].quantity += delta;
+        if (systemCartCache[idx].quantity <= 0) { systemCartCache.splice(idx, 1); }
     }
-    renderMainCatalogViewInterface();
+    saveCartToCloud(); renderEcomCartWorkspace();
 };
 
-// =========================================================================
-// ALLOCATION MANIFEST (CART ENGINE INTERACTIVE LIFECYCLE)
-// =========================================================================
-function allocateAssetToCartPool(id) {
-    const referenceItem = products.find(p => p.id === id);
-    if(!referenceItem) return;
-    
-    const existingEntry = cart.find(item => item.id === id);
-    if(existingEntry) {
-        existingEntry.qty += 1;
-    } else {
-        cart.push({ id: referenceItem.id, name: referenceItem.name, price: referenceItem.price, image: referenceItem.image, qty: 1 });
-    }
-    synchronizeCartGlobalMatrices();
-    toggleCartDrawerMatrix(true);
-}
-
-function synchronizeCartGlobalMatrices() {
-    localStorage.setItem('bazaarCartPool', JSON.stringify(cart));
-    
-    // Updates Navbar Total Count Badge Accumulator
-    const totalCount = cart.reduce((acc, current) => acc + current.qty, 0);
-    const globalBadge = document.getElementById('cartGlobalBadgeDisplay');
-    if(globalBadge) globalBadge.innerText = totalCount;
-    
-    // Render Drawers
-    const drawerContainer = document.getElementById('cartDrawerItemsDataFlowContainer');
-    const drawerTotalText = document.getElementById('cartDrawerTotalValueDisplay');
-    
-    let compiledCost = 0;
-    if(drawerContainer) {
-        if(cart.length === 0) {
-            drawerContainer.innerHTML = `<div style="text-align:center; padding:50px 0; color:#4b5563; font-size:12px;">Selection Allocation Manifest Empty.</div>`;
-        } else {
-            drawerContainer.innerHTML = cart.map(item => {
-                compiledCost += Number(item.price) * item.qty;
-                return `
-                    <div class="cart-modular-card">
-                        <img src="${item.image}" class="cart-card-media" alt="Manifest Thumb">
-                        <div class="cart-card-details">
-                            <h4 class="cart-card-title">${item.name}</h4>
-                            <div class="cart-card-price">Rs. ${Number(item.price).toLocaleString()}</div>
-                            <div class="cart-qty-cluster">
-                                <button class="qty-adjust-action dec-qty-btn" data-id="${item.id}"><i class="fas fa-minus"></i></button>
-                                <span class="qty-value-node">${item.qty}</span>
-                                <button class="qty-adjust-action inc-qty-btn" data-id="${item.id}"><i class="fas fa-plus"></i></button>
-                            </div>
-                        </div>
-                        <button class="cart-remove-trash-action delete-manifest-item-btn" data-id="${item.id}"><i class="far fa-trash-alt"></i></button>
-                    </div>
-                `;
-            }).join('');
-
-            // Drawer Action Listener Maps
-            drawerContainer.querySelectorAll('.inc-qty-btn').forEach(b => b.addEventListener('click', () => adjustQtyRef(b.getAttribute('data-id'), 1)));
-            drawerContainer.querySelectorAll('.dec-qty-btn').forEach(b => b.addEventListener('click', () => adjustQtyRef(b.getAttribute('data-id'), -1)));
-            drawerContainer.querySelectorAll('.delete-manifest-item-btn').forEach(b => b.addEventListener('click', () => removeManifestItemCompletely(b.getAttribute('data-id'))));
-        }
-    }
-    if(drawerTotalText) drawerTotalText.innerText = `Rs. ${compiledCost.toLocaleString()}`;
-    
-    // Auto Update checkout summaries if currently rendering on screen space asset pipeline
-    if(checkoutSummaryItemsContainer) renderCheckoutSummaryStaticMatrix();
-}
-
-function adjustQtyRef(id, delta) {
-    const targetedItem = cart.find(i => i.id === id);
-    if(!targetedItem) return;
-    targetedItem.qty += delta;
-    if(targetedItem.qty <= 0) cart = cart.filter(i => i.id !== id);
-    synchronizeCartGlobalMatrices();
-}
-
-function removeManifestItemCompletely(id) {
-    cart = cart.filter(i => i.id !== id);
-    synchronizeCartGlobalMatrices();
-}
-
-window.toggleCartDrawerMatrix = function(shouldOpen) {
-    const el = document.getElementById('globalCartDrawerMatrixElement');
-    if(!el) return;
-    if(shouldOpen) el.classList.add('active');
-    else el.classList.remove('active');
-};
-
-window.clearCartManifestPool = function() {
-    cart = [];
-    synchronizeCartGlobalMatrices();
-};
-
-window.routeUserToCheckoutPipeline = function() {
-    if(cart.length === 0) { alert("Manifest empty. Cannot generate transaction transmission path."); return; }
+window.routeToCheckoutPipeline = function() {
+    if (systemCartCache.length === 0) { alert("Cart is empty."); return; }
     window.location.href = 'checkout.html';
 };
 
 // =========================================================================
-// CHECKOUT & LOGISTICS ROUTINES
+// CHECKOUT PIPELINE & ORDERS LOGISTICS TRANSMISSION
 // =========================================================================
-function renderCheckoutSummaryStaticMatrix() {
-    let accumulatedBill = 0;
-    checkoutSummaryItemsContainer.innerHTML = cart.map(item => {
-        accumulatedBill += Number(item.price) * item.qty;
-        return `
-            <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.01); border:1px solid #1f2937; padding:12px; border-radius:8px; margin-bottom:10px;">
-                <div>
-                    <div style="font-size:13px; font-weight:700;">${item.name} <span style="color:#facc15; font-size:11px;">x${item.qty}</span></div>
-                    <div style="font-size:11px; color:#9ca3af; margin-top:2px;">Unit: Rs. ${Number(item.price).toLocaleString()}</div>
-                </div>
-                <div style="font-size:13px; font-weight:700; color:#facc15;">Rs. ${(Number(item.price)*item.qty).toLocaleString()}</div>
-            </div>
-        `;
-    }).join('');
-    document.getElementById('checkoutSummaryTotalDisplay').innerText = `Rs. ${accumulatedBill.toLocaleString()}`;
-}
+if (document.getElementById('checkoutForm')) {
+    const checkoutSummaryContainer = document.getElementById('checkoutSummaryItemsContainer');
+    const checkoutTotalDisplay = document.getElementById('checkoutSummaryTotalDisplay');
+    const checkoutForm = document.getElementById('checkoutForm');
 
-const checkoutForm = document.getElementById('checkoutForm');
-if(checkoutForm) {
+    function renderCheckoutSummary() {
+        if(!checkoutSummaryContainer) return;
+        checkoutSummaryContainer.innerHTML = systemCartCache.map(c => `
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:13px; color:#9ca3af;">
+                <span style="flex:1;">${c.name} (x${c.quantity})</span>
+                <span>Rs. ${c.price * c.quantity}</span>
+            </div>
+        `).join('');
+        const grandTotal = systemCartCache.reduce((acc, c) => acc + (c.price * c.quantity), 0);
+        if(checkoutTotalDisplay) checkoutTotalDisplay.innerText = `Rs. ${grandTotal}`;
+    }
+
     checkoutForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        if(cart.length === 0) { alert("Core pipeline allocation validation failed. Empty selection stack."); return; }
+        const grandTotal = systemCartCache.reduce((acc, c) => acc + (c.price * c.quantity), 0);
+        const orderId = 'BZH-' + Math.floor(100000 + Math.random() * 900000);
         
-        const customerManifestPayload = {
-            firstName: document.getElementById('custFirstName').value.trim(),
-            lastName: document.getElementById('custLastName').value.trim(),
-            address: document.getElementById('custAddress').value.trim(),
-            city: document.getElementById('custCity').value.trim(),
-            phone: document.getElementById('custPhone').value.trim(),
-            items: cart.map(i => `${i.name} (x${i.qty})`).join(', '),
-            cost: document.getElementById('checkoutSummaryTotalDisplay').innerText,
-            status: "Pending Verification",
-            user: currentUserRef ? currentUserRef.email : "Anonymous Guest Node",
-            timestamp: new Date().toISOString()
+        const orderPayload = {
+            id: orderId,
+            user: document.getElementById('custFirst').value + ' ' + document.getElementById('custLast').value,
+            items: systemCartCache.map(c => `${c.name}(x${c.quantity})`).join(', '),
+            cost: `Rs. ${grandTotal}`,
+            address: document.getElementById('custAddress').value + ', ' + document.getElementById('custCity').value,
+            phone: document.getElementById('custPhone').value,
+            status: 'Pending Verification',
+            createdAt: new Date().toISOString()
         };
 
-        try {
-            await addDoc(collection(db, "orders"), customerManifestPayload);
-            alert("Logistics Manifest Data Transmitted Successfully via Cloud Pipeline Matrix!");
-            cart = [];
-            localStorage.removeItem('bazaarCartPool');
-            window.location.href = 'index.html';
-        } catch(err) {
-            alert(`Logistics Transmission Pipeline Dropped: ${err.message}`);
-        }
+        await addDoc(collection(db, "orders"), orderPayload);
+        
+        systemCartCache = [];
+        await saveCartToCloud();
+        checkoutForm.reset();
+        alert(`Order Placed Successfully! ID: ${orderId}`);
+        window.location.href = 'index.html';
     });
+
+    const cachedCart = localStorage.getItem('systemCartCache');
+    if (cachedCart) {
+        systemCartCache = JSON.parse(cachedCart);
+    }
+    renderCheckoutSummary();
 }
 
 // =========================================================================
-// ADMINISTRATIVE PRIVILEGE MANAGEMENT MATRIX
+// ADMIN CONSOLE INTERACTION SYSTEM 
 // =========================================================================
-const addProductForm = document.getElementById('addProductForm');
-if(addProductForm) {
+function renderAdminConsole() {
+    const adminProductsList = document.getElementById('adminProductsList');
+    const adminOrdersList = document.getElementById('adminOrdersList');
+
+    if(adminProductsList) {
+        adminProductsList.innerHTML = products.map((p, idx) => `
+            <div style="display:flex; align-items:center; justify-content:space-between; background:#14141c; padding:10px; border-radius:6px; margin-bottom:8px; border:1px solid #1f2937;">
+                <span style="font-size:13px;">${p.name} (Rs. ${p.price})</span>
+                <div>
+                    <button onclick="editProductConsole('${p.id}')" style="color:#facc15; font-size:12px; margin-right:10px;">Edit</button>
+                    <button onclick="deleteProductConsole('${p.id}')" style="color:#ef4444; font-size:12px;">Delete</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    if(adminOrdersList) {
+        if (orders.length === 0) {
+            adminOrdersList.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px; color:#9ca3af;">No current logs.</td></tr>`;
+            return;
+        }
+        adminOrdersList.innerHTML = orders.map((o) => `
+            <tr>
+                <td style="font-size:12px;"><strong>ID:</strong> ${o.id}<br><strong>Client:</strong> ${o.user}<br><strong>Tel:</strong> ${o.phone}<br><strong>Dest:</strong> ${o.address}</td>
+                <td style="font-size:12px; color:#9ca3af;">${o.items}</td>
+                <td><span style="padding:4px 8px; font-size:11px; border-radius:4px; font-weight:bold; background:${o.status === 'Delivered' ? '#10b981' : o.status === 'Placed' ? '#3b82f6' : '#facc15'}; color:#000;">${o.status}</span></td>
+                <td>
+                    <select onchange="changeStatusAction('${o.docId}', this.value)" style="padding:4px; font-size:11px; width:auto; display:inline-block;">
+                        <option value="Pending Verification" ${o.status==='Pending Verification'?'selected':''}>Pending</option>
+                        <option value="Placed" ${o.status==='Placed'?'selected':''}>Placed</option>
+                        <option value="Delivered" ${o.status==='Delivered'?'selected':''}>Delivered</option>
+                    </select>
+                    <button onclick="eraseOrderAction('${o.docId}')" style="color:#ef4444; font-size:12px; margin-left:8px;">X</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+}
+
+if (document.getElementById('addProductForm')) {
+    const addProductForm = document.getElementById('addProductForm');
+
     addProductForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const editId = document.getElementById('editIndex').value;
         const dynamicPayloadStructure = {
-            name: document.getElementById('pName').value.trim(),
+            name: document.getElementById('pName').value,
             category: document.getElementById('pCategory').value,
-            price: Number(document.getElementById('pPrice').value),
-            image: document.getElementById('pImage').value.trim() || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=400&q=80',
-            description: document.getElementById('pDesc').value.trim()
+            price: parseInt(document.getElementById('pPrice').value),
+            image: document.getElementById('pImage').value,
+            description: document.getElementById('pDesc').value
         };
 
-        if(editId) {
+        if (editId !== '') {
             await setDoc(doc(db, "products", editId), dynamicPayloadStructure);
             document.getElementById('editIndex').value = '';
             document.getElementById('formSubmitBtn').innerText = "SAVE NODE MODULE";
@@ -347,78 +411,32 @@ if(addProductForm) {
         }
         addProductForm.reset(); 
     });
+
+    window.editProductConsole = function(id) {
+        const itemRef = products.find(p => p.id === id);
+        if(!itemRef) return;
+        document.getElementById('editIndex').value = id;
+        document.getElementById('pName').value = itemRef.name; 
+        document.getElementById('pCategory').value = itemRef.category;
+        document.getElementById('pPrice').value = itemRef.price; 
+        document.getElementById('pImage').value = itemRef.image;
+        document.getElementById('pDesc').value = itemRef.description || ''; 
+        document.getElementById('formSubmitBtn').innerText = "UPDATE PRODUCT";
+    };
+
+    window.deleteProductConsole = async function(id) { 
+        if(confirm("Confirm asset record removal?")) { 
+            await deleteDoc(doc(db, "products", id));
+        } 
+    };
+    
+    window.changeStatusAction = async function(docId, newStatus) { 
+        await setDoc(doc(db, "orders", docId), { status: newStatus }, { merge: true });
+    };
+    
+    window.eraseOrderAction = async function(docId) { 
+        if(confirm("Erase order record?")) { 
+            await deleteDoc(doc(db, "orders", docId));
+        } 
+    };
 }
-
-function renderAdminProductsConsoleList() {
-    if(!adminProductsList) return;
-    adminProductsList.innerHTML = products.map(p => `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#14141c; border:1px solid #1f2937; padding:10px 15px; border-radius:8px; margin-bottom:8px; font-size:12px;">
-            <div style="min-width:0; flex:1; padding-right:10px;">
-                <strong class="accent-yellow">${p.name}</strong> <span style="color:#6b7280; margin-left:5px;">[${p.category}]</span>
-                <div style="color:#9ca3af; margin-top:2px;">Rs. ${Number(p.price).toLocaleString()}</div>
-            </div>
-            <div style="display:flex; gap:8px;">
-                <button onclick="editProductConsole('${p.id}')" style="color:#facc15; padding:4px;"><i class="fas fa-edit"></i></button>
-                <button onclick="deleteProductConsole('${p.id}')" style="color:#ef4444; padding:4px;"><i class="far fa-trash-alt"></i></button>
-            </div>
-        </div>
-    `).join('');
-}
-
-window.editProductConsole = function(id) {
-    const itemRef = products.find(p => p.id === id);
-    if(!itemRef) return;
-    document.getElementById('editIndex').value = id;
-    document.getElementById('pName').value = itemRef.name; 
-    document.getElementById('pCategory').value = itemRef.category;
-    document.getElementById('pPrice').value = itemRef.price; 
-    document.getElementById('pImage').value = itemRef.image;
-    document.getElementById('pDesc').value = itemRef.description || ''; 
-    document.getElementById('formSubmitBtn').innerText = "UPDATE PRODUCT";
-};
-
-window.deleteProductConsole = async function(id) { 
-    if(confirm("Confirm asset record removal from Cloud Storage Node?")) { 
-        await deleteDoc(doc(db, "products", id));
-    } 
-};
-
-function renderAdminOrdersTrackingMatrix(orders) {
-    if(!adminOrdersList) return;
-    if(orders.length === 0) {
-        adminOrdersList.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px; color:#4b5563;">Zero tracking arrays detected.</td></tr>`;
-        return;
-    }
-    adminOrdersList.innerHTML = orders.map(o => `
-        <tr>
-            <td style="font-size:11px;">
-                <strong>${o.firstName} ${o.lastName}</strong><br>
-                <span style="color:#9ca3af;">M: ${o.user}<br>A: ${o.address}, ${o.city}<br>P: ${o.phone}</span>
-            </td>
-            <td style="font-size:11px; max-width:200px; overflow:hidden; text-overflow:ellipsis;">${o.items}</td>
-            <td style="font-weight:700; color:#facc15; font-size:12px;">${o.cost}</td>
-            <td>
-                <select onchange="changeStatusAction('${o.id}', this.value)" style="margin:0; padding:6px; font-size:11px; background:#14141c; color:white; border:1px solid #1f2937; border-radius:6px;">
-                    <option value="Pending Verification" ${o.status === 'Pending Verification' ? 'selected' : ''}>Pending</option>
-                    <option value="Placed" ${o.status === 'Placed' ? 'selected' : ''}>Placed</option>
-                    <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-                </select>
-                <button onclick="eraseOrderAction('${o.id}')" style="color:#ef4444; margin-left:8px; font-size:12px;" title="Wipe Order Archival"><i class="far fa-trash-alt"></i></button>
-            </td>
-        </tr>
-    `).join('');
-}
-
-window.changeStatusAction = async function(docId, newStatus) { 
-    await setDoc(doc(db, "orders", docId), { status: newStatus }, { merge: true });
-    alert(`Order node lifecycle state updated successfully to: ${newStatus}`);
-};
-
-window.eraseOrderAction = async function(docId) { 
-    if(confirm("Wipe this order history element permanently from cluster metadata?")) {
-        await deleteDoc(doc(db, "orders", docId));
-    }
-};
-
-// INITIALIZATION TRIGNOMETRY FLOW RUNNER
-synchronizeCartGlobalMatrices();
