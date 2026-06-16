@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BazaarHub - Transmit Order Platform</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
@@ -24,15 +25,15 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
                         <div>
                             <label>First Name</label>
-                            <input type="text" id="custFName" required placeholder="John">
+                            <input type="text" id="custFirstName" required placeholder="Muhammad">
                         </div>
                         <div>
                             <label>Last Name</label>
-                            <input type="text" id="custLName" required placeholder="Doe">
+                            <input type="text" id="custLastName" required placeholder="Ali">
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Delivery Destination Address</label>
+                    <div class="input-group" style="margin-bottom: 12px;">
+                        <label>Shipping Destination Address</label>
                         <input type="text" id="custAddress" required placeholder="Apartment, Street name, Block address...">
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
@@ -51,8 +52,7 @@
 
             <div class="summary-card">
                 <h2 class="section-title" style="font-size: 16px;">Order Summary</h2>
-                <div id="checkoutSummaryItemsContainer">
-                    </div>
+                <div id="checkoutSummaryItemsContainer"></div>
                 <div style="display:flex; justify-content:space-between; margin-top: 20px; padding-top:15px; border-top:1px solid #1f2937; font-weight:800; font-size:16px;">
                     <span>TOTAL DUE:</span>
                     <span class="accent-yellow" id="checkoutSummaryTotalDisplay">Rs. 0</span>
