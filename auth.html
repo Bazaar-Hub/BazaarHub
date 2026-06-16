@@ -10,11 +10,11 @@
     <div class="auth-wrapper">
         <div class="auth-card">
             <div class="auth-tabs">
-                <button id="loginTab" class="tab-btn active">CLIENT LOGIN</button>
-                <button id="registerTab" class="tab-btn">REGISTER NOW</button>
+                <button id=\"loginTab\" class=\"tab-btn active\">CLIENT LOGIN</button>
+                <button id=\"registerTab\" class=\"tab-btn\">REGISTER NOW</button>
             </div>
 
-            <form id="loginForm" class="auth-form">
+            <form id="loginForm" class="auth-form" onsubmit="window.loginUserPortal(event)">
                 <div class="input-group">
                     <label>Email Address</label>
                     <input type="email" id="loginEmail" placeholder="example@mail.com" required>
@@ -26,7 +26,7 @@
                 <button type="submit" class="form-btn bg-yellow">SECURE LOGIN</button>
             </form>
 
-            <form id="registerForm" class="auth-form hidden">
+            <form id="registerForm" class="auth-form hidden" onsubmit="window.registerUserAccount(event)">
                 <div class="input-group">
                     <label>Full Name</label>
                     <input type="text" id="regName" placeholder="Your Name" required>
@@ -49,5 +49,28 @@
     </div>
 
     <script type="module" src="script.js"></script>
+
+    <script>
+        const loginTab = document.getElementById('loginTab');
+        const registerTab = document.getElementById('registerTab');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+
+        if(loginTab && registerTab) {
+            loginTab.addEventListener('click', () => {
+                loginTab.classList.add('active');
+                registerTab.classList.remove('active');
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+            });
+
+            registerTab.addEventListener('click', () => {
+                registerTab.classList.add('active');
+                loginTab.classList.remove('active');
+                registerForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            });
+        }
+    </script>
 </body>
 </html>
