@@ -21,16 +21,12 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Global Variables
-let products = [];
-let orders = [];
-let systemCartCache = [];
-// --- 1. REALTIME AUTH & CART SYNC (Cross-Browser Fix) ---
+// --- 1. REALTIME AUTH & CART SYNC (Cross-Browser Multi-Device Fix) ---
 onAuthStateChanged(auth, (user) => {
     if (user) {
         localStorage.setItem('loggedInUser', user.email);
         
-        // Listen to Cart changes in Realtime from Cloud
+        // Firebase Cloud se cart data realtime sync karne ke liye
         onSnapshot(doc(db, "carts", user.uid), (cartSnap) => {
             if (cartSnap.exists()) {
                 systemCartCache = cartSnap.data().items || [];
@@ -41,6 +37,61 @@ onAuthStateChanged(auth, (user) => {
             if (typeof renderEcomCartWorkspace === 'function') renderEcomCartWorkspace();
         });
 
+        // Sirf auth.html page par redirect trigger hoga taake doosre browser me login block na ho
+        if(window.location.pathname.includes('auth.html')) {
+            if (user.email === "admin@bazaarhub.com") {
+                window.location.href = 'admin.html';
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+    } else {
+        localStorage.removeItem('loggedInUser');
+        systemCartCache = [];
+        if (typeof renderEcomCartWorkspace === 'function') renderEcomCartWorkspace();
+    }
+});
+
+// Global Window Functions jo Firebase Cloud Auth se directly connect karengi
+window.loginUserPortal = function(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const pass = document.getElementById('loginPass').value;
+
+    signInWithEmailAndPassword(auth, email, pass)
+        .then(() => {
+            alert("Authentication successful! Cloud session synchronized.");
+        })
+        .catch((error) => {
+            alert("Login Failed: " + error.message);
+        });
+};
+
+window.registerUserAccount = function(e) {
+    e.preventDefault();
+    const name = document.getElementById('regName').value;
+    const email = document.getElementById('regEmail').value;
+    const phone = document.getElementById('regPhone').value;
+    const pass = document.getElementById('regPass').value;
+
+    createUserWithEmailAndPassword(auth, email, pass)
+        .then(async (userCredential) => {
+            const user = userCredential.user;
+            // User ki extra information Firestore cloud database me save karne ke liye
+            await setDoc(doc(db, "users", user.uid), {
+                uid: user.uid,
+                name: name,
+                email: email,
+                phone: phone,
+                role: "client",
+                timestamp: new Date().toISOString()
+            });
+            alert("Account registered successfully in Firebase Cloud!");
+        })
+        .catch((error) => {
+            alert("Registration Failed: " + error.message);
+        });
+};
         // FIXED AUTHORIZATION GATEWAY: Sirf auth page par redirect karega taake dussre browser me login block na ho
         if(window.location.pathname.includes('auth.html')) {
             if (user.email === "admin@bazaarhub.com") {
