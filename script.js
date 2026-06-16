@@ -43,14 +43,113 @@ onAuthStateChanged(auth, (user) => {
         });
 
         if(window.location.pathname.includes('auth.html')) {
-            window.location.href = 'index.html';
+            if (user.email === "admin@bazaarhub.com") {
+                window.location.href = 'admin.html';
+            } else {
+                window.location.href = 'index.html';
+            }
         }
     } else {
         localStorage.removeItem('loggedInUser');
         systemCartCache = [];
         if (typeof renderEcomCartWorkspace === 'function') renderEcomCartWorkspace();
-        
-        // CHANGED: Yahan jo direct redirect loop laga hua tha, usay remove kar diya hai taake naye browser me page wapis na bhage.
+    }
+});
+
+// Global Window Functions for Auth Tabs Toggle (Fixed for Module Engine)
+window.switchAuthTabToLogin = function() {
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const loginTab = document.getElementById('loginTab');
+    const registerTab = document.getElementById('registerTab');
+    
+    if(loginForm && registerForm) {
+        loginForm.classList.remove('hidden');
+        registerForm.classList.add('hidden');
+        if(loginTab && registerTab) {
+            loginTab.classList.add('active');
+            registerTab.classList.remove('active');
+        }
+    }
+};
+
+window.switchAuthTabToRegister = function() {
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const loginTab = document.getElementById('loginTab');
+    const registerTab = document.getElementById('registerTab');
+    
+    if(loginForm && registerForm) {
+        registerForm.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+        if(loginTab && registerTab) {
+            registerTab.classList.add('active');
+            loginTab.classList.remove('active');
+        }
+    }
+};
+
+// DOM Content Loaded to bind events safely without breaking other pages
+document.addEventListener('DOMContentLoaded', () => {
+    const loginTab = document.getElementById('loginTab');
+    const registerTab = document.getElementById('registerTab');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+
+    // Tab Event listeners setup
+    if(loginTab) loginTab.addEventListener('click', window.switchAuthTabToLogin);
+    if(registerTab) registerTab.addEventListener('click', window.switchAuthTabToRegister);
+
+    // Login Form Submission Trigger
+    if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPass').value;
+
+            signInWithEmailAndPassword(auth, email, pass)
+                .then((userCredential) => {
+                    alert("Authentication successful. Routing system entry node...");
+                    if (email === "admin@bazaarhub.com") {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                })
+                .catch((error) => {
+                    alert("Authentication failed: " + error.message);
+                });
+        });
+    }
+
+    // Register Form Submission Trigger
+    if (registerForm) {
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const phone = document.getElementById('regPhone').value;
+            const pass = document.getElementById('regPass').value;
+
+            createUserWithEmailAndPassword(auth, email, pass)
+                .then(async (userCredential) => {
+                    const user = userCredential.user;
+                    // Save additional meta data to Firestore
+                    await setDoc(doc(db, "users", user.uid), {
+                        uid: user.uid,
+                        name: name,
+                        email: email,
+                        phone: phone,
+                        role: "client",
+                        timestamp: new Date().toISOString()
+                    });
+                    alert("Account configuration complete. Routing gateway login...");
+                    window.location.href = 'index.html';
+                })
+                .catch((error) => {
+                    alert("Registration block error: " + error.message);
+                });
+        });
     }
 });
 
