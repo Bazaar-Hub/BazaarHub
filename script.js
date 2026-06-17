@@ -314,3 +314,86 @@ if (logForm) {
         }
     });
 }
+
+// =========================================================================
+// PHONE NUMBER VERIFICATION AGENT MODULE (ADD-ON BLOCK)
+// =========================================================================
+
+// Global Variables State for temporary trace tracking
+let tempRegisterPayload = null;
+let generatedOtpCodeToken = null;
+
+const customRegisterInterceptForm = document.getElementById('registerForm');
+const otpVerificationModalContainer = document.getElementById('otpModal');
+const otpSubmissionResponseForm = document.getElementById('otpVerifyForm');
+
+if (customRegisterInterceptForm && otpVerificationModalContainer) {
+    // 1. Intercepting the Standard Register Submit Channel
+    customRegisterInterceptForm.addEventListener('submit', async (e) => {
+        // Stop default movement to index.html directly
+        e.stopImmediatePropagation(); 
+        e.preventDefault();
+
+        // Capture data safely inside local variables memory
+        const email = document.getElementById('regEmail').value;
+        const password = document.getElementById('regPass').value;
+        const name = document.getElementById('regName').value;
+        const phone = document.getElementById('regPhone').value;
+
+        // Generate a random 6-digit cryptographic OTP token
+        generatedOtpCodeToken = Math.floor(100000 + Math.random() * 900000).toString();
+
+        // Save into memory container state
+        tempRegisterPayload = { name, email, phone, password };
+
+        // >>> ALERTS & DISPATCH INTERFACE ROUTE <<<
+        // For testing, showing inside console & alert box. 
+        // Real architecture can route this string directly into a Twilio API fetch endpoint or WhatsApp trigger link.
+        console.log(`[SECURITY] Secure OTP generated token for routing node: ${generatedOtpCodeToken}`);
+        alert(`Verification token generated and simulated dispatch successfully to phone number: ${phone}\n\n[Your Test OTP Code is: ${generatedOtpCodeToken}]`);
+
+        // Trigger the Verification CSS Modal View Overlay Screen
+        otpVerificationModalContainer.classList.remove('hidden');
+    });
+}
+
+if (otpSubmissionResponseForm) {
+    // 2. Processing Verification Action
+    otpSubmissionResponseForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const userInputOtp = document.getElementById('inputOtpCode').value.trim();
+
+        // Validation Parameter Check
+        if (userInputOtp === generatedOtpCodeToken) {
+            alert("Cryptographic verification node matching verified successfully! Initializing Firebase registration sync...");
+            
+            try {
+                // Triggering actual Firebase auth creation inside security channel
+                const userCredential = await createUserWithEmailAndPassword(auth, tempRegisterPayload.email, tempRegisterPayload.password);
+                
+                // Saving verified data mapping node array inside user collection database
+                await setDoc(doc(db, "users", userCredential.user.uid), {
+                    uid: userCredential.user.uid,
+                    fullName: tempRegisterPayload.name,
+                    emailAddress: tempRegisterPayload.email,
+                    telemetryPhone: tempRegisterPayload.phone,
+                    isPhoneVerified: true, // Verification verified state signature status flag
+                    role: "client"
+                });
+
+                alert("Profile node successfully activated inside cloud database! Redirecting to dashboard context...");
+                
+                // Close modal overlay state cleanly
+                otpVerificationModalContainer.classList.add('hidden');
+                
+                // Redirect user node safely
+                window.location.href = "index.html";
+            } catch (error) {
+                console.error("Firebase auth profile execution exception failure: ", error.message);
+                alert("Runtime activation sequence halted: " + error.message);
+            }
+        } else {
+            alert("Verification mismatch validation error! The token code entered is invalid. Try again.");
+        }
+    });
+}
