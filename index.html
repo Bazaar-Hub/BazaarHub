@@ -7,1290 +7,361 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        /* ==========================================================================
-           GLOBAL PRESTIGE MODERN THEME & CINEMATIC 3D INTERACTIVE MATRIX WITH ADVANCED ANIMATIONS
-           ========================================================================== */
+        /* Global Prestige Theme */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1); /* Ultra Smooth Inertia Physics */
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
         body {
-            /* Immersive Futuristic Cyber-Grid Background Canvas */
             background-color: #040509;
             background-image: 
                 linear-gradient(rgba(250, 204, 21, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(250, 204, 21, 0.02) 1px, transparent 1px),
-                radial-gradient(circle at 50% 50%, #161936 0%, #040509 100%);
-            background-size: 40px 40px, 40px 40px, 100% 100%;
+                linear-gradient(90deg, rgba(250, 204, 21, 0.02) 1px, transparent 1px);
+            background-size: 30px 30px;
             color: #ffffff;
-            line-height: 1.4;
             overflow-x: hidden;
-            position: relative;
         }
 
-        /* Ambient Dynamic Background Aura Pulse */
-        body::before {
-            content: '';
-            position: fixed;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle at 30% 30%, rgba(250, 204, 21, 0.04) 0%, transparent 50%),
-                        radial-gradient(circle at 70% 70%, rgba(239, 68, 68, 0.03) 0%, transparent 50%);
-            z-index: -1;
-            animation: cosmicBackgroundRotation 20s infinite linear;
-        }
+        .accent-yellow { color: #facc15; }
+        .bg-yellow { background-color: #facc15; color: #000; }
+        .bg-yellow:hover { background-color: #e2b80d; box-shadow: 0 0 15px rgba(250,204,21,0.4); }
 
-        @keyframes cosmicBackgroundRotation {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        a { color: inherit; text-decoration: none; }
-        button { cursor: pointer; border: none; background: none; }
-        
-        input, textarea, select {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            padding: 14px;
-            color: #ffffff;
-            font-size: 14px;
-            margin-top: 6px;
-            margin-bottom: 12px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
-        }
-
-        input:focus, textarea:focus, select:focus { 
-            outline: none; 
-            border-color: #facc15;
-            box-shadow: 0 0 25px rgba(250, 204, 21, 0.4), inset 0 1px 10px rgba(250, 204, 21, 0.1);
-            transform: translateY(-4px) scale(1.01);
-            background: rgba(255, 255, 255, 0.06);
-        }
-
-        .accent-yellow { 
-            color: #facc15; 
-            text-shadow: 0 0 15px rgba(250, 204, 21, 0.7);
-        }
-        
-        .bg-yellow { 
-            background: linear-gradient(135deg, #facc15 0%, #e2b714 100%); 
-            color: #000000; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            letter-spacing: 1.5px;
-            box-shadow: 0 4px 15px rgba(250, 204, 21, 0.3);
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        /* 3D Liquid Wave Button Hover Animation */
-        .bg-yellow::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
-            transform: skewX(-30deg);
-            transition: none;
-        }
-
-        .bg-yellow:hover::before {
-            left: 200%;
-            transition: left 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-        
-        .bg-yellow:hover { 
-            transform: translateY(-5px) scale(1.03); 
-            box-shadow: 0 15px 35px rgba(250, 204, 21, 0.6), 0 0 15px rgba(250, 204, 21, 0.3);
-        }
-
-        .bg-yellow:active {
-            transform: translateY(-2px) scale(0.99);
-        }
-        
-        .hidden { display: none !important; }
-
-        /* ==========================================================================
-           1. AUTH INTERFACE WITH DYNAMIC DRIFT PARTICLES
-           ========================================================================== */
-        .auth-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            position: relative;
-        }
-
-        .auth-card {
-            background: rgba(15, 16, 35, 0.6);
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(250, 204, 21, 0.15);
-            padding: 45px 35px;
-            border-radius: 28px;
-            width: 100%;
-            max-width: 430px;
-            box-shadow: 0 30px 70px rgba(0,0,0,0.7), 
-                        inset 0 1px 2px rgba(255,255,255,0.15),
-                        0 0 40px rgba(250, 204, 21, 0.05);
-            position: relative;
-            overflow: hidden;
-            animation: authEntranceWave 1s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-
-        /* Animated Glowing Edge on Hover */
-        .auth-card::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            border-radius: 28px;
-            pointer-events: none;
-            border: 1px solid transparent;
-            background: linear-gradient(135deg, #facc15, transparent, #ef4444) border-box;
-            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: destination-out;
-            mask-composite: exclude;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-
-        .auth-card:hover::after { opacity: 0.5; }
-
-        @keyframes authEntranceWave {
-            0% { opacity: 0; transform: translateY(60px) scale(0.95) rotateX(15deg); }
-            100% { opacity: 1; transform: translateY(0) scale(1) rotateX(0); }
-        }
-        
-        .auth-card:hover {
-            transform: translateY(-8px) scale(1.01);
-            box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 30px rgba(250,204,21,0.2);
-        }
-
-        .auth-header { text-align: center; margin-bottom: 30px; }
-        .auth-header h2 { font-size: 32px; font-weight: 900; letter-spacing: 2px; }
-        .auth-header p { color: #9ca3af; font-size: 13px; margin-top: 6px; }
-        .auth-btn { width: 100%; padding: 15px; border-radius: 14px; font-size: 14px; font-weight: 700; margin-top: 18px; }
-        .auth-switch-text { text-align: center; font-size: 13px; color: #9ca3af; margin-top: 20px; }
-        .auth-switch-text span { color: #facc15; cursor: pointer; font-weight: 600; text-decoration: underline; }
-
-        /* ==========================================================================
-           2. MODERN NAVBAR & SHIMMER GLASS HERO BLUR MODULE
-           ========================================================================== */
         nav {
-            background: rgba(8, 9, 20, 0.85);
-            backdrop-filter: blur(30px);
-            padding: 16px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(250, 204, 21, 0.1);
+            padding: 15px 6%;
+            background: rgba(4, 5, 9, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
             position: sticky;
             top: 0;
-            z-index: 100;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            z-index: 1000;
         }
 
-        .nav-logo-box { display: flex; align-items: center; gap: 12px; cursor: pointer; }
-        
-        .logo-badge { 
-            background: linear-gradient(135deg, #facc15, #eab308); 
-            color: #000000; font-weight: 900; font-size: 22px; 
-            width: 40px; height: 40px; border-radius: 12px; 
-            display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 0 20px rgba(250,204,21,0.4); 
-            animation: 3dLogoSpin 4s infinite linear;
-        }
-        
-        @keyframes 3dLogoSpin {
-            0% { transform: perspective(100px) rotateY(0deg); }
-            50% { transform: perspective(100px) rotateY(180deg); }
-            100% { transform: perspective(100px) rotateY(360deg); }
-        }
+        .nav-logo-box { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .logo-badge { background: #facc15; color: #000; font-weight: 900; padding: 4px 10px; border-radius: 6px; font-size: 18px; }
+        .logo-text { font-size: 18px; font-weight: 800; letter-spacing: 1px; }
+        .logo-text span { color: #facc15; }
 
-        .logo-text { font-size: 22px; font-weight: 900; letter-spacing: 1px; }
-        
-        .nav-center { display: flex; gap: 35px; align-items: center; }
-        .nav-center a { font-size: 14px; color: #e5e7eb; font-weight: 600; position: relative; padding: 6px 0; }
-        
-        /* Futuristic Nav Hover Underline Wave */
-        .nav-center a::after { 
-            content: ''; position: absolute; bottom: 0; left: 50%; 
-            width: 0; height: 2px; background: #facc15; 
-            transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-            box-shadow: 0 0 8px #facc15;
-        }
-        .nav-center a:hover::after { width: 100%; left: 0; }
-        .nav-center a:hover { color: #facc15; transform: translateY(-3px); }
-        
-        .nav-right-controls { display: flex; align-items: center; gap: 24px; }
-        
-        .search-bar { 
-            max-width: 250px; padding: 10px 18px; margin: 0; 
-            font-size: 13px; border-radius: 50px;
-            background: rgba(255,255,255,0.02);
-        }
-        .search-bar:focus { max-width: 300px; }
-        
-        .cart-icon { font-size: 22px; position: relative; cursor: pointer; color: #ffffff; }
-        .cart-icon:hover { color: #facc15; transform: scale(1.25) rotate(-10deg); text-shadow: 0 0 20px #facc15; }
-        
-        .cart-count { 
-            position: absolute; top: -9px; right: -9px; 
-            background: linear-gradient(135deg, #ef4444, #cc1f1f); color: white; 
-            font-size: 10px; width: 20px; height: 20px; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; font-weight: bold; 
-            box-shadow: 0 0 15px rgba(239,68,68,0.7); 
-            animation: cartBubblePop 0.4s ease-out;
-        }
+        .nav-actions { display: flex; align-items: center; gap: 20px; }
+        .cart-icon-btn { position: relative; font-size: 20px; color: #fff; cursor: pointer; }
+        .cart-counter { position: absolute; top: -8px; right: -10px; background: #facc15; color: #000; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 50%; }
 
-        @keyframes cartBubblePop {
-            0% { transform: scale(0); }
-            80% { transform: scale(1.3); }
-            100% { transform: scale(1); }
-        }
+        .form-btn { width: 100%; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; border: none; }
 
-        /* Cinematic Hero Panel with Grid Overlay */
-        .hero { 
-            text-align: center; 
-            padding: 120px 20px; 
-            display: flex; 
-            flex-direction: column; 
+        .hero-banner {
+            position: relative;
+            height: 420px;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(4,5,9,1)), url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964') center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            background: radial-gradient(circle at top, rgba(250,204,21,0.12) 0%, transparent 65%);
-            position: relative;
+            text-align: center;
+            padding: 0 20px;
         }
 
-        .tag-new { 
-            background: rgba(234, 179, 8, 0.07); border: 1px solid rgba(234,179,8,0.5); 
-            color: #eab308; font-size: 11px; text-transform: uppercase; 
-            padding: 7px 20px; border-radius: 50px; margin-bottom: 25px; 
-            font-weight: 700; letter-spacing: 1.5px; 
-            box-shadow: 0 0 20px rgba(234,179,8,0.15);
-            animation: tagPulseGlow 2s infinite alternate;
-        }
+        .hero-title { font-size: 42px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; line-height: 1.1; }
+        .hero-subtitle { color: #9ca3af; font-size: 14px; margin-top: 10px; max-width: 500px; }
 
-        @keyframes tagPulseGlow {
-            0% { box-shadow: 0 0 10px rgba(234,179,8,0.1); border-color: rgba(234,179,8,0.3); }
-            100% { box-shadow: 0 0 25px rgba(234,179,8,0.4); border-color: rgba(234,179,8,0.8); }
-        }
+        .store-layout { display: grid; grid-template-columns: 240px 1fr; gap: 30px; padding: 40px 6%; }
+        .sidebar-card { background: #0d0d13; border: 1px solid #1f2937; border-radius: 12px; padding: 20px; height: fit-content; }
+        .filter-section h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; color: #facc15; }
+        .filter-tags-grid { display: flex; flex-direction: column; gap: 8px; }
+        .filter-tag { padding: 8px 12px; background: #14141c; border: 1px solid #1f2937; border-radius: 6px; font-size: 13px; cursor: pointer; text-align: left; }
+        .filter-tag.active { background: #facc15; color: #000; font-weight: 700; border-color: #facc15; }
 
-        .hero h1 { font-size: 54px; font-weight: 900; line-height: 1.15; margin-bottom: 22px; letter-spacing: -1px; }
-        .hero p { color: #9ca3af; max-width: 630px; font-size: 16px; line-height: 1.6; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
+        .product-card { background: #0d0d13; border: 1px solid #1f2937; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+        .product-card:hover { transform: translateY(-5px); border-color: #facc15; }
+        .product-img { width: 100%; height: 180px; object-fit: cover; background: #14141c; }
+        .product-info { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
+        .product-title { font-size: 15px; font-weight: 700; margin-bottom: 5px; }
+        .product-desc { font-size: 12px; color: #9ca3af; margin-bottom: 12px; line-height: 1.3; }
+        .product-meta { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+        .product-price { font-size: 16px; font-weight: 800; color: #facc15; }
+        .add-cart-btn { background: #14141c; border: 1px solid #374151; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+        .add-cart-btn:hover { background: #facc15; color: #000; border-color: #facc15; }
 
-        /* ==========================================================================
-           3. DYNAMIC METRIC 3D INTERACTIVE CARD INTERNALS
-           ========================================================================== */
-        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
-        .section-title { font-size: 30px; font-weight: 800; margin-bottom: 45px; text-align: center; text-transform: uppercase; letter-spacing: 2px; position: relative; }
-        .section-title::after { content: ''; display: block; width: 70px; height: 4px; background: #facc15; margin: 12px auto 0 auto; border-radius: 2px; box-shadow: 0 0 20px #facc15; }
-        
-        .filter-capsules { display: flex; justify-content: center; gap: 14px; margin-bottom: 50px; flex-wrap: wrap; }
-        .capsule { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); padding: 11px 26px; border-radius: 50px; font-size: 12px; color: #ffffff; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-        .capsule.active, .capsule:hover { background: #facc15; color: #000000; border-color: #facc15; box-shadow: 0 8px 30px rgba(250, 204, 21, 0.5); transform: translateY(-5px) scale(1.06); }
+        /* Slide-out Cart Drawer */
+        .cart-drawer { position: fixed; top: 0; right: -360px; width: 360px; height: 100vh; background: #0d0d13; border-left: 1px solid #1f2937; box-shadow: -5px 0 25px rgba(0,0,0,0.5); z-index: 2000; display: flex; flex-direction: column; }
+        .cart-drawer.open { right: 0; }
+        .cart-header { padding: 20px; border-bottom: 1px solid #1f2937; display: flex; justify-content: space-between; align-items: center; }
+        .cart-items-container { padding: 20px; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 15px; }
+        .cart-item { display: flex; gap: 12px; background: #14141c; padding: 10px; border-radius: 8px; border: 1px solid #1f2937; }
+        .cart-item-img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
+        .cart-footer { padding: 20px; border-top: 1px solid #1f2937; background: #08080c; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 35px; }
-        
-        /* Elite Fluid Cinematic Card Design with Magnetic Float Animation */
-        .product-card { 
-            background: linear-gradient(150deg, rgba(20, 22, 45, 0.7) 0%, rgba(10, 11, 22, 0.5) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.06); 
-            border-radius: 24px; 
-            overflow: hidden; 
-            padding: 22px; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            position: relative;
-            transform: translateY(0);
-        }
+        /* Floating WhatsApp Chat */
+        .whatsapp-widget { position: fixed; bottom: 25px; left: 25px; z-index: 999; }
+        .whatsapp-trigger-btn { width: 52px; height: 52px; background: #25d366; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer; }
+        .whatsapp-chat-card { position: absolute; bottom: 65px; left: 0; width: 280px; background: #0d0d13; border: 1px solid #1f2937; border-radius: 12px; overflow: hidden; display: none; box-shadow: 0 5px 20px rgba(0,0,0,0.4); }
+        .whatsapp-chat-card.open { display: block; }
+        .wa-card-header { background: #25d366; padding: 12px; color: white; display: flex; align-items: center; gap: 10px; }
+        .wa-card-body { padding: 15px; background: #14141c; font-size: 13px; }
 
-        .product-card:hover {
-            transform: translateY(-15px) scale(1.03);
-            border-color: rgba(250, 204, 21, 0.5);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.7), 0 0 35px rgba(250, 204, 21, 0.25);
-        }
-        
-        .product-img { width: 100%; height: 230px; object-fit: cover; border-radius: 18px; background-color: #0c0d17; box-shadow: 0 10px 25px rgba(0,0,0,0.5); transition: transform 0.6s, filter 0.6s; }
-        .product-card:hover .product-img { transform: scale(1.06); filter: brightness(1.15); }
-        
-        .product-title { font-size: 19px; font-weight: 700; margin: 18px 0 8px 0; letter-spacing: -0.3px; }
-        .product-desc { font-size: 13px; color: #9ca3af; margin-bottom: 16px; min-height: 40px; line-height: 1.5; }
-        .product-price { font-size: 24px; font-weight: 800; color: #facc15; margin-bottom: 16px; text-shadow: 0 0 12px rgba(250,204,21,0.35); }
-        .card-btn { width: 100%; padding: 14px; border-radius: 14px; font-size: 13px; font-weight: 800; }
-
-        /* ==========================================================================
-           4. SIDEBAR BLUR MATRIX DRAWER WITH INERTIA OPENING
-           ========================================================================== */
-        .cart-sidebar { 
-            position: fixed; top: 0; right: -100%; width: 100%; max-width: 420px; height: 100vh; 
-            background: rgba(8, 9, 20, 0.85); backdrop-filter: blur(35px); 
-            border-left: 1px solid rgba(250, 204, 21, 0.15); 
-            box-shadow: -15px 0 50px rgba(0,0,0,0.7); z-index: 500; 
-            display: flex; flex-direction: column; 
-            transition: right 0.6s cubic-bezier(0.16, 1, 0.3, 1); 
-        }
-        .cart-sidebar.open { right: 0; }
-        .cart-header { padding: 30px 25px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; }
-        .cart-header h3 { font-size: 19px; font-weight: 800; display: flex; align-items: center; gap: 12px; }
-        .close-cart { color: #9ca3af; font-size: 24px; }
-        .close-cart:hover { color: #ef4444; transform: scale(1.3) rotate(90deg); }
-        .cart-items-wrapper { flex: 1; overflow-y: auto; padding: 25px 20px; }
-
-        .cart-item { 
-            display: flex; align-items: center; gap: 16px; 
-            background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); 
-            padding: 16px; border-radius: 16px; margin-bottom: 16px; 
-            animation: cartItemSlideIn 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-        @keyframes cartItemSlideIn {
-            0% { opacity: 0; transform: translateX(30px); }
-            100% { opacity: 1; transform: translateX(0); }
-        }
-        .cart-item:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.03); }
-        .cart-item-img { width: 65px; height: 65px; object-fit: cover; border-radius: 12px; }
-        .cart-item-details { flex: 1; }
-        .cart-item-name { font-size: 14px; font-weight: 700; }
-        .cart-item-price { font-size: 13px; color: #facc15; font-weight: 800; margin-top: 4px; }
-        
-        .qty-control { display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; background: rgba(0,0,0,0.3); overflow: hidden; }
-        .qty-btn { padding: 6px 14px; font-size: 14px; color: white; background: rgba(255,255,255,0.03); }
-        .qty-btn:hover { background: #facc15; color: #000000; font-weight: bold; }
-        .qty-val { padding: 0 12px; font-size: 13px; font-weight: 700; }
-        
-        .cart-footer { padding: 30px 25px; border-top: 1px solid rgba(255,255,255,0.06); background: rgba(4, 5, 11, 0.7); }
-        .total-box { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; font-size: 16px; font-weight: 800; }
-
-        /* ==========================================================================
-           5. DATA LOGISTICS LAYERS & TABLES
-           ========================================================================== */
-        .checkout-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 35px; margin-top: 25px; }
-        @media(max-width: 768px) { .checkout-grid { grid-template-columns: 1fr; } }
-        .checkout-box { background: rgba(18, 20, 38, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); padding: 35px; border-radius: 24px; backdrop-filter: blur(15px); box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
-        .checkout-box h3 { font-size: 19px; font-weight: 800; margin-bottom: 30px; display: flex; align-items: center; gap: 12px; }
-        
-        .required-label::after {
-            content: ' *'; color: #ef4444; font-weight: bold; text-shadow: 0 0 8px #ef4444;
-        }
-
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-        
-        .summary-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; animation: summaryNodeFade 0.5s ease-out; }
-        @keyframes summaryNodeFade { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
-        .summary-name { font-weight: 700; }
-        .summary-qty { color: #9ca3af; font-size: 12px; margin-top: 3px; }
-        .summary-price { font-weight: 800; color: #facc15; }
-
-        .order-table-card { background: rgba(18, 20, 38, 0.5); border: 1px solid rgba(255, 255, 255, 0.05); padding: 30px; border-radius: 24px; margin-top: 25px; overflow-x: auto; backdrop-filter: blur(15px); }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
-        th { padding: 16px; background: rgba(255, 255, 255, 0.04); color: #9ca3af; font-weight: 700; border-bottom: 1px solid rgba(255, 255, 255, 0.06); text-transform: uppercase; letter-spacing: 0.5px; font-size: 12px; }
-        td { padding: 18px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.03); vertical-align: middle; }
-        tr:hover td { background: rgba(255,255,255,0.02); }
-        
-        .status-badge { padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-        .badge-pending { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000000; }
-        .badge-placed { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #ffffff; }
-        .badge-delivered { background: linear-gradient(135deg, #10b981, #047857); color: #ffffff; }
-
-        /* INTERACTIVE STAR RATING SYSTEM CSS */
-        .rating-interactive-box { display: flex; align-items: center; gap: 4px; margin-top: 5px; }
-        .star-node { font-size: 18px; color: rgba(255, 255, 255, 0.2); cursor: pointer; transition: transform 0.2s, color 0.2s; }
-        .star-node.selected, .star-node:hover { color: #facc15; text-shadow: 0 0 10px rgba(250, 204, 21, 0.6); transform: scale(1.2); }
-
-        /* ==========================================================================
-           6. PARTY POPPER PARTY EFFECTS CANVAS OVERLAYS
-           ========================================================================== */
-        .popper-particle {
-            position: fixed;
-            width: 12px;
-            height: 12px;
-            pointer-events: none;
-            z-index: 9999;
-            border-radius: 50%;
-            animation: popperFallAnimation 2.5s cubic-bezier(0.1, 0.8, 0.25, 1) forwards;
-        }
-        @keyframes popperFallAnimation {
-            0% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
-            80% { opacity: 0.8; }
-            100% { transform: translate(var(--x-drift), var(--y-drift)) rotate(var(--r-drift)) scale(0.4); opacity: 0; }
-        }
-
-        /* ==========================================================================
-           7. ADMINISTRATIVE GATE TERMINAL DESK
-           ========================================================================== */
-        .admin-dashboard-layout { display: grid; grid-template-columns: 1fr 1.7fr; gap: 35px; margin-top: 25px; }
-        @media (max-width: 950px) { .admin-dashboard-layout { grid-template-columns: 1fr; } }
-        .admin-panel-card { background: rgba(18, 20, 38, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); padding: 35px; border-radius: 24px; backdrop-filter: blur(15px); }
-        .admin-inline-list-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); padding: 16px 22px; border-radius: 16px; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.04); }
-        .admin-inline-list-item:hover { border-color: #facc15; transform: translateX(8px); background: rgba(250,204,21,0.02); }
-
-        /* ==========================================================================
-           8. SUPPORT INTERACTIVE NETWORKS
-           ========================================================================== */
-        .contact-grid-system { display: grid; grid-template-columns: 1fr 1fr; gap: 35px; margin-top: 25px; }
-        @media(max-width: 768px) { .contact-grid-system { grid-template-columns: 1fr; } }
-        
-        .contact-left-details { background: rgba(18, 20, 38, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); padding: 45px; border-radius: 24px; display: flex; flex-direction: column; justify-content: flex-end; gap: 26px; min-height: 400px; }
-        .contact-data-node { display: flex; align-items: center; gap: 20px; font-size: 15px; color: #e5e7eb; }
-        .contact-data-node i { font-size: 24px; width: 45px; text-align: center; color: #facc15; transition: transform 0.3s; }
-        .contact-data-node:hover i { transform: scale(1.3) rotate(10deg); }
-
-        .contact-right-networks { background: rgba(18, 20, 38, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); padding: 45px; border-radius: 24px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 24px; }
-        .network-btn-link { width: 100%; max-width: 330px; padding: 18px; border-radius: 16px; display: flex; align-items: center; justify-content: center; gap: 14px; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #ffffff; box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
-        .network-btn-link:hover { transform: translateY(-8px) scale(1.05); box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
-        .btn-fb { background: linear-gradient(135deg, #1877f2, #115dc3); box-shadow: 0 6px 20px rgba(24,119,242,0.35); }
-        .btn-insta { background: linear-gradient(135deg, #c13584, #fd1d1d, #f9a825); box-shadow: 0 6px 20px rgba(253,29,29,0.35); }
-        .btn-wa { background: linear-gradient(135deg, #25d366, #1ca24e); box-shadow: 0 6px 20px rgba(37,211,102,0.35); }
-
-        /* ==========================================================================
-           9. WHATSAPP FLOATING SYSTEM ENGINE
-           ========================================================================== */
-        .whatsapp-floating-engine { position: fixed; bottom: 35px; right: 35px; z-index: 999; display: flex; flex-direction: column; align-items: flex-end; }
-        
-        .whatsapp-trigger-bubble { 
-            background: linear-gradient(135deg, #25d366 0%, #1ebd56 100%); 
-            color: #ffffff; width: 64px; height: 64px; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; font-size: 32px; 
-            box-shadow: 0 12px 30px rgba(37, 211, 102, 0.5); cursor: pointer; 
-            position: relative; animation: fluidRadialPulse 2s infinite alternate;
-        }
-        
-        @keyframes fluidRadialPulse {
-            0% { transform: scale(1); box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4), 0 0 0 0 rgba(37, 211, 102, 0.4); }
-            100% { transform: scale(1.1); box-shadow: 0 15px 35px rgba(37, 211, 102, 0.6), 0 0 0 15px rgba(37, 211, 102, 0); }
-        }
-        
-        .whatsapp-trigger-bubble::after { content: ''; position: absolute; width: 14px; height: 14px; background-color: #ef4444; border: 3px solid #25d366; border-radius: 50%; top: 3px; right: 3px; }
-        
-        .whatsapp-chat-matrix-card { width: 350px; background-color: #161729; border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.55); margin-bottom: 22px; display: none; flex-direction: column; }
-        .whatsapp-chat-matrix-card.active { display: flex; transform: translateY(0) scale(1); animation: chatCardEntranceSweep 0.5s cubic-bezier(0.19, 1, 0.22, 1); }
-        
-        @keyframes chatCardEntranceSweep {
-            0% { opacity: 0; transform: translateY(40px) scale(0.85); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .wa-card-header { background: #054d44; padding: 20px; display: flex; align-items: center; justify-content: space-between; color: white; }
-        .wa-header-profile { display: flex; align-items: center; gap: 14px; }
-        .wa-avatar { width: 42px; height: 42px; background: #25d366; border-radius: 50%; display:flex; align-items:center; justify-content:center; font-weight:900; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .wa-status-info h4 { font-size: 15px; font-weight: 700; margin: 0; }
-        .wa-status-info p { font-size: 11px; color: #9ca3af; margin: 0; }
-        .wa-card-body { background-color: #0d0e1b; padding: 24px; min-height: 120px; display: flex; align-items: flex-start; }
-        .wa-bubble-msg { background-color: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); padding: 14px 18px; border-radius: 0 16px 16px 16px; color: #ffffff; font-size: 14px; max-width: 85%; box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
-        
-        .wa-card-footer { padding: 16px; background: rgba(0,0,0,0.25); display: flex; justify-content: center; }
-        .wa-send-action-btn { width: 95%; background: linear-gradient(135deg, #25d366, #1ebd56); color: white; font-weight: 800; font-size: 13px; padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 12px; box-shadow: 0 5px 15px rgba(37,211,102,0.3); }
-
-        footer { background: #030409; border-top: 1px solid rgba(250, 204, 21, 0.1); padding: 40px 6%; margin-top: 90px; text-align: center; color: #9ca3af; font-size: 14px; position: relative; }
+        footer { background: #000; border-top: 1px solid #1f2937; padding: 35px 6%; text-align: center; font-size: 12px; color: #6b7280; margin-top: 50px; }
     </style>
-    <script type="module" src="script.js"></script>
 </head>
 <body>
 
-    <!-- REGISTER SCREEN -->
-    <div id="registerScreen" class="auth-container">
-        <div class="auth-card">
-            <div class="auth-header">
-                <h2>BAZAAR<span class="accent-yellow">HUB</span></h2>
-                <p>Create your new client network log entry</p>
+    <nav>
+        <div class="nav-logo-box" onclick="window.location.reload()">
+            <div class="logo-badge">B</div>
+            <div class="logo-text">BAZAAR<span>HUB</span></div>
+        </div>
+        <div class="nav-actions">
+            <button id="navAdminBtn" onclick="window.location.href='admin.html'" class="form-btn bg-yellow" style="width:auto; padding:6px 14px; font-size:12px; display:none;">Admin panel</button>
+            <div id="userProfileDisplay" style="font-size:12px; color:#9ca3af; font-weight:600;"></div>
+            <button id="navAuthBtn" onclick="window.location.href='auth.html'" class="form-btn bg-yellow" style="width:auto; padding:6px 14px; font-size:12px;">Login/Register</button>
+            <div class="cart-icon-btn" onclick="toggleCartDrawerOpenState(true)">
+                <i class="fas fa-shopping-basket"></i>
+                <div class="cart-counter" id="globalCartItemsCounter">0</div>
             </div>
-            <form id="registerForm" onsubmit="handleRegister(event)">
-                <label style="font-size:12px;">Full Identity Name</label>
-                <input type="text" id="regName" placeholder="Enter full name" required>
-                
-                <label style="font-size:12px;">Email Registry</label>
-                <input type="email" id="regEmail" placeholder="name@domain.com" required>
-                
-                <label style="font-size:12px;">Phone Sequence Number</label>
-                <input type="tel" id="regPhone" placeholder="e.g. 03001234567" required>
-                
-                <label style="font-size:12px;">Password Cipher Key</label>
-                <input type="password" id="regPass" placeholder="••••••••" required>
-                
-                <button type="submit" class="auth-btn bg-yellow">Register Account</button>
-            </form>
-            <p class="auth-switch-text">Already configured? <span onclick="switchScreen('login')">Login Here</span></p>
-            <p class="auth-switch-text" style="margin-top:16px; font-size:11px; color:#facc15; cursor:pointer;" onclick="switchScreen('admin')"><i class="fas fa-user-shield"></i> Fire Root Admin Command</p>
+        </div>
+    </nav>
+
+    <div class="hero-banner">
+        <h1 class="hero-title">Elevate Your <span class="accent-yellow">Lifestyle Matrix</span></h1>
+        <p class="hero-subtitle">Experience unmatched premium quality products curated across cross-functional parameters globally.</p>
+    </div>
+
+    <div class="store-layout">
+        <aside class="sidebar-card">
+            <div class="filter-section">
+                <h3>Catalog Clusters</h3>
+                <div class="filter-tags-grid" id="categoryFilterTagsContainer">
+                    <button class="filter-tag active" onclick="filterCatalogProductsByCategory('All')">All Categories</button>
+                </div>
+            </div>
+        </aside>
+
+        <main>
+            <div class="products-grid" id="catalogProductsContainerDisplay">
+                </div>
+        </main>
+    </div>
+
+    <div class="cart-drawer" id="globalCartDrawerSection">
+        <div class="cart-header">
+            <h2 style="font-size: 16px; font-weight:800;">Your Cart Manifest</h2>
+            <i class="fas fa-times" onclick="toggleCartDrawerOpenState(false)" style="cursor:pointer; font-size:18px;"></i>
+        </div>
+        <div class="cart-items-container" id="cartDrawerItemsContainer">
+            </div>
+        <div class="cart-footer">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:800; font-size:15px;">
+                <span>AGGREGATE COST:</span>
+                <span class="accent-yellow" id="cartDrawerTotalPriceDisplay">Rs. 0</span>
+            </div>
+            <button onclick="window.location.href='checkout.html'" class="form-btn bg-yellow">PROCEED TO CHECKOUT PIPELINE</button>
         </div>
     </div>
 
-    <!-- LOGIN SCREEN -->
-    <div id="loginScreen" class="auth-container hidden">
-        <div class="auth-card">
-            <div class="auth-header">
-                <h2>CLIENT <span class="accent-yellow">LOGIN</span></h2>
-                <p>Transmit security credentials</p>
+    <div class="whatsapp-widget">
+        <div class="whatsapp-trigger-btn" onclick="toggleWhatsAppWidget()"><i class="fab fa-whatsapp"></i></div>
+        <div class="whatsapp-chat-card" id="whatsappChatCard">
+            <div class="wa-card-header">
+                <i class="fab fa-whatsapp" style="font-size:20px;"></i>
+                <div>
+                    <h4 style="font-size:13px; font-weight:700;">BazaarHub Operator</h4>
+                    <p style="font-size:10px; color:#e0e0e0;">Online Response Protocol</p>
+                </div>
             </div>
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <label style="font-size:12px;">Email Address</label>
-                <input type="email" id="loginEmail" placeholder="name@domain.com" required>
-                
-                <label style="font-size:12px;">Secret Key (Password)</label>
-                <input type="password" id="loginPass" placeholder="••••••••" required>
-                
-                <button type="submit" class="auth-btn bg-yellow">Secure Login</button>
-            </form>
-            <p class="auth-switch-text">New data node element? <span onclick="switchScreen('register')">Register Now</span></p>
+            <div class="wa-card-body">
+                <p style="color:white; margin-bottom:12px;">Assalam-o-Alaikum! Welcome to BazaarHub. How can we assist you today?</p>
+                <a href="https://wa.me/923272535741?text=Hello%20BazaarHub%20Support%2C%20I%20need%20assistance%20with%20my%20order." target="_blank" style="display:block; text-align:center; background:#25d366; color:white; padding:8px; border-radius:6px; font-weight:700; text-decoration:none;">START CHAT PIPELINE</a>
+            </div>
         </div>
     </div>
 
-    <!-- ADMIN SCREEN -->
-    <div id="adminScreen" class="auth-container hidden">
-        <div class="auth-card">
-            <div class="auth-header">
-                <h2 style="color:#ef4444;"><i class="fas fa-user-shield"></i> ROOT <span class="accent-yellow">PORTAL</span></h2>
-                <p>Execute main administrative control permissions</p>
-            </div>
-            <form id="adminForm" onsubmit="handleAdminLogin(event)">
-                <label style="font-size:12px;">Admin Identity String</label>
-                <input type="text" id="adminUser" placeholder="Default user: ••••••••" required>
+    <footer>
+        <p>&copy; 2026 BazaarHub Systems Matrix Inc. All cryptographic rights reserved.</p>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+        // Firebase Setup configuration (Bazaarhubnew)
+        const firebaseConfig = {
+          apiKey: "AIzaSyAPlpnfGWTiUQlyl2vH6uM_Ae6_EQ8YW5E",
+          authDomain: "bazaarhubnew-79dee.firebaseapp.com",
+          projectId: "bazaarhubnew-79dee",
+          storageBucket: "bazaarhubnew-79dee.firebasestorage.app",
+          messagingSenderId: "452492018395",
+          appId: "1:452492018395:web:6c3cf8d956ce7fe45b42fe"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUserNode = null;
+        let globalCatalogProducts = [];
+
+        onAuthStateChanged(auth, async (user) => {
+            const authBtn = document.getElementById('navAuthBtn');
+            const profileDisp = document.getElementById('userProfileDisplay');
+            const adminBtn = document.getElementById('navAdminBtn');
+
+            if (user) {
+                currentUserNode = user.email;
+                profileDisp.innerText = `SESSION ACTIVE: ${user.email}`;
+                authBtn.innerText = "LOGOUT";
+                authBtn.onclick = () => signOut(auth).then(() => window.location.reload());
                 
-                <label style="font-size:12px;">Clearance Passkey</label>
-                <input type="password" id="adminPass" placeholder="Default pass: ••••••••" required>
-                
-                <button type="submit" class="auth-btn" style="background: linear-gradient(135deg, #ef4444, #b91c1c); color:white; box-shadow: 0 4px 15px rgba(239,68,68,0.4);">Authenticate Root Terminal</button>
-            </form>
-            <p class="auth-switch-text">Exit control console? <span onclick="switchScreen('login')">Return Client Site</span></p>
-        </div>
-    </div>
-
-    <!-- MAIN APP APP HUB -->
-    <div id="mainAppHub" class="hidden">
-        <nav>
-            <div class="nav-logo-box" onclick="showSection('catalog')">
-                <div class="logo-badge">B</div>
-                <div class="logo-text">BAZAAR<span>HUB</span></div>
-            </div>
-            <div class="nav-center" id="clientNavLinks">
-                <a href="#" onclick="showSection('catalog'); return false;">Home</a>
-                <a href="#" onclick="scrollToShop(); return false;">Shop Now</a>
-                <a href="#" onclick="showSection('my-orders'); return false;">My Orders</a>
-                <a href="#" onclick="showSection('support'); return false;">Contact Us</a>
-            </div>
-            <div class="nav-center hidden" id="adminNavLinks">
-                <span style="color:#ef4444; font-weight:bold; font-size:13px; text-shadow:0 0 10px rgba(239,68,68,0.4);"><i class="fas fa-shield-alt"></i> MANAGEMENT ACTIVE</span>
-                <a href="#" onclick="showSection('admin-panel'); return false;">Control Desk Terminal</a>
-            </div>
-            <div class="nav-right-controls">
-                <input type="text" id="storeSearch" oninput="handleSearch()" placeholder="Search nodes..." class="search-bar">
-                <div class="cart-icon" id="navCartWidget" onclick="toggleCartSidebar(true)">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span id="cartCount" class="cart-count">0</span>
-                </div>
-                <button onclick="handleLogout()" style="color:#ef4444; font-size:15px; font-weight:600;" title="Logout System Node"><i class="fas fa-sign-out-alt"></i></button>
-            </div>
-        </nav>
-
-        <div id="viewBox">
-            
-            <div id="catalogPage">
-                <section class="hero">
-                    <span class="tag-new">Verified Secure Workspace Node</span>
-                    <h1>Everything You Need,<br><span class="accent-yellow">All In One Marketplace</span></h1>
-                    <p>Fashion apparel, modern telemetry smartwatches, luxury gear, footwear & peripheral matrices.</p>
-                </section>
-                <main class="container" id="shopCatalogSection">
-                    <h2 class="section-title">Storefront Matrix Pipeline</h2>
-                    <div class="filter-capsules" id="categoryChipsBox"></div>
-                    <div id="productsGrid" class="grid"></div>
-                </main>
-            </div>
-
-            <!-- CHECKOUT PAGE -->
-            <div id="checkoutPage" class="container hidden">
-                <h2 class="section-title">Logistics Dispatch Terminal</h2>
-                <div class="checkout-grid">
-                    <div class="checkout-box">
-                        <h3><i class="fas fa-truck accent-yellow"></i> Transmission Parameters</h3>
-                        <form id="checkoutForm" onsubmit="executeCheckoutOrder(event)">
-                            <div class="form-row">
-                                <div>
-                                    <label class="required-label" style="font-size:12px;">First Name</label>
-                                    <input type="text" id="billFirst" placeholder="John" required>
-                                </div>
-                                <div>
-                                    <label class="required-label" style="font-size:12px;">Last Name</label>
-                                    <input type="text" id="billLast" placeholder="Doe" required>
-                                </div>
-                            </div>
-                            
-                            <label class="required-label" style="font-size:12px;">Telemetry Phone Node Number</label>
-                            <input type="tel" id="billPhone" placeholder="e.g. 03001234567" required>
-
-                            <label class="required-label" style="font-size:12px;">Email Address Registry</label>
-                            <input type="email" id="billEmail" placeholder="client@domain.com" required>
-
-                            <label class="required-label" style="font-size:12px;">Delivery Destination Address Location</label>
-                            <input type="text" id="billAddress" placeholder="Sector address, block lane data stream..." required>
-                            
-                            <label class="required-label" style="font-size:12px;">Payment Processing Stream Protocol</label>
-                            <select id="billPaymentMode" required>
-                                <option value="COD" selected>Cash On Delivery (COD)</option>
-                                <option value="ONLINE" disabled>Online Payment (Not Available)</option>
-                            </select>
-
-                            <button type="submit" class="auth-btn bg-yellow" style="margin-bottom:0; margin-top:15px;">Transmit Order Target</button>
-                        </form>
-                    </div>
-                    <div class="checkout-box">
-                        <h3><i class="fas fa-box-open accent-yellow"></i> Processing Matrix</h3>
-                        <div id="checkoutSummaryItems"></div>
-                        <div style="display:flex; justify-content:space-between; margin-top:20px; padding-top:15px; border-top:2px dashed rgba(255,255,255,0.15); font-weight:800;">
-                            <span>TOTAL DUE:</span><span class="accent-yellow" id="checkoutTotalDue">Rs. 0</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="myOrdersPage" class="container hidden">
-                <h2 class="section-title">My Dispatched Tracked Logs</h2>
-                <div class="order-table-card">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Manifest ID</th>
-                                <th>Purchased Items Stack</th>
-                                <th>Address Coordinates</th>
-                                <th>Aggregated Fee</th>
-                                <th>Logistics Status Link / Rating</th>
-                            </tr>
-                        </thead>
-                        <tbody id="myOrdersTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="adminPanelPage" class="container hidden">
-                <h2 class="section-title" style="color:#ef4444;">Central Management Workspace Console</h2>
-                <div class="admin-dashboard-layout">
-                    <div class="admin-panel-card">
-                        <h3 id="adminFormTitle" style="font-size:15px; margin-bottom:15px; color:#facc15;"><i class="fas fa-plus-circle"></i> Injection New Product Struct</h3>
-                        <form id="productCrudForm" onsubmit="handleProductSubmit(event)">
-                            <input type="hidden" id="crudProductId">
-                            
-                            <label style="font-size:11px;">Product Title Display String</label>
-                            <input type="text" id="crudTitle" placeholder="e.g. Phoenix Chrono Alpha" required>
-                            
-                            <label style="font-size:11px;">Category Chip Allocation Key</label>
-                            <input type="text" id="crudCategory" placeholder="e.g. ZHZSFB" required>
-                            
-                            <label style="font-size:11px;">Numeric Pricing Unit Value (Rs.)</label>
-                            <input type="number" id="crudPrice" placeholder="e.g. 7500" required>
-                            
-                            <label style="font-size:11px;">Image CDN Target URL String</label>
-                            <input type="url" id="crudImg" placeholder="https://images.unsplash.com/..." required>
-                            
-                            <label style="font-size:11px;">Node Log Description Metadata</label>
-                            <textarea id="crudDesc" rows="3" placeholder="Describe component specs..." required></textarea>
-                            
-                            <div style="display:flex; gap:10px;">
-                                <button type="submit" id="crudSubmitBtn" class="auth-btn bg-yellow" style="margin-bottom:0;">Save Asset Data</button>
-                                <button type="button" id="crudCancelBtn" class="auth-btn hidden" style="background:rgba(255,255,255,0.1); color:white; margin-bottom:0;" onclick="resetCrudForm()">Cancel Edit</button>
-                            </div>
-                        </form>
-
-                        <h3 style="font-size:14px; margin-top:30px; margin-bottom:12px; color:#ef4444;"><i class="fas fa-boxes"></i> Existing Core Vault Products</h3>
-                        <div id="adminProductsVaultList" style="max-height:300px; overflow-y:auto; padding-right:5px;"></div>
-                    </div>
-
-                    <div class="admin-panel-card">
-                        <h3 style="font-size:15px; margin-bottom:15px; color:#3b82f6;"><i class="fas fa-network-wired"></i> Global Order Dispatch Matrix Pipeline</h3>
-                        <div class="order-table-card" style="margin-top:0; background:transparent; border:none; padding:0;">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Client Terminal</th>
-                                        <th>Items Stream</th>
-                                        <th>Cost Total</th>
-                                        <th>Logistics Action Dispatch</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="adminGlobalOrdersBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="supportPage" class="container hidden">
-                <h2 class="section-title">Help Desks & System Support Matrix</h2>
-                <div class="contact-grid-system">
-                    <div class="contact-left-details">
-                        <div>
-                            <h3 style="font-size:18px; margin-bottom:10px; color:#facc15;"><i class="fas fa-id-card-alt"></i> Information Terminal</h3>
-                            <p style="color:#9ca3af; font-size:13px; margin-bottom:20px;">Direct system parameters mapping location coordinates.</p>
-                        </div>
-                        <div class="contact-data-node">
-                            <i class="fas fa-envelope"></i>
-                            <span>support@bazaarhub.com</span>
-                        </div>
-                        <div class="contact-data-node">
-                            <i class="fas fa-globe"></i>
-                            <span>www.bazaarhub.com</span>
-                        </div>
-                        <div class="contact-data-node">
-                            <i class="fas fa-phone-alt"></i>
-                            <span>+92 300 1234567</span>
-                        </div>
-                        <div class="contact-data-node">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Karachi Core Logistics Center, Sindh, Pakistan</span>
-                        </div>
-                    </div>
-
-                    <div class="contact-right-networks">
-                        <h3 style="font-size:16px; margin-bottom:10px; text-align:center;"><i class="fas fa-share-alt accent-yellow"></i> External Network Dispatches</h3>
-                        <p style="color:#9ca3af; font-size:12px; text-align:center; margin-bottom:15px;">Route external secure interaction tunnels via verified server gateways.</p>
-                        
-                        <a href="https://facebook.com" target="_blank" class="network-btn-link btn-fb">
-                            <i class="fab fa-facebook-f"></i> Connect Facebook
-                        </a>
-                        <a href="https://instagram.com" target="_blank" class="network-btn-link btn-insta">
-                            <i class="fab fa-instagram"></i> Follow Instagram
-                        </a>
-                        <button onclick="toggleWhatsAppWidget()" class="network-btn-link btn-wa">
-                            <i class="fab fa-whatsapp"></i> Trigger WhatsApp Box
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="cart-sidebar" id="cartSidebarOverlay">
-            <div class="cart-header">
-                <h3><i class="fas fa-shopping-cart accent-yellow"></i> Memory Cart Stream</h3>
-                <button class="close-cart" onclick="toggleCartSidebar(false)"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="cart-items-wrapper" id="cartItemsContainer"></div>
-            <div class="cart-footer">
-                <div class="total-box"><span>AGGREGATED TOTAL:</span><span class="accent-yellow" id="cartAggregatedTotal">Rs. 0</span></div>
-                <button class="bg-yellow card-btn" onclick="goToCheckout()">Proceed Matrix Checkout</button>
-            </div>
-        </div>
-
-        <div class="whatsapp-floating-engine" id="whatsappFloatingWidget">
-            <div class="whatsapp-chat-matrix-card" id="whatsappChatCard">
-                <div class="wa-card-header">
-                    <div class="wa-header-profile">
-                        <div class="wa-avatar">B</div>
-                        <div class="wa-status-info"><h4>BazaarHub Support</h4><p>Online Operational Engine</p></div>
-                    </div>
-                    <button onclick="toggleWhatsAppWidget()" style="color:white; font-size:16px;"><i class="fas fa-times"></i></button>
-                </div>
-                <div class="wa-card-body"><div class="wa-bubble-msg">Welcome to BazaarHub Support! How can we help you?</div></div>
-                <div class="wa-card-footer">
-                    <a id="waDirectLink" href="https://wa.me/923001234567?text=Hi%20BazaarHub" target="_blank" class="wa-send-action-btn">
-                        <i class="fab fa-whatsapp"></i> Send A Message
-                    </a>
-                </div>
-            </div>
-            <div class="whatsapp-trigger-bubble" onclick="toggleWhatsAppWidget()"><i class="fab fa-whatsapp"></i></div>
-        </div>
-
-        <footer>
-            <p>&copy; 2026 BazaarHub Network Pipeline Modules. All Rights Protected Inside System Storage Cache.</p>
-        </footer>
-    </div>
-
-    <!-- JAVA SCRIPT ENGINE ENGINE -->
-    <script>
-        let PRODUCT_DATABASE = JSON.parse(localStorage.getItem('bazaar_products')) || [
-            { id: 1, title: "ndz Smart Watch", category: "ZHZSFB", desc: "Premium Black Silicone Edition Tech Wear", price: 5432, img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=80" },
-            { id: 2, title: "znjfzndjx Orange", category: "ZBZDHF", desc: "Strap Tactical Active High Response Watch", price: 7654, img: "https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?w=500&auto=format&fit=crop&q=80" },
-            { id: 3, title: "cxbzv Tech Wear", category: "KJNBHGVFWA", desc: "Luxury Executive Limited Carbon Model", price: 87654, img: "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=500&auto=format&fit=crop&q=80" },
-            { id: 4, title: "Phoenix Alpha Node", category: "ZHZSFB", desc: "Amoled Always-On Pro Sports Watch", price: 12500, img: "https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=500&auto=format&fit=crop&q=80" },
-            { id: 5, title: "Cyber Horizon KJH", category: "KJHGFD", desc: "Rugged Outdoor Weatherproof GPS Tracker", price: 9300, img: "https://images.unsplash.com/photo-1517502884422-41eaaced0168?w=500&auto=format&fit=crop&q=80" }
-        ];
-
-        let CENTRAL_ORDERS_DB = JSON.parse(localStorage.getItem('bazaar_orders')) || [];
-        let SYSTEM_CART = [];
-        let SELECTED_CATEGORY = "ALL";
-        let SEARCH_QUERY = "";
-        let LOGGED_IN_USER_PHONE = "";
-        let IS_ADMIN_MODE = false;
-
-        function saveDatabasesToLocalStorage() {
-            localStorage.setItem('bazaar_products', JSON.stringify(PRODUCT_DATABASE));
-            localStorage.setItem('bazaar_orders', JSON.stringify(CENTRAL_ORDERS_DB));
-        }
-
-        function switchScreen(type) {
-            document.getElementById('registerScreen').classList.add('hidden');
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('adminScreen').classList.add('hidden');
-            if(type === 'register') document.getElementById('registerScreen').classList.remove('hidden');
-            if(type === 'login') document.getElementById('loginScreen').classList.remove('hidden');
-            if(type === 'admin') document.getElementById('adminScreen').classList.remove('hidden');
-        }
-
-        function handleRegister(e) {
-            e.preventDefault();
-            // Data ko alag alag keys me store kar rahay hain taake login validation asan ho
-            localStorage.setItem('storedUserName', document.getElementById('regName').value.trim());
-            localStorage.setItem('storedUserEmail', document.getElementById('regEmail').value.trim());
-            localStorage.setItem('storedUserPhone', document.getElementById('regPhone').value.trim());
-            localStorage.setItem('storedUserPass', document.getElementById('regPass').value);
-            
-            alert('User profile identity verified & logged inside terminal registry.');
-            switchScreen('login');
-        }
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const emailInput = document.getElementById('loginEmail').value.trim();
-            const passInput = document.getElementById('loginPass').value;
-            
-            const savedEmail = localStorage.getItem('storedUserEmail');
-            const savedPass = localStorage.getItem('storedUserPass');
-            const savedPhone = localStorage.getItem('storedUserPhone');
-            
-            if(emailInput === savedEmail && passInput === savedPass) {
-                LOGGED_IN_USER_PHONE = savedPhone;
-                IS_ADMIN_MODE = false;
-                
-                // Alert trigger hone ke baad seedha dashboard load hoga, infinite register loop khatam
-                alert('Access Granted! Booting System Node Hub.');
-                bootAppFramework();
-            } else {
-                alert('Access Error! Identity email string or pass cipher mismatch.');
-            }
-        }
-
-        function handleAdminLogin(e) {
-            e.preventDefault();
-            const user = document.getElementById('adminUser').value.trim();
-            const pass = document.getElementById('adminPass').value;
-
-            if(user === "OwnerBH" && pass === "bh777!@") {
-                IS_ADMIN_MODE = true;
-                LOGGED_IN_USER_PHONE = "ADMIN-MASTER-TOKEN";
-                bootAppFramework();
-            } else {
-                alert('Root Protocol Denied! Access keys invalid.');
-            }
-        }
-
-        function bootAppFramework() {
-            document.getElementById('registerScreen').classList.add('hidden');
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('adminScreen').classList.add('hidden');
-            document.getElementById('mainAppHub').classList.remove('hidden');
-
-            if(IS_ADMIN_MODE) {
-                document.getElementById('clientNavLinks').classList.add('hidden');
-                document.getElementById('navCartWidget').classList.add('hidden');
-                document.getElementById('adminNavLinks').classList.remove('hidden');
-                showSection('admin-panel');
-            } else {
-                document.getElementById('clientNavLinks').classList.remove('hidden');
-                document.getElementById('navCartWidget').classList.remove('hidden');
-                document.getElementById('adminNavLinks').classList.add('hidden');
-                showSection('catalog');
-            }
-            initWorkspaceEngine();
-        }
-
-        function handleLogout() { location.reload(); }
-
-        function showSection(sectionId) {
-            document.getElementById('catalogPage').classList.add('hidden');
-            document.getElementById('checkoutPage').classList.add('hidden');
-            document.getElementById('myOrdersPage').classList.add('hidden');
-            document.getElementById('adminPanelPage').classList.add('hidden');
-            document.getElementById('supportPage').classList.add('hidden');
-            
-            if(sectionId === 'catalog') document.getElementById('catalogPage').classList.remove('hidden');
-            if(sectionId === 'checkout') {
-                document.getElementById('checkoutPage').classList.remove('hidden');
-                // Auto fill system parameters from active local database nodes
-                if(!IS_ADMIN_MODE) {
-                    document.getElementById('billEmail').value = localStorage.getItem('storedUserEmail') || "";
-                    document.getElementById('billPhone').value = LOGGED_IN_USER_PHONE || "";
-                    const fullName = localStorage.getItem('storedUserName') || "";
-                    if(fullName) {
-                        const nameParts = fullName.split(" ");
-                        document.getElementById('billFirst').value = nameParts[0] || "";
-                        document.getElementById('billLast').value = nameParts.slice(1).join(" ") || "Client";
-                    }
-                }
-            }
-            if(sectionId === 'my-orders') { document.getElementById('myOrdersPage').classList.remove('hidden'); renderMyOrdersTable(); }
-            if(sectionId === 'admin-panel') { document.getElementById('adminPanelPage').classList.remove('hidden'); renderAdminGlobalTable(); renderAdminProductsVault(); }
-            if(sectionId === 'support') document.getElementById('supportPage').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function scrollToShop() {
-            showSection('catalog');
-            setTimeout(() => {
-                document.getElementById('shopCatalogSection').scrollIntoView({ behavior: 'smooth' });
-            }, 100);
-        }
-
-        function initWorkspaceEngine() {
-            renderCategoryCapsules();
-            renderDynamicProducts();
-            updateLiveCartUI();
-        }
-
-        function renderCategoryCapsules() {
-            const categories = ["ALL", ...new Set(PRODUCT_DATABASE.map(p => p.category))];
-            document.getElementById('categoryChipsBox').innerHTML = categories.map(cat => `
-                <button class="capsule ${SELECTED_CATEGORY === cat ? 'active' : ''}" onclick="filterByCategory('${cat}')">${cat}</button>
-            `).join('');
-        }
-
-        function filterByCategory(cat) { SELECTED_CATEGORY = cat; renderCategoryCapsules(); renderDynamicProducts(); }
-        function handleSearch() { SEARCH_QUERY = document.getElementById('storeSearch').value.toLowerCase(); renderDynamicProducts(); }
-
-        function renderDynamicProducts() {
-            const grid = document.getElementById('productsGrid');
-            const items = PRODUCT_DATABASE.filter(p => {
-                return (SELECTED_CATEGORY === "ALL" || p.category === SELECTED_CATEGORY) && (p.title.toLowerCase().includes(SEARCH_QUERY) || p.desc.toLowerCase().includes(SEARCH_QUERY));
-            });
-            if(items.length === 0) {
-                grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:#9ca3af; padding:40px;">No operational item tags match your search index.</p>`;
-                return;
-            }
-            grid.innerHTML = items.map((p, index) => `
-                <div class="product-card" style="animation: cardRevealMove 0.6s cubic-bezier(0.19, 1, 0.22, 1) ${index * 0.05}s both;">
-                    <img src="${p.img}" class="product-img">
-                    <div><div class="product-title">${p.title}</div><div class="product-desc">${p.desc}</div></div>
-                    <div><div class="product-price">Rs. ${parseFloat(p.price).toLocaleString()}</div><button class="bg-yellow card-btn" onclick="addItemToCart(${p.id})">Add to Basket</button></div>
-                </div>
-            `).join('');
-        }
-
-        // Keyframe injector logic for dynamic stagger cards loading animation
-        const styleSheet = document.styleSheets[0];
-        styleSheet.insertRule(`
-            @keyframes cardRevealMove {
-                0% { opacity: 0; transform: translateY(40px) scale(0.96); filter: blur(5px); }
-                100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-            }
-        `, styleSheet.cssRules.length);
-
-        function addItemToCart(id) {
-            const prod = PRODUCT_DATABASE.find(p => p.id === id);
-            const inside = SYSTEM_CART.find(item => item.id === id);
-            if(inside) inside.qty++; else SYSTEM_CART.push({ ...prod, qty: 1 });
-            updateLiveCartUI();
-            toggleCartSidebar(true);
-        }
-
-        function modifyQty(id, modifier) {
-            const target = SYSTEM_CART.find(item => item.id === id);
-            if(!target) return;
-            target.qty += modifier;
-            if(target.qty <= 0) SYSTEM_CART = SYSTEM_CART.filter(item => item.id !== id);
-            updateLiveCartUI();
-        }
-
-        function updateLiveCartUI() {
-            document.getElementById('cartCount').innerText = SYSTEM_CART.reduce((acc, i) => acc + i.qty, 0);
-            const box = document.getElementById('cartItemsContainer');
-            if(SYSTEM_CART.length === 0) {
-                box.innerHTML = `<p style="text-align:center; color:#9ca3af; margin-top:50px; font-size:13px;">Your workspace cart allocation stream is empty.</p>`;
-                document.getElementById('cartAggregatedTotal').innerText = "Rs. 0";
-                return;
-            }
-            let computedSum = 0;
-            box.innerHTML = SYSTEM_CART.map(item => {
-                computedSum += (item.price * item.qty);
-                return `
-                    <div class="cart-item">
-                        <img src="${item.img}" class="cart-item-img">
-                        <div class="cart-item-details"><div class="cart-item-name">${item.title}</div><div class="cart-item-price">Rs. ${parseFloat(item.price).toLocaleString()}</div></div>
-                        <div class="qty-control">
-                            <button class="qty-btn" onclick="modifyQty(${item.id}, -1)">-</button>
-                            <span class="qty-val">${item.qty}</span>
-                            <button class="qty-btn" onclick="modifyQty(${item.id}, 1)">+</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            document.getElementById('cartAggregatedTotal').innerText = "Rs. " + computedSum.toLocaleString();
-        }
-
-        function toggleCartSidebar(state) {
-            const sidebar = document.getElementById('cartSidebarOverlay');
-            const waWidget = document.getElementById('whatsappFloatingWidget');
-            if(state) {
-                sidebar.classList.add('open');
-                waWidget.style.display = "none"; 
-            } else {
-                sidebar.classList.remove('open');
-                waWidget.style.display = "flex"; 
-            }
-        }
-
-        function goToCheckout() {
-            if(SYSTEM_CART.length === 0) return;
-            toggleCartSidebar(false);
-            let grandTotal = 0;
-            document.getElementById('checkoutSummaryItems').innerHTML = SYSTEM_CART.map(item => {
-                grandTotal += (item.price * item.qty);
-                return `<div class="summary-item"><div><div class="summary-name">${item.title}</div><div class="summary-qty">Qty: ${item.qty}x</div></div><div class="summary-price">Rs. ${(item.price * item.qty).toLocaleString()}</div></div>`;
-            }).join('');
-            document.getElementById('checkoutTotalDue').innerText = "Rs. " + grandTotal.toLocaleString();
-            showSection('checkout');
-        }
-
-        /* ==========================================================================
-           DYNAMIC CONFETTI PARTY POPPER ENGINE (LEFT & RIGHT BURST)
-           ========================================================================== */
-        function triggerPartyPoppersAnimation() {
-            const totalParticles = 70;
-            const colors = ['#facc15', '#ef4444', '#3b82f6', '#10b981', '#a855f7', '#ff7849'];
-            
-            for (let i = 0; i < totalParticles; i++) {
-                createPopperNode(0, window.innerHeight * 0.7, 45);
-            }
-            for (let i = 0; i < totalParticles; i++) {
-                createPopperNode(window.innerWidth, window.innerHeight * 0.7, 135);
-            }
-
-            function createPopperNode(x, y, angleBase) {
-                const particle = document.createElement('div');
-                particle.classList.add('popper-particle');
-                
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                const size = Math.floor(Math.random() * 8) + 6;
-                const radians = (angleBase + (Math.random() * 60 - 30)) * Math.PI / 180;
-                const velocity = Math.random() * 400 + 200;
-                
-                const xDrift = Math.cos(radians) * velocity;
-                const yDrift = -Math.sin(radians) * velocity + 150; 
-                const rDrift = Math.floor(Math.random() * 720) + 360;
-
-                particle.style.backgroundColor = color;
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                particle.style.left = x + 'px';
-                particle.style.top = y + 'px';
-                
-                if (Math.random() > 0.5) {
-                    particle.style.borderRadius = '0%'; 
-                }
-
-                particle.style.setProperty('--x-drift', xDrift + 'px');
-                particle.style.setProperty('--y-drift', yDrift + 'px');
-                particle.style.setProperty('--r-drift', rDrift + 'deg');
-
-                document.body.appendChild(particle);
-                setTimeout(() => { particle.remove(); }, 2500);
-            }
-        }
-
-        function executeCheckoutOrder(e) {
-            e.preventDefault();
-
-            const nameVal = (document.getElementById('billFirst').value.trim() + " " + document.getElementById('billLast').value.trim()).trim();
-            const phoneVal = document.getElementById('billPhone').value.trim();
-            const emailVal = document.getElementById('billEmail').value.trim();
-            const addressVal = document.getElementById('billAddress').value.trim();
-
-            if(!nameVal || !phoneVal || !emailVal || !addressVal) {
-                alert("Core Error: Identity Verification Failed! Name, Phone, Email, and Location metrics are absolutely mandatory to proceed.");
-                return;
-            }
-
-            const orderId = "BZH-" + Math.floor(100000 + Math.random() * 900000);
-            const itemsString = SYSTEM_CART.map(i => `${i.title} (${i.qty}x)`).join(', ');
-            const totalCost = document.getElementById('checkoutTotalDue').innerText;
-
-            const orderPayload = {
-                id: orderId,
-                user: phoneVal,
-                items: itemsString,
-                cost: totalCost,
-                address: addressVal,
-                status: "Pending Verification",
-                rating: 0 
-            };
-
-            CENTRAL_ORDERS_DB.push(orderPayload);
-            saveDatabasesToLocalStorage();
-            SYSTEM_CART = [];
-            updateLiveCartUI();
-            
-            triggerPartyPoppersAnimation();
-            alert(`Order ${orderId} has been successfully verified via COD pipeline.`);
-            showSection('my-orders');
-        }
-
-        function saveUserRatingLog(orderId, stars) {
-            const orderIdx = CENTRAL_ORDERS_DB.findIndex(o => o.id === orderId);
-            if(orderIdx !== -1) {
-                CENTRAL_ORDERS_DB[orderIdx].rating = stars;
-                saveDatabasesToLocalStorage();
-                alert(`Thank you for rating this device module entry with ${stars} Stars!`);
-                renderMyOrdersTable();
-            }
-        }
-
-        function renderMyOrdersTable() {
-            const tbody = document.getElementById('myOrdersTableBody');
-            const userOrders = CENTRAL_ORDERS_DB.filter(o => o.user === LOGGED_IN_USER_PHONE);
-            if(userOrders.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:#9ca3af;">No tracking matrices linked to your phone token.</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = userOrders.map(o => {
-                let badgeClass = "badge-pending";
-                if(o.status === "Placed") badgeClass = "badge-placed";
-                if(o.status === "Delivered") badgeClass = "badge-delivered";
-                
-                let ratingInterfaceHtml = "";
-                if(o.status === "Delivered") {
-                    const currentRating = o.rating || 0;
-                    ratingInterfaceHtml = `<div class="rating-interactive-box"><span style="font-size:11px; color:#9ca3af; margin-right:4px;">Rate:</span>`;
-                    for(let star = 1; star <= 5; star++) {
-                        ratingInterfaceHtml += `
-                            <i class="fas fa-star star-node ${star <= currentRating ? 'selected' : ''}" 
-                               onclick="saveUserRatingLog('${o.id}', ${star})"></i>`;
-                    }
-                    ratingInterfaceHtml += `</div>`;
+                if(user.email === 'admin@bazaarhub.com') {
+                    adminBtn.style.display = 'block';
                 } else {
-                    ratingInterfaceHtml = `<div style="font-size:11px; color:#9ca3af; margin-top:4px;">Rating available after dispatch arrival.</div>`;
+                    adminBtn.style.display = 'none';
                 }
 
-                return `
-                    <tr>
-                        <td style="font-weight:bold; color:#facc15;">${o.id}</td>
-                        <td>${o.items}</td>
-                        <td>${o.address}</td>
-                        <td style="font-weight:700;">${o.cost}</td>
-                        <td>
-                            <span class="status-badge ${badgeClass}">${o.status}</span>
-                            ${ratingInterfaceHtml}
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
+                // FIXED: Purana GitHub link hata kar simple local fallback set kar diya hai
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 2000);
 
-        function handleProductSubmit(e) {
-            e.preventDefault();
-            const idVal = document.getElementById('crudProductId').value;
-            const title = document.getElementById('crudTitle').value.trim();
-            const category = document.getElementById('crudCategory').value.trim();
-            const price = parseFloat(document.getElementById('crudPrice').value);
-            const img = document.getElementById('crudImg').value.trim();
-            const desc = document.getElementById('crudDesc').value.trim();
-
-            if(idVal) {
-                const targetIdx = PRODUCT_DATABASE.findIndex(p => p.id == idVal);
-                if(targetIdx !== -1) {
-                    PRODUCT_DATABASE[targetIdx] = { id: parseInt(idVal), title, category, price, img, desc };
-                    alert("Component structural attributes modified successfully.");
-                }
             } else {
-                const newId = PRODUCT_DATABASE.length > 0 ? Math.max(...PRODUCT_DATABASE.map(p => p.id)) + 1 : 1;
-                PRODUCT_DATABASE.push({ id: newId, title, category, price, img, desc });
-                alert("New product payload records successfully injected.");
+                currentUserNode = null;
+                profileDisp.innerText = "";
+                authBtn.innerText = "Login/Register";
+                authBtn.onclick = () => window.location.href = 'auth.html';
+                adminBtn.style.display = 'none';
             }
-            
-            saveDatabasesToLocalStorage();
-            resetCrudForm();
-            renderAdminProductsVault();
-            initWorkspaceEngine();
+        });
+
+        // Realtime snapshots loading
+        onSnapshot(collection(db, "products"), (snapshot) => {
+            globalCatalogProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            buildDynamicCategoryClusters();
+            renderCatalogStoreGrid(globalCatalogProducts);
+        });
+
+        function buildDynamicCategoryClusters() {
+            const container = document.getElementById('categoryFilterTagsContainer');
+            const categories = ['All', ...new Set(globalCatalogProducts.map(p => p.category))];
+            container.innerHTML = categories.map(cat => `
+                <button class="filter-tag" id="tag-${cat}" onclick="filterCatalogProductsByCategory('${cat}')">${cat}</button>
+            `).join('');
+            const activeTag = document.getElementById('tag-All');
+            if(activeTag) activeTag.classList.add('active');
         }
 
-        function editProductConsole(id) {
-            const item = PRODUCT_DATABASE.find(p => p.id == id);
-            if(!item) return;
+        window.filterCatalogProductsByCategory = function(category) {
+            document.querySelectorAll('.filter-tag').forEach(btn => btn.classList.remove('active'));
+            const clickedTag = document.getElementById(`tag-${category}`);
+            if(clickedTag) clickedTag.classList.add('active');
 
-            document.getElementById('crudProductId').value = item.id;
-            document.getElementById('crudTitle').value = item.title;
-            document.getElementById('crudCategory').value = item.category;
-            document.getElementById('crudPrice').value = item.price;
-            document.getElementById('crudImg').value = item.img;
-            document.getElementById('crudDesc').value = item.desc;
-
-            document.getElementById('adminFormTitle').innerHTML = `<i class="fas fa-edit"></i> Modify Product Target Node: ${item.id}`;
-            document.getElementById('crudSubmitBtn').innerText = "Update Structural Node";
-            document.getElementById('crudCancelBtn').classList.remove('hidden');
-        }
-
-        function deleteProductConsole(id) {
-            if(confirm("Are you absolutely sure you want to remove this product matrix asset record?")) {
-                PRODUCT_DATABASE = PRODUCT_DATABASE.filter(p => p.id != id);
-                saveDatabasesToLocalStorage();
-                renderAdminProductsVault();
-                initWorkspaceEngine();
+            if(category === 'All') {
+                renderCatalogStoreGrid(globalCatalogProducts);
+            } else {
+                const elementsFiltered = globalCatalogProducts.filter(p => p.category === category);
+                renderCatalogStoreGrid(elementsFiltered);
             }
-        }
+        };
 
-        function resetCrudForm() {
-            document.getElementById('productCrudForm').reset();
-            document.getElementById('crudProductId').value = "";
-            document.getElementById('adminFormTitle').innerHTML = `<i class="fas fa-plus-circle"></i> Injection New Product Struct`;
-            document.getElementById('crudSubmitBtn').innerText = "Save Asset Data";
-            document.getElementById('crudCancelBtn').classList.add('hidden');
-        }
-
-        function renderAdminProductsVault() {
-            const wrapper = document.getElementById('adminProductsVaultList');
-            if(PRODUCT_DATABASE.length === 0) {
-                wrapper.innerHTML = `<p style="text-align:center; padding:15px; color:#9ca3af;">Vault is currently empty.</p>`;
+        function renderCatalogStoreGrid(array) {
+            const container = document.getElementById('catalogProductsContainerDisplay');
+            if(!container) return;
+            if(array.length === 0) {
+                container.innerHTML = `<p style="font-size:13px; color:#9ca3af;">No products inside this catalog trace module.</p>`;
                 return;
             }
-            wrapper.innerHTML = PRODUCT_DATABASE.map(p => `
-                <div class="admin-inline-list-item">
-                    <div>
-                        <div style="font-weight:600; font-size:13px;">${p.title}</div>
-                        <div style="font-size:11px; color:#9ca3af;">ID: ${p.id} | Key: ${p.category} | Rs. ${p.price}</div>
+            container.innerHTML = array.map(p => `
+                <div class="product-card">
+                    <img class="product-img" src="${p.image || 'https://via.placeholder.com/200'}" alt="${p.name}">
+                    <div class="product-info">
+                        <h4 class="product-title">${p.name}</h4>
+                        <p class="product-desc">${p.description || 'No description assigned.'}</p>
+                        <div class="product-meta">
+                            <span class="product-price">Rs. ${p.price}</span>
+                            <button class="add-cart-btn" onclick="injectItemToCartPipeline('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${p.image}')">Add To Cart</button>
+                        </div>
                     </div>
-                    <div style="display:flex; gap:8px;">
-                        <button onclick="editProductConsole(${p.id})" style="color:#facc15; font-size:14px;" title="Edit Node"><i class="fas fa-edit"></i></button>
-                        <button onclick="deleteProductConsole(${p.id})" style="color:#ef4444; font-size:14px;" title="Delete Node"><i class="fas fa-trash-alt"></i></button>
+                </div>
+            `).join('');
+        }
+    </script>
+
+    <script>
+        let localCartArray = JSON.parse(localStorage.getItem('bazaarhub_cart_cache')) || [];
+
+        function toggleCartDrawerOpenState(state) {
+            const drawer = document.getElementById('globalCartDrawerSection');
+            if(state) drawer.classList.add('open');
+            else drawer.classList.remove('open');
+            refreshCartDrawerUI();
+        }
+
+        function injectItemToCartPipeline(id, name, price, image) {
+            const matchingIndex = localCartArray.findIndex(item => item.id === id);
+            if(matchingIndex > -1) {
+                localCartArray[matchingIndex].quantity += 1;
+            } else {
+                localCartArray.push({ id, name, price, image, quantity: 1 });
+            }
+            localStorage.setItem('bazaarhub_cart_cache', JSON.stringify(localCartArray));
+            refreshCartDrawerUI();
+            alert(`${name} integrated inside cart operational matrix.`);
+        }
+
+        function mutateCartQuantity(id, adjustment) {
+            const idx = localCartArray.findIndex(item => item.id === id);
+            if(idx > -1) {
+                localCartArray[idx].quantity += adjustment;
+                if(localCartArray[idx].quantity <= 0) {
+                    localCartArray.splice(idx, 1);
+                }
+                localStorage.setItem('bazaarhub_cart_cache', JSON.stringify(localCartArray));
+                refreshCartDrawerUI();
+            }
+        }
+
+        function refreshCartDrawerUI() {
+            const counter = document.getElementById('globalCartItemsCounter');
+            const totalDisplay = document.getElementById('cartDrawerTotalPriceDisplay');
+            const itemsContainer = document.getElementById('cartDrawerItemsContainer');
+            
+            const totalCount = localCartArray.reduce((acc, item) => acc + item.quantity, 0);
+            counter.innerText = totalCount;
+
+            const totalCost = localCartArray.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+            totalDisplay.innerText = `Rs. ${totalCost}`;
+
+            if(localCartArray.length === 0) {
+                itemsContainer.innerHTML = `<p style="font-size:12px; color:#9ca3af; text-align:center; padding:30px 0;">Cart operational stack is empty.</p>`;
+                return;
+            }
+
+            itemsContainer.innerHTML = localCartArray.map(item => `
+                <div class="cart-item">
+                    <img class="cart-item-img" src="${item.image || 'https://via.placeholder.com/50'}" alt="">
+                    <div style="flex-grow:1;">
+                        <h5 style="font-size:13px; font-weight:700;">${item.name}</h5>
+                        <p style="font-size:11px; color:#facc15; font-weight:800; margin-top:2px;">Rs. ${item.price}</p>
+                        <div style="display:flex; align-items:center; gap:10px; margin-top:6px;">
+                            <button onclick="mutateCartQuantity('${item.id}', -1)" style="color:white; font-size:12px; font-weight:900;">-</button>
+                            <span style="font-size:12px; font-weight:700;">${item.quantity}</span>
+                            <button onclick="mutateCartQuantity('${item.id}', 1)" style="color:white; font-size:12px; font-weight:900;">+</button>
+                        </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        function renderAdminGlobalTable() {
-            const tbody = document.getElementById('adminGlobalOrdersBody');
-            if(CENTRAL_ORDERS_DB.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:#9ca3af;">Global logistics streams are fully idle.</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = CENTRAL_ORDERS_DB.map((o, idx) => `
-                <tr>
-                    <td style="font-weight:bold; color:#ef4444;">${o.id}</td>
-                    <td style="font-size:11px;">M: ${o.user}<br>A: ${o.address}</td>
-                    <td>${o.items}</td>
-                    <td style="font-weight:700; color:#facc15;">${o.cost}</td>
-                    <td>
-                        <select onchange="updateOrderStatusWorkflow(${idx}, this.value)" style="margin:0; padding:5px; font-size:11px; background:#14141c; color:white; border-color:#374151;">
-                            <option value="Pending Verification" ${o.status === 'Pending Verification' ? 'selected' : ''}>Pending</option>
-                            <option value="Placed" ${o.status === 'Placed' ? 'selected' : ''}>Placed</option>
-                            <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-                        </select>
-                        <div style="font-size:11px; color:#9ca3af; margin-top:4px;">User Rating: ${o.rating ? o.rating + ' ★' : 'None yet'}</div>
-                    </td>
-                </tr>
-            `).join('');
+        function toggleWhatsAppWidget() {
+            document.getElementById('whatsappChatCard').classList.toggle('open');
         }
 
-        function updateOrderStatusWorkflow(index, newStatus) {
-            CENTRAL_ORDERS_DB[index].status = newStatus;
-            saveDatabasesToLocalStorage();
-            alert(`Logistics Order Node updated status parameter successfully to: ${newStatus}`);
-            renderAdminGlobalTable();
-        }
-
-        function toggleWhatsAppWidget() { document.getElementById('whatsappChatCard').classList.toggle('active'); }
+        // Boot-up trigger execution
+        refreshCartDrawerUI();
     </script>
 </body>
 </html>
