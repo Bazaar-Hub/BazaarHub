@@ -261,3 +261,56 @@ if (document.getElementById('addProductForm')) {
         addProductForm.reset(); 
     });
 }
+
+// ==========================================
+// 1. REGISTRATION (Naya Account Banane Ke Liye)
+// ==========================================
+const regForm = document.getElementById('registerForm');
+if (regForm) {
+    regForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('regEmail').value;
+        const password = document.getElementById('regPass').value;
+        const name = document.getElementById('regName').value;
+
+        try {
+            // Firebase Auth me user create ho raha hai
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            
+            // User ka extra data (Name) Firestore database me save karne ke liye
+            await setDoc(doc(db, "users", userCredential.user.uid), {
+                name: name,
+                email: email,
+                role: "client" // default role
+            });
+
+            alert("Account successfully created!");
+            window.location.href = "index.html"; // Login ke baad home page pr bhejne k liye
+        } catch (error) {
+            console.error("Reg Error:", error.message);
+            alert("Registration Failed: " + error.message);
+        }
+    });
+}
+
+// ==========================================
+// 2. LOGIN (Kisi bhi Browser se Sign In Ke Liye)
+// ==========================================
+const logForm = document.getElementById('loginForm');
+if (logForm) {
+    logForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPass').value;
+
+        try {
+            // Firebase Auth se login validation
+            await signInWithEmailAndPassword(auth, email, password);
+            alert("Login Successful!");
+            window.location.href = "index.html"; 
+        } catch (error) {
+            console.error("Login Error:", error.message);
+            alert("Login Failed: " + error.message);
+        }
+    });
+}
