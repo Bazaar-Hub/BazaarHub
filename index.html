@@ -5,107 +5,385 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BazaarHub - Master Integrated Platform</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <link rel="stylesheet" href="style.css">
     <style>
-        /* Global Prestige Theme */
+        /* ==========================================================================
+           GLOBAL PRESTIGE MODERN THEME & CINEMATIC INTERACTIVE DESIGN
+           ========================================================================== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
         body {
             background-color: #040509;
             background-image: 
-                linear-gradient(rgba(250, 204, 21, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(250, 204, 21, 0.02) 1px, transparent 1px);
+                linear-gradient(rgba(250, 204, 21, 0.01) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(250, 204, 21, 0.01) 1px, transparent 1px);
             background-size: 30px 30px;
             color: #ffffff;
             overflow-x: hidden;
         }
 
         .accent-yellow { color: #facc15; }
-        .bg-yellow { background-color: #facc15; color: #000; }
+        .bg-yellow { background-color: #facc15; color: #000000; font-weight: 700; }
         .bg-yellow:hover { background-color: #e2b80d; box-shadow: 0 0 15px rgba(250,204,21,0.4); }
 
+        /* Navigation Bar */
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 6%;
-            background: rgba(4, 5, 9, 0.85);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 15px 5%;
+            background: rgba(13, 13, 19, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #1f2937;
             position: sticky;
             top: 0;
-            z-index: 1000;
+            z-index: 100;
         }
 
-        .nav-logo-box { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .logo-badge { background: #facc15; color: #000; font-weight: 900; padding: 4px 10px; border-radius: 6px; font-size: 18px; }
-        .logo-text { font-size: 18px; font-weight: 800; letter-spacing: 1px; }
+        .nav-logo-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .logo-badge {
+            background: #facc15;
+            color: #000;
+            font-weight: 900;
+            padding: 5px 11px;
+            border-radius: 6px;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
         .logo-text span { color: #facc15; }
 
-        .nav-actions { display: flex; align-items: center; gap: 20px; }
-        .cart-icon-btn { position: relative; font-size: 20px; color: #fff; cursor: pointer; }
-        .cart-counter { position: absolute; top: -8px; right: -10px; background: #facc15; color: #000; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 50%; }
-
-        .form-btn { width: 100%; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; border: none; }
-
-        .hero-banner {
-            position: relative;
-            height: 420px;
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(4,5,9,1)), url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964') center/cover;
+        .nav-actions {
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            text-align: center;
-            padding: 0 20px;
+            gap: 15px;
         }
 
-        .hero-title { font-size: 42px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; line-height: 1.1; }
-        .hero-subtitle { color: #9ca3af; font-size: 14px; margin-top: 10px; max-width: 500px; }
+        .cart-icon-btn {
+            position: relative;
+            font-size: 20px;
+            color: #ffffff;
+            cursor: pointer;
+            padding: 8px;
+        }
 
-        .store-layout { display: grid; grid-template-columns: 240px 1fr; gap: 30px; padding: 40px 6%; }
-        .sidebar-card { background: #0d0d13; border: 1px solid #1f2937; border-radius: 12px; padding: 20px; height: fit-content; }
-        .filter-section h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; color: #facc15; }
-        .filter-tags-grid { display: flex; flex-direction: column; gap: 8px; }
-        .filter-tag { padding: 8px 12px; background: #14141c; border: 1px solid #1f2937; border-radius: 6px; font-size: 13px; cursor: pointer; text-align: left; }
-        .filter-tag.active { background: #facc15; color: #000; font-weight: 700; border-color: #facc15; }
+        .cart-badge-count {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: #facc15;
+            color: #000;
+            font-size: 10px;
+            font-weight: 700;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
-        .product-card { background: #0d0d13; border: 1px solid #1f2937; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
-        .product-card:hover { transform: translateY(-5px); border-color: #facc15; }
-        .product-img { width: 100%; height: 180px; object-fit: cover; background: #14141c; }
-        .product-info { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
-        .product-title { font-size: 15px; font-weight: 700; margin-bottom: 5px; }
-        .product-desc { font-size: 12px; color: #9ca3af; margin-bottom: 12px; line-height: 1.3; }
-        .product-meta { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
-        .product-price { font-size: 16px; font-weight: 800; color: #facc15; }
-        .add-cart-btn { background: #14141c; border: 1px solid #374151; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; }
-        .add-cart-btn:hover { background: #facc15; color: #000; border-color: #facc15; }
+        /* Hero Banner Section */
+        .hero-banner {
+            padding: 60px 5%;
+            text-align: center;
+            background: radial-gradient(circle at center, #141524 0%, #040509 100%);
+            border-bottom: 1px solid #1f2937;
+            margin-bottom: 30px;
+        }
 
-        /* Slide-out Cart Drawer */
-        .cart-drawer { position: fixed; top: 0; right: -360px; width: 360px; height: 100vh; background: #0d0d13; border-left: 1px solid #1f2937; box-shadow: -5px 0 25px rgba(0,0,0,0.5); z-index: 2000; display: flex; flex-direction: column; }
-        .cart-drawer.open { right: 0; }
-        .cart-header { padding: 20px; border-bottom: 1px solid #1f2937; display: flex; justify-content: space-between; align-items: center; }
-        .cart-items-container { padding: 20px; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 15px; }
-        .cart-item { display: flex; gap: 12px; background: #14141c; padding: 10px; border-radius: 8px; border: 1px solid #1f2937; }
-        .cart-item-img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
-        .cart-footer { padding: 20px; border-top: 1px solid #1f2937; background: #08080c; }
+        .hero-banner h1 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
 
-        /* Floating WhatsApp Chat */
-        .whatsapp-widget { position: fixed; bottom: 25px; left: 25px; z-index: 999; }
-        .whatsapp-trigger-btn { width: 52px; height: 52px; background: #25d366; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer; }
-        .whatsapp-chat-card { position: absolute; bottom: 65px; left: 0; width: 280px; background: #0d0d13; border: 1px solid #1f2937; border-radius: 12px; overflow: hidden; display: none; box-shadow: 0 5px 20px rgba(0,0,0,0.4); }
-        .whatsapp-chat-card.open { display: block; }
-        .wa-card-header { background: #25d366; padding: 12px; color: white; display: flex; align-items: center; gap: 10px; }
-        .wa-card-body { padding: 15px; background: #14141c; font-size: 13px; }
+        .hero-banner p {
+            color: #9ca3af;
+            font-size: 14px;
+            max-width: 60px;
+            margin: 0 auto;
+        }
 
-        footer { background: #000; border-top: 1px solid #1f2937; padding: 35px 6%; text-align: center; font-size: 12px; color: #6b7280; margin-top: 50px; }
+        /* Category Filter Pills */
+        .categories-scroller {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            padding: 10px 5%;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .category-pill {
+            padding: 8px 18px;
+            border-radius: 20px;
+            background: #14141c;
+            border: 1px solid #1f2937;
+            color: #9ca3af;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .category-pill.active, .category-pill:hover {
+            background: #facc15;
+            color: #000000;
+            border-color: #facc15;
+        }
+
+        /* Main Store Grid */
+        .store-container {
+            padding: 0 5%;
+            margin-bottom: 50px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 25px;
+        }
+
+        .product-card {
+            background: #0d0d13;
+            border: 1px solid #1f2937;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            border-color: #facc15;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .product-img-wrapper {
+            width: 100%;
+            height: 200px;
+            background: #14141c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .product-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-info-box {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .product-tag-cat {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #facc15;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .product-title-node {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #fff;
+            line-height: 1.3;
+        }
+
+        .product-desc-node {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            flex-grow: 1;
+        }
+
+        .product-action-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .product-price-display {
+            font-size: 16px;
+            font-weight: 800;
+            color: #facc15;
+        }
+
+        .add-to-cart-action-btn {
+            background: #facc15;
+            color: #000;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Sidebar Cart Drawer Panel */
+        .cart-drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            display: none;
+        }
+
+        .cart-drawer-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            background: #0d0d13;
+            border-left: 1px solid #1f2937;
+            z-index: 1001;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .cart-drawer-panel.open { right: 0; }
+
+        .cart-drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1f2937;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .cart-drawer-items-stream {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .cart-item-row {
+            display: flex;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #14141c;
+            align-items: center;
+        }
+
+        .cart-item-details { flex-grow: 1; }
+        .cart-item-title { font-size: 13px; font-weight: 700; }
+        .cart-item-price { font-size: 12px; color: #facc15; margin-top: 2px; }
+
+        .cart-item-remove {
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 5px;
+        }
+
+        .cart-drawer-footer {
+            border-top: 1px solid #1f2937;
+            padding-top: 15px;
+        }
+
+        .cart-total-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .form-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+            display: block;
+            cursor: pointer;
+        }
+
+        /* Floating WhatsApp Widget */
+        .whatsapp-float-trigger {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background-color: #25d366;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            z-index: 999;
+        }
+
+        .whatsapp-chat-card {
+            position: fixed;
+            bottom: 85px;
+            right: 25px;
+            width: 280px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            display: none;
+            z-index: 1000;
+            color: #000;
+        }
+
+        .wa-card-header { background: #075e54; color: white; padding: 12px; display: flex; align-items: center; gap: 10px; }
+        .wa-card-body { padding: 15px; background: #ece5dd; font-size: 13px; }
+        .wa-bubble { background: white; padding: 8px 10px; border-radius: 0 8px 8px 8px; max-width: 85%; }
+        .wa-card-footer { padding: 10px; background: #f0f0f0; }
+        .wa-send-btn { width: 100%; background: #25d366; color: white; padding: 8px; border-radius: 6px; font-weight: 700; text-align: center; display: block; font-size: 12px; }
+
+        /* Footer */
+        footer {
+            background-color: #000000;
+            border-top: 1px solid #1f2937;
+            padding: 40px 5%;
+            margin-top: 40px;
+            text-align: center;
+            font-size: 13px;
+            color: #9ca3af;
+        }
     </style>
 </head>
 <body>
@@ -116,252 +394,106 @@
             <div class="logo-text">BAZAAR<span>HUB</span></div>
         </div>
         <div class="nav-actions">
-            <button id="navAdminBtn" onclick="window.location.href='admin.html'" class="form-btn bg-yellow" style="width:auto; padding:6px 14px; font-size:12px; display:none;">Admin panel</button>
-            <div id="userProfileDisplay" style="font-size:12px; color:#9ca3af; font-weight:600;"></div>
-            <button id="navAuthBtn" onclick="window.location.href='auth.html'" class="form-btn bg-yellow" style="width:auto; padding:6px 14px; font-size:12px;">Login/Register</button>
-            <div class="cart-icon-btn" onclick="toggleCartDrawerOpenState(true)">
+            <button id="navAdminBtn" class="category-pill" style="display:none;" onclick="window.location.href='admin.html'">Admin Panel</button>
+            <button id="navAuthBtn" class="form-btn bg-yellow" style="width:auto; padding:6px 14px; font-size:12px;" onclick="window.location.href='auth.html'">Login / Register</button>
+            <div class="cart-icon-btn" onclick="toggleCartDrawer(true)">
                 <i class="fas fa-shopping-basket"></i>
-                <div class="cart-counter" id="globalCartItemsCounter">0</div>
+                <div class="cart-badge-count" id="globalCartCountDisplay">0</div>
             </div>
         </div>
     </nav>
 
-    <div class="hero-banner">
-        <h1 class="hero-title">Elevate Your <span class="accent-yellow">Lifestyle Matrix</span></h1>
-        <p class="hero-subtitle">Experience unmatched premium quality products curated across cross-functional parameters globally.</p>
+    <section class="hero-banner">
+        <h1>Welcome to <span class="accent-yellow">BazaarHub</span></h1>
+        <p>Explore elite tech items, custom nodes, and rapid checkout streaming arrays.</p>
+    </section>
+
+    <div class="categories-scroller">
+        <button class="category-pill active" onclick="filterCategoryStream('all')">All Vaults</button>
+        <button class="category-pill" onclick="filterCategoryStream('Electronics')">Electronics</button>
+        <button class="category-pill" onclick="filterCategoryStream('Clothing')">Clothing</button>
+        <button class="category-pill" onclick="filterCategoryStream('Accessories')">Accessories</button>
     </div>
 
-    <div class="store-layout">
-        <aside class="sidebar-card">
-            <div class="filter-section">
-                <h3>Catalog Clusters</h3>
-                <div class="filter-tags-grid" id="categoryFilterTagsContainer">
-                    <button class="filter-tag active" onclick="filterCatalogProductsByCategory('All')">All Categories</button>
-                </div>
-            </div>
-        </aside>
-
-        <main>
-            <div class="products-grid" id="catalogProductsContainerDisplay">
-                </div>
-        </main>
-    </div>
-
-    <div class="cart-drawer" id="globalCartDrawerSection">
-        <div class="cart-header">
-            <h2 style="font-size: 16px; font-weight:800;">Your Cart Manifest</h2>
-            <i class="fas fa-times" onclick="toggleCartDrawerOpenState(false)" style="cursor:pointer; font-size:18px;"></i>
+    <main class="store-container">
+        <div class="products-grid" id="globalProductsGridContainer">
+            <p style="color:#9ca3af; grid-column: 1/-1; text-align:center;">Synchronizing with cloud node database pipeline...</p>
         </div>
-        <div class="cart-items-container" id="cartDrawerItemsContainer">
+    </main>
+
+    <div class="cart-drawer-overlay" id="cartOverlayNode" onclick="toggleCartDrawer(false)"></div>
+    <div class="cart-drawer-panel" id="cartDrawerNode">
+        <div class="cart-drawer-header">
+            <h3 style="font-weight: 800;"><i class="fas fa-shopping-cart accent-yellow"></i> Your Cart</h3>
+            <button onclick="toggleCartDrawer(false)" style="color:#fff; font-size:20px;">&times;</button>
+        </div>
+        <div class="cart-drawer-items-stream" id="cartDrawerItemsContainer">
             </div>
-        <div class="cart-footer">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:800; font-size:15px;">
-                <span>AGGREGATE COST:</span>
-                <span class="accent-yellow" id="cartDrawerTotalPriceDisplay">Rs. 0</span>
+        <div class="cart-drawer-footer">
+            <div class="cart-total-row">
+                <span>Subtotal:</span>
+                <span class="accent-yellow" id="cartDrawerTotalDisplay">Rs. 0</span>
             </div>
-            <button onclick="window.location.href='checkout.html'" class="form-btn bg-yellow">PROCEED TO CHECKOUT PIPELINE</button>
+            <button class="form-btn bg-yellow" onclick="window.location.href='checkout.html'">PROCEED TO LOGISTICS DISPATCH</button>
         </div>
     </div>
 
-    <div class="whatsapp-widget">
-        <div class="whatsapp-trigger-btn" onclick="toggleWhatsAppWidget()"><i class="fab fa-whatsapp"></i></div>
-        <div class="whatsapp-chat-card" id="whatsappChatCard">
-            <div class="wa-card-header">
-                <i class="fab fa-whatsapp" style="font-size:20px;"></i>
-                <div>
-                    <h4 style="font-size:13px; font-weight:700;">BazaarHub Operator</h4>
-                    <p style="font-size:10px; color:#e0e0e0;">Online Response Protocol</p>
-                </div>
+    <div class="whatsapp-float-trigger" onclick="toggleWhatsAppWidget()">
+        <i class="fab fa-whatsapp"></i>
+    </div>
+    <div class="whatsapp-chat-card" id="whatsappChatCard">
+        <div class="wa-card-header">
+            <i class="fab fa-whatsapp" style="font-size:20px;"></i>
+            <div>
+                <h4 style="font-size:13px; font-weight:700;">BazaarHub Logistics</h4>
+                <p style="font-size:10px; color:#e0e0e0;">Online Pipeline Support</p>
             </div>
-            <div class="wa-card-body">
-                <p style="color:white; margin-bottom:12px;">Assalam-o-Alaikum! Welcome to BazaarHub. How can we assist you today?</p>
-                <a href="https://wa.me/923272535741?text=Hello%20BazaarHub%20Support%2C%20I%20need%20assistance%20with%20my%20order." target="_blank" style="display:block; text-align:center; background:#25d366; color:white; padding:8px; border-radius:6px; font-weight:700; text-decoration:none;">START CHAT PIPELINE</a>
+        </div>
+        <div class="wa-card-body">
+            <div class="wa-bubble">
+                Assalam-o-Alaikum! Welcome to BazaarHub. How can we route your order today?
             </div>
+        </div>
+        <div class="wa-card-footer">
+            <a href="https://wa.me/923001234567" target="_blank" class="wa-send-btn">Start Live Chat</a>
         </div>
     </div>
 
     <footer>
-        <p>&copy; 2026 BazaarHub Systems Matrix Inc. All cryptographic rights reserved.</p>
+        <p>&copy; 2026 BazaarHub Integrated Ecosystem. All digital channels active.</p>
     </footer>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
-
-        // Firebase Setup configuration (Bazaarhubnew)
-        const firebaseConfig = {
-          apiKey: "AIzaSyAPlpnfGWTiUQlyl2vH6uM_Ae6_EQ8YW5E",
-          authDomain: "bazaarhubnew-79dee.firebaseapp.com",
-          projectId: "bazaarhubnew-79dee",
-          storageBucket: "bazaarhubnew-79dee.firebasestorage.app",
-          messagingSenderId: "452492018395",
-          appId: "1:452492018395:web:6c3cf8d956ce7fe45b42fe"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let currentUserNode = null;
-        let globalCatalogProducts = [];
-
-        onAuthStateChanged(auth, async (user) => {
-            const authBtn = document.getElementById('navAuthBtn');
-            const profileDisp = document.getElementById('userProfileDisplay');
-            const adminBtn = document.getElementById('navAdminBtn');
-
-            if (user) {
-                currentUserNode = user.email;
-                profileDisp.innerText = `SESSION ACTIVE: ${user.email}`;
-                authBtn.innerText = "LOGOUT";
-                authBtn.onclick = () => signOut(auth).then(() => window.location.reload());
-                
-                if(user.email === 'admin@bazaarhub.com') {
-                    adminBtn.style.display = 'block';
-                } else {
-                    adminBtn.style.display = 'none';
-                }
-
-                // FIXED: Purana GitHub link hata kar simple local fallback set kar diya hai
-                setTimeout(() => {
-                    window.location.href = "index.html";
-                }, 2000);
-
-            } else {
-                currentUserNode = null;
-                profileDisp.innerText = "";
-                authBtn.innerText = "Login/Register";
-                authBtn.onclick = () => window.location.href = 'auth.html';
-                adminBtn.style.display = 'none';
-            }
-        });
-
-        // Realtime snapshots loading
-        onSnapshot(collection(db, "products"), (snapshot) => {
-            globalCatalogProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            buildDynamicCategoryClusters();
-            renderCatalogStoreGrid(globalCatalogProducts);
-        });
-
-        function buildDynamicCategoryClusters() {
-            const container = document.getElementById('categoryFilterTagsContainer');
-            const categories = ['All', ...new Set(globalCatalogProducts.map(p => p.category))];
-            container.innerHTML = categories.map(cat => `
-                <button class="filter-tag" id="tag-${cat}" onclick="filterCatalogProductsByCategory('${cat}')">${cat}</button>
-            `).join('');
-            const activeTag = document.getElementById('tag-All');
-            if(activeTag) activeTag.classList.add('active');
-        }
-
-        window.filterCatalogProductsByCategory = function(category) {
-            document.querySelectorAll('.filter-tag').forEach(btn => btn.classList.remove('active'));
-            const clickedTag = document.getElementById(`tag-${category}`);
-            if(clickedTag) clickedTag.classList.add('active');
-
-            if(category === 'All') {
-                renderCatalogStoreGrid(globalCatalogProducts);
-            } else {
-                const elementsFiltered = globalCatalogProducts.filter(p => p.category === category);
-                renderCatalogStoreGrid(elementsFiltered);
-            }
-        };
-
-        function renderCatalogStoreGrid(array) {
-            const container = document.getElementById('catalogProductsContainerDisplay');
-            if(!container) return;
-            if(array.length === 0) {
-                container.innerHTML = `<p style="font-size:13px; color:#9ca3af;">No products inside this catalog trace module.</p>`;
-                return;
-            }
-            container.innerHTML = array.map(p => `
-                <div class="product-card">
-                    <img class="product-img" src="${p.image || 'https://via.placeholder.com/200'}" alt="${p.name}">
-                    <div class="product-info">
-                        <h4 class="product-title">${p.name}</h4>
-                        <p class="product-desc">${p.description || 'No description assigned.'}</p>
-                        <div class="product-meta">
-                            <span class="product-price">Rs. ${p.price}</span>
-                            <button class="add-cart-btn" onclick="injectItemToCartPipeline('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${p.image}')">Add To Cart</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-    </script>
-
     <script>
-        let localCartArray = JSON.parse(localStorage.getItem('bazaarhub_cart_cache')) || [];
-
-        function toggleCartDrawerOpenState(state) {
-            const drawer = document.getElementById('globalCartDrawerSection');
-            if(state) drawer.classList.add('open');
-            else drawer.classList.remove('open');
-            refreshCartDrawerUI();
-        }
-
-        function injectItemToCartPipeline(id, name, price, image) {
-            const matchingIndex = localCartArray.findIndex(item => item.id === id);
-            if(matchingIndex > -1) {
-                localCartArray[matchingIndex].quantity += 1;
+        function toggleCartDrawer(open) {
+            const drawer = document.getElementById('cartDrawerNode');
+            const overlay = document.getElementById('cartOverlayNode');
+            if(open) {
+                drawer.classList.add('open');
+                overlay.style.display = 'block';
             } else {
-                localCartArray.push({ id, name, price, image, quantity: 1 });
+                drawer.classList.remove('open');
+                overlay.style.display = 'none';
             }
-            localStorage.setItem('bazaarhub_cart_cache', JSON.stringify(localCartArray));
-            refreshCartDrawerUI();
-            alert(`${name} integrated inside cart operational matrix.`);
-        }
-
-        function mutateCartQuantity(id, adjustment) {
-            const idx = localCartArray.findIndex(item => item.id === id);
-            if(idx > -1) {
-                localCartArray[idx].quantity += adjustment;
-                if(localCartArray[idx].quantity <= 0) {
-                    localCartArray.splice(idx, 1);
-                }
-                localStorage.setItem('bazaarhub_cart_cache', JSON.stringify(localCartArray));
-                refreshCartDrawerUI();
-            }
-        }
-
-        function refreshCartDrawerUI() {
-            const counter = document.getElementById('globalCartItemsCounter');
-            const totalDisplay = document.getElementById('cartDrawerTotalPriceDisplay');
-            const itemsContainer = document.getElementById('cartDrawerItemsContainer');
-            
-            const totalCount = localCartArray.reduce((acc, item) => acc + item.quantity, 0);
-            counter.innerText = totalCount;
-
-            const totalCost = localCartArray.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-            totalDisplay.innerText = `Rs. ${totalCost}`;
-
-            if(localCartArray.length === 0) {
-                itemsContainer.innerHTML = `<p style="font-size:12px; color:#9ca3af; text-align:center; padding:30px 0;">Cart operational stack is empty.</p>`;
-                return;
-            }
-
-            itemsContainer.innerHTML = localCartArray.map(item => `
-                <div class="cart-item">
-                    <img class="cart-item-img" src="${item.image || 'https://via.placeholder.com/50'}" alt="">
-                    <div style="flex-grow:1;">
-                        <h5 style="font-size:13px; font-weight:700;">${item.name}</h5>
-                        <p style="font-size:11px; color:#facc15; font-weight:800; margin-top:2px;">Rs. ${item.price}</p>
-                        <div style="display:flex; align-items:center; gap:10px; margin-top:6px;">
-                            <button onclick="mutateCartQuantity('${item.id}', -1)" style="color:white; font-size:12px; font-weight:900;">-</button>
-                            <span style="font-size:12px; font-weight:700;">${item.quantity}</span>
-                            <button onclick="mutateCartQuantity('${item.id}', 1)" style="color:white; font-size:12px; font-weight:900;">+</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
         }
 
         function toggleWhatsAppWidget() {
-            document.getElementById('whatsappChatCard').classList.toggle('open');
+            const widget = document.getElementById('whatsappChatCard');
+            widget.style.display = widget.style.display === 'block' ? 'none' : 'block';
         }
 
-        // Boot-up trigger execution
-        refreshCartDrawerUI();
+        function filterCategoryStream(category) {
+            // Update active state in pills
+            const pills = document.querySelectorAll('.category-pill');
+            pills.forEach(p => p.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Route filter task to the globally attached function inside script.js
+            if (typeof window.filterProductsByCategory === 'function') {
+                window.filterProductsByCategory(category);
+            }
+        }
     </script>
+
+    <script type="module" src="script.js"></script>
 </body>
 </html>
