@@ -316,84 +316,101 @@ if (logForm) {
 }
 
 // =========================================================================
-// PHONE NUMBER VERIFICATION AGENT MODULE (ADD-ON BLOCK)
+// NATIVE FIREBASE REAL CELLULAR SMS VERIFICATION GATEWAY (REAL SMS CODE)
 // =========================================================================
+import { RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-// Global Variables State for temporary trace tracking
-let tempRegisterPayload = null;
-let generatedOtpCodeToken = null;
+let systemRecaptchaVerifierNode = undefined;
+let activeSMSConfirmationToken = undefined;
+let localTemporaryAccountPayload = null;
 
-const customRegisterInterceptForm = document.getElementById('registerForm');
-const otpVerificationModalContainer = document.getElementById('otpModal');
-const otpSubmissionResponseForm = document.getElementById('otpVerifyForm');
+const sourceRegistrationFormElement = document.getElementById('registerForm');
 
-if (customRegisterInterceptForm && otpVerificationModalContainer) {
-    // 1. Intercepting the Standard Register Submit Channel
-    customRegisterInterceptForm.addEventListener('submit', async (e) => {
-        // Stop default movement to index.html directly
-        e.stopImmediatePropagation(); 
-        e.preventDefault();
+if (sourceRegistrationFormElement) {
+    sourceRegistrationFormElement.addEventListener('submit', async (controlSignal) => {
+        controlSignal.stopImmediatePropagation();
+        controlSignal.preventDefault();
 
-        // Capture data safely inside local variables memory
         const email = document.getElementById('regEmail').value;
         const password = document.getElementById('regPass').value;
         const name = document.getElementById('regName').value;
-        const phone = document.getElementById('regPhone').value;
+        let phone = document.getElementById('regPhone').value.trim();
 
-        // Generate a random 6-digit cryptographic OTP token
-        generatedOtpCodeToken = Math.floor(100000 + Math.random() * 900000).toString();
+        // Tip: User number international format me hona zaroori hai (e.g. +923001234567)
+        if(!phone.startsWith('+')) {
+            alert("Format Error: Please enter phone number starting with country code prefix (e.g. +923001234567)");
+            return;
+        }
 
-        // Save into memory container state
-        tempRegisterPayload = { name, email, phone, password };
+        localTemporaryAccountPayload = { name, email, password, phone };
 
-        // >>> ALERTS & DISPATCH INTERFACE ROUTE <<<
-        // For testing, showing inside console & alert box. 
-        // Real architecture can route this string directly into a Twilio API fetch endpoint or WhatsApp trigger link.
-        console.log(`[SECURITY] Secure OTP generated token for routing node: ${generatedOtpCodeToken}`);
-        alert(`Verification token generated and simulated dispatch successfully to phone number: ${phone}\n\n[Your Test OTP Code is: ${generatedOtpCodeToken}]`);
-
-        // Trigger the Verification CSS Modal View Overlay Screen
-        otpVerificationModalContainer.classList.remove('hidden');
-    });
-}
-
-if (otpSubmissionResponseForm) {
-    // 2. Processing Verification Action
-    otpSubmissionResponseForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const userInputOtp = document.getElementById('inputOtpCode').value.trim();
-
-        // Validation Parameter Check
-        if (userInputOtp === generatedOtpCodeToken) {
-            alert("Cryptographic verification node matching verified successfully! Initializing Firebase registration sync...");
-            
-            try {
-                // Triggering actual Firebase auth creation inside security channel
-                const userCredential = await createUserWithEmailAndPassword(auth, tempRegisterPayload.email, tempRegisterPayload.password);
-                
-                // Saving verified data mapping node array inside user collection database
-                await setDoc(doc(db, "users", userCredential.user.uid), {
-                    uid: userCredential.user.uid,
-                    fullName: tempRegisterPayload.name,
-                    emailAddress: tempRegisterPayload.email,
-                    telemetryPhone: tempRegisterPayload.phone,
-                    isPhoneVerified: true, // Verification verified state signature status flag
-                    role: "client"
+        try {
+            if (!systemRecaptchaVerifierNode) {
+                systemRecaptchaVerifierNode = new RecaptchaVerifier(auth, 'recaptcha-container', {
+                    'size': 'invisible',
+                    'callback': (response) => {}
                 });
-
-                alert("Profile node successfully activated inside cloud database! Redirecting to dashboard context...");
-                
-                // Close modal overlay state cleanly
-                otpVerificationModalContainer.classList.add('hidden');
-                
-                // Redirect user node safely
-                window.location.href = "index.html";
-            } catch (error) {
-                console.error("Firebase auth profile execution exception failure: ", error.message);
-                alert("Runtime activation sequence halted: " + error.message);
             }
-        } else {
-            alert("Verification mismatch validation error! The token code entered is invalid. Try again.");
+
+            alert("Sending official authentication code via SMS network...");
+
+            // Yeh line Firebase network se real mobile standard SMS dispatch karegi
+            activeSMSConfirmationToken = await signInWithPhoneNumber(auth, phone, systemRecaptchaVerifierNode);
+            
+            // Popup screen show karein
+            document.getElementById('otpModal').style.display = 'flex';
+
+        } catch (dispatchException) {
+            console.error("Firebase SMS Node Error: ", dispatchException.message);
+            alert("SMS Dispatch Failure: " + dispatchException.message);
         }
     });
 }
+
+// SMS verify karne wala action control trigger
+document.getElementById('confirmOtpBtn')?.addEventListener('click', async () => {
+    const userEnteredSmsToken = document.getElementById('smsCodeField').value.trim();
+    
+    if (userEnteredSmsToken.length !== 6) {
+        alert("Verification code must be exactly 6 digits.");
+        return;
+    }
+
+    try {
+        // Firebase Cloud ke real code se matching checking
+        await activeSMSConfirmationToken.confirm(userEnteredSmsToken);
+        
+        alert("Real SMS OTP Verified! Finalizing account creation inside authorized panel...");
+
+        // Jab user sahi code dega, sirf TABHI email aur password ka user link authorize ho kar create hoga
+        const systemAccountCredential = await createUserWithEmailAndPassword(auth, localTemporaryAccountPayload.email, localTemporaryAccountPayload.password);
+        
+        // Firestore database me entry link parameters write mapping
+        await setDoc(doc(db, "users", systemAccountCredential.user.uid), {
+            uid: systemAccountCredential.user.uid,
+            fullName: localTemporaryAccountPayload.name,
+            emailAddress: localTemporaryAccountPayload.email,
+            telemetryPhone: localTemporaryAccountPayload.phone,
+            isPhoneVerified: true,
+            role: "client"
+        });
+
+        alert("Welcome! Account verified and activated successfully.");
+        document.getElementById('otpModal').style.display = 'none';
+        window.location.href = "index.html";
+
+    } catch (tokenVerificationException) {
+        // AGAR OTP GALAT HO: Error alert, popup close, account create NAHI hoga, form wapis samne aa jayega
+        alert("SECURITY ALERT: Invalid Verification Code entered! Authentication rejected. Account was not created. Please register again with correct details.");
+        
+        document.getElementById('otpModal').style.display = 'none';
+        document.getElementById('smsCodeField').value = "";
+    }
+});
+
+// Cancel button script
+document.getElementById('cancelOtpBtn')?.addEventListener('click', () => {
+    document.getElementById('otpModal').style.display = 'none';
+    document.getElementById('smsCodeField').value = "";
+    alert("Verification cancelled. Registration reset.");
+});
