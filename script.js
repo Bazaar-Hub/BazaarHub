@@ -25,23 +25,23 @@ let products = [];
 
 // DYNAMIC TOAST NOTIFICATION ENGINE (BOTTOM-LEFT)
 function showToast(message) {
-    // Agar pehle se koi toast hai toh use hatao
+    // Agar pehle se koi toast active hai toh use screen se hatao
     const oldToast = document.querySelector('.toast-notification');
     if (oldToast) oldToast.remove();
 
-    // Naya toast element create karo
+    // Naya notification toast element create karein
     const toast = document.createElement('div');
     toast.className = 'toast-notification';
     toast.innerHTML = `<i class="fas fa-info-circle" style="color:#facc15;"></i> <span>${message}</span>`;
     
     document.body.appendChild(toast);
 
-    // Slide in karne ke liye micro-timeout
+    // Slide-in animation trigger karne ke liye halka sa timeout
     setTimeout(() => {
         toast.classList.add('show');
     }, 50);
 
-    // 3 seconds baad slide out aur remove karo
+    // 3 seconds baad automatic slide-out aur destroy ho jaye (Bina OK pooche)
     setTimeout(() => {
         toast.classList.remove('show');
         setTimeout(() => {
@@ -77,10 +77,11 @@ if (registerForm) {
                 role: 'client'
             });
 
+            // Yahan alert notification hata kar bottom-left notification set ki hai
             showToast("Account Registered Cloud Infrastructure Successfully!");
             setTimeout(() => {
                 window.location.href = "index.html";
-            }, 1500); // Thoda delay taaki notification padhi ja sake
+            }, 1500); 
         } catch (error) {
             console.error("Registration Error: ", error);
             showToast("Error: " + error.message);
@@ -97,6 +98,7 @@ if (loginForm) {
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
+            // Yahan bhi automatic smooth toast call hoga
             showToast("Secure Access Route Granted!");
             setTimeout(() => {
                 window.location.href = "index.html";
