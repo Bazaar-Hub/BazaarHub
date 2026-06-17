@@ -314,3 +314,35 @@ if (logForm) {
         }
     });
 }
+
+// Verification Layer Support Import Additions
+import { sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+
+window.registerUserAccount = async function(e) {
+    e.preventDefault();
+    const name = document.getElementById('regName').value;
+    const email = document.getElementById('regEmail').value;
+    const phone = document.getElementById('regPhone').value;
+    const pass = document.getElementById('regPass').value;
+
+    try {
+        const credentials = await createUserWithEmailAndPassword(auth, email, pass);
+        
+        // Save user profile metadata to Firestore Document Collection Tree
+        await setDoc(doc(db, "users", credentials.user.uid), {
+            uid: credentials.user.uid,
+            fullName: name,
+            emailAddress: email,
+            telemetryPhone: phone,
+            role: "client"
+        });
+
+        // Trigger native Firebase Auth verification link dispatch pipeline
+        await sendEmailVerification(credentials.user);
+
+        alert("User security node generated! Please finalize authentication parameters on the verification window.");
+        window.location.href = "verify.html"; // Redirecting straight to custom two-tier dashboard page
+    } catch(err) {
+        alert("Failed to create user sequence node: " + err.message);
+    }
+};
