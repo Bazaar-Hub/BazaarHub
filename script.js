@@ -23,6 +23,33 @@ const db = getFirestore(app);
 let currentUserNode = null;
 let products = [];
 
+// DYNAMIC TOAST NOTIFICATION ENGINE (BOTTOM-LEFT)
+function showToast(message) {
+    // Agar pehle se koi toast hai toh use hatao
+    const oldToast = document.querySelector('.toast-notification');
+    if (oldToast) oldToast.remove();
+
+    // Naya toast element create karo
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.innerHTML = `<i class="fas fa-info-circle" style="color:#facc15;"></i> <span>${message}</span>`;
+    
+    document.body.appendChild(toast);
+
+    // Slide in karne ke liye micro-timeout
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 50);
+
+    // 3 seconds baad slide out aur remove karo
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            toast.remove();
+        }, 400);
+    }, 3000);
+}
+
 // -------------------------------------------------------------------------
 // AUTHENTICATION MATRIX HANDLERS (WITH NULL SAFE CHECKS)
 // -------------------------------------------------------------------------
@@ -42,7 +69,6 @@ if (registerForm) {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
             
-            // Store additional data in Firestore Cloud
             await setDoc(doc(db, "users", user.uid), {
                 name: name,
                 email: email,
@@ -51,11 +77,13 @@ if (registerForm) {
                 role: 'client'
             });
 
-            alert("Account Registered Cloud Infrastructure Successfully!");
-            window.location.href = "index.html";
+            showToast("Account Registered Cloud Infrastructure Successfully!");
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 1500); // Thoda delay taaki notification padhi ja sake
         } catch (error) {
             console.error("Registration Error: ", error);
-            alert("Error creating account: " + error.message);
+            showToast("Error: " + error.message);
         }
     });
 }
@@ -69,11 +97,13 @@ if (loginForm) {
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            alert("Secure Access Route Granted!");
-            window.location.href = "index.html";
+            showToast("Secure Access Route Granted!");
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 1500);
         } catch (error) {
             console.error("Login Error: ", error);
-            alert("Invalid Credentials Or Access Path Blocked: " + error.message);
+            showToast("Invalid Credentials Or Access Path Blocked!");
         }
     });
 }
@@ -144,8 +174,8 @@ function renderStorefrontGrid(dataArray) {
 // Global Cart Actions Local Engine Mapping
 window.commitCartAddition = function(id) {
     if(!currentUserNode) {
-        alert("Authentication context node is null. Please login via auth terminal.");
-        window.location.href = "auth.html";
+        showToast("Authentication context node is null. Please login.");
+        setTimeout(() => { window.location.href = "auth.html"; }, 1500);
         return;
     }
     const match = products.find(p => p.id === id);
@@ -159,7 +189,7 @@ window.commitCartAddition = function(id) {
         userCart.push({ id: match.id, name: match.name, price: match.price, image: match.image, qty: 1 });
     }
     localStorage.setItem(`cart_${currentUserNode}`, JSON.stringify(userCart));
-    alert(`${match.name} integrated payload pushed to Local Cart buffer!`);
+    showToast(`${match.name} added to cart!`);
 };
 
 // -------------------------------------------------------------------------
@@ -212,11 +242,11 @@ if(document.getElementById('checkoutForm')) {
                 try {
                     await addDoc(collection(db, "orders"), combinedMetadataPayload);
                     localStorage.removeItem(`cart_${currentSessionUser}`);
-                    alert("Order Transmitted and Saved safely to Realtime Cloud Database!");
-                    window.location.href = "index.html";
+                    showToast("Order Transmitted safely to Cloud Database!");
+                    setTimeout(() => { window.location.href = "index.html"; }, 1500);
                 } catch(err) {
                     console.error("Order writing failure logs: ", err);
-                    alert("Database routing failure. Check console network parameters.");
+                    showToast("Database routing failure.");
                 }
             });
         }
@@ -281,17 +311,20 @@ window.editProductConsole = function(id) {
 window.deleteProductConsole = async function(id) { 
     if(confirm("Confirm asset record removal?")) { 
         await deleteDoc(doc(db, "products", id));
+        showToast("Product deleted successfully.");
     } 
 };
 
 window.changeStatusAction = async function(docId, newStatus) { 
     await setDoc(doc(db, "orders", docId), { status: newStatus }, { merge: true });
+    showToast("Order status updated.");
 };
 
 window.eraseOrderAction = async function(docId) { 
     if(confirm("Erase order record?")) { 
         try {
             await deleteDoc(doc(db, "orders", docId));
+            showToast("Order record removed.");
         } catch(err) {
             console.error("Order deletion error: ", err);
         }
@@ -316,8 +349,10 @@ if (document.getElementById('addProductForm')) {
             await setDoc(doc(db, "products", editId), dynamicPayloadStructure);
             document.getElementById('editIndex').value = '';
             document.getElementById('formSubmitBtn').innerText = "SAVE NODE MODULE";
+            showToast("Product updated successfully.");
         } else { 
             await addDoc(collection(db, "products"), dynamicPayloadStructure); 
+            showToast("Product added successfully.");
         }
         addProductForm.reset(); 
     });
