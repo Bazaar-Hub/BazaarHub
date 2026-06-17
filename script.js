@@ -23,7 +23,7 @@ const db = getFirestore(app);
 let currentUserNode = null;
 let products = [];
 
-// DYNAMIC TOAST NOTIFICATION ENGINE (BOTTOM-LEFT) - NO ALERT/NO OK BUTTON REQUIRED
+// DYNAMIC TOAST NOTIFICATION ENGINE
 function showToast(message) {
     const oldToast = document.querySelector('.toast-notification');
     if (oldToast) oldToast.remove();
@@ -33,27 +33,18 @@ function showToast(message) {
     toast.innerHTML = `<i class="fas fa-info-circle" style="color:#facc15; margin-right:8px;"></i> <span>${message}</span>`;
     
     document.body.appendChild(toast);
+    setTimeout(() => { toast.classList.add('show'); }, 50);
 
-    setTimeout(() => {
-        toast.classList.add('show');
-    }, 50);
-
-    // 3 seconds baad khud hi sliding out ho kar delete ho jayega
     setTimeout(() => {
         toast.classList.remove('show');
-        setTimeout(() => {
-            toast.remove();
-        }, 400);
+        setTimeout(() => { toast.remove(); }, 400);
     }, 3000);
 }
 
-// -------------------------------------------------------------------------
-// AUTHENTICATION MATRIX HANDLERS (FIXED ACCIDENTAL LOOPS)
-// -------------------------------------------------------------------------
+// AUTH HANDLERS
 const loginForm = document.getElementById('loginForm');
 const registerForm = document.getElementById('registerForm');
 
-// User Registration Handler
 if (registerForm) {
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -65,27 +56,15 @@ if (registerForm) {
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
-            
-            await setDoc(doc(db, "users", user.uid), {
-                name: name,
-                email: email,
-                phone: phone,
-                uid: user.uid,
-                role: 'client'
-            });
-
+            await setDoc(doc(db, "users", user.uid), { name, email, phone, uid: user.uid, role: 'client' });
             showToast("Account Registered Successfully!");
-            setTimeout(() => {
-                window.location.href = "index.html";
-            }, 2000); 
+            setTimeout(() => { window.location.href = "index.html"; }, 2000); 
         } catch (error) {
-            console.error("Registration Error: ", error);
             showToast("Error: " + error.message);
         }
     });
 }
 
-// User Login Handler
 if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -95,17 +74,13 @@ if (loginForm) {
         try {
             await signInWithEmailAndPassword(auth, email, password);
             showToast("Secure Access Granted! Redirecting...");
-            setTimeout(() => {
-                window.location.href = "index.html";
-            }, 2000);
+            setTimeout(() => { window.location.href = "index.html"; }, 2000);
         } catch (error) {
-            console.error("Login Error: ", error);
-            showToast("Invalid Credentials Or Access Path Blocked!");
+            showToast("Invalid Credentials!");
         }
     });
 }
 
-// Monitor Auth State Across Browsers Safely
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         currentUserNode = user.email;
@@ -124,16 +99,12 @@ onAuthStateChanged(auth, async (user) => {
         currentUserNode = null;
         const userNavState = document.getElementById('userNavState');
         if(userNavState) {
-            userNavState.innerHTML = `
-                <button onclick="window.location.href='auth.html'" class="form-btn bg-yellow" style="width:auto; margin-top:0; padding:6px 14px; font-size:12px;">CLIENT LOGIN / REGISTER</button>
-            `;
+            userNavState.innerHTML = `<button onclick="window.location.href='auth.html'" class="form-btn bg-yellow" style="width:auto; margin-top:0; padding:6px 14px; font-size:12px;">CLIENT LOGIN / REGISTER</button>`;
         }
     }
 });
 
-// -------------------------------------------------------------------------
-// PRODUCTS CATALOG & LIVE STORAGE PIPELINES
-// -------------------------------------------------------------------------
+// PRODUCTS CATALOG READ
 if (document.getElementById('productsDisplayGrid')) {
     onSnapshot(collection(db, "products"), (snapshot) => {
         products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -144,21 +115,17 @@ if (document.getElementById('productsDisplayGrid')) {
 function renderStorefrontGrid(dataArray) {
     const container = document.getElementById('productsDisplayGrid');
     if(!container) return;
-    
     if(dataArray.length === 0) {
-        container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:#9ca3af;">No products found in database.</div>`;
+        container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:#9ca3af;">No products found.</div>`;
         return;
     }
-
     container.innerHTML = dataArray.map(p => `
         <div class="product-premium-card">
-            <div class="p-img-frame">
-                <img src="${p.image}" alt="${p.name}">
-            </div>
+            <div class="p-img-frame"><img src="${p.image}" alt="${p.name}"></div>
             <div class="p-card-body">
                 <span class="p-tag-category">${p.category}</span>
                 <h3 class="p-title-node">${p.name}</h3>
-                <p style="font-size:12px; color:#9ca3af; margin-bottom:12px; height:34px; overflow:hidden;">${p.description || 'No description available.'}</p>
+                <p style="font-size:12px; color:#9ca3af; margin-bottom:12px; height:34px; overflow:hidden;">${p.description || ''}</p>
                 <div class="p-card-footer-flex">
                     <div class="p-price-metric">Rs. ${p.price}</div>
                     <button onclick="commitCartAddition('${p.id}')" class="cart-action-trigger-btn"><i class="fas fa-shopping-basket"></i></button>
@@ -170,27 +137,20 @@ function renderStorefrontGrid(dataArray) {
 
 window.commitCartAddition = function(id) {
     if(!currentUserNode) {
-        showToast("Please login first to add items to cart.");
+        showToast("Please login first.");
         setTimeout(() => { window.location.href = "auth.html"; }, 1500);
         return;
     }
     const match = products.find(p => p.id === id);
     if(!match) return;
-
     let userCart = JSON.parse(localStorage.getItem(`cart_${currentUserNode}`)) || [];
     const target = userCart.find(item => item.id === id);
-    if(target) {
-        target.qty += 1;
-    } else {
-        userCart.push({ id: match.id, name: match.name, price: match.price, image: match.image, qty: 1 });
-    }
+    if(target) { target.qty += 1; } else { userCart.push({ id: match.id, name: match.name, price: match.price, image: match.image, qty: 1 }); }
     localStorage.setItem(`cart_${currentUserNode}`, JSON.stringify(userCart));
     showToast(`${match.name} added to cart!`);
 };
 
-// -------------------------------------------------------------------------
-// CHECKOUT VALIDATION & RECONCILIATION LAYER
-// -------------------------------------------------------------------------
+// CHECKOUT WORKFLOW
 if(document.getElementById('checkoutForm')) {
     const checkoutSummaryItemsContainer = document.getElementById('checkoutSummaryItemsContainer');
     const checkoutSummaryTotalDisplay = document.getElementById('checkoutSummaryTotalDisplay');
@@ -199,30 +159,17 @@ if(document.getElementById('checkoutForm')) {
         if(user) {
             const currentSessionUser = user.email;
             let currentCartArray = JSON.parse(localStorage.getItem(`cart_${currentSessionUser}`)) || [];
-            
-            if(currentCartArray.length === 0) {
-                checkoutSummaryItemsContainer.innerHTML = "<p style='color:#9ca3af; font-size:13px;'>Your cart is empty.</p>";
-                return;
-            }
+            if(currentCartArray.length === 0) return;
 
             let computedFinancialTotal = 0;
             checkoutSummaryItemsContainer.innerHTML = currentCartArray.map(item => {
                 computedFinancialTotal += (item.price * item.qty);
-                return `
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid #14141c; font-size:13px;">
-                        <div>
-                            <span style="font-weight:700; color:#facc15;">${item.qty}x</span> ${item.name}
-                        </div>
-                        <div style="color:#9ca3af;">Rs. ${item.price * item.qty}</div>
-                    </div>
-                `;
+                return `<div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:13px;"><div><span style="font-weight:700; color:#facc15;">${item.qty}x</span> ${item.name}</div><div>Rs. ${item.price * item.qty}</div></div>`;
             }).join('');
-            
             checkoutSummaryTotalDisplay.innerText = `Rs. ${computedFinancialTotal}`;
 
             document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                
                 const combinedMetadataPayload = {
                     user: currentSessionUser,
                     customerName: document.getElementById('custFirstName').value + " " + document.getElementById('custLastName').value,
@@ -234,34 +181,27 @@ if(document.getElementById('checkoutForm')) {
                     status: "Pending Verification",
                     timestamp: new Date().toISOString()
                 };
-
                 try {
                     await addDoc(collection(db, "orders"), combinedMetadataPayload);
                     localStorage.removeItem(`cart_${currentSessionUser}`);
-                    showToast("Order Transmitted safely to Database!");
+                    showToast("Order Transmitted safely!");
                     setTimeout(() => { window.location.href = "index.html"; }, 1500);
-                } catch(err) {
-                    console.error("Order writing failure logs: ", err);
-                    showToast("Database routing failure.");
-                }
+                } catch(err) { showToast("Database failure."); }
             });
         }
     });
 }
 
-// -------------------------------------------------------------------------
-// ADMIN CONSOLE INTERACTION CONTROLS
-// -------------------------------------------------------------------------
+// GLOBAL ADMIN CONTROL SYSTEM (ATTACHED TO WINDOW OBJECT)
 if(document.getElementById('adminProductsList')) {
     onSnapshot(collection(db, "products"), (snapshot) => {
-        const rawArray = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        products = rawArray;
-        document.getElementById('adminProductsList').innerHTML = rawArray.map(p => `
+        products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        document.getElementById('adminProductsList').innerHTML = products.map(p => `
             <div style="display:flex; justify-content:space-between; align-items:center; background:#14141c; padding:8px 12px; border-radius:6px; margin-bottom:8px; border:1px solid #1f2937; font-size:12px;">
                 <span>${p.name} (Rs. ${p.price})</span>
                 <div>
-                    <button onclick="editProductConsole('${p.id}')" style="color:#facc15; margin-right:10px; cursor:pointer;"><i class="fas fa-edit"></i></button>
-                    <button onclick="deleteProductConsole('${p.id}')" style="color:#ef4444; cursor:pointer;"><i class="fas fa-trash-alt"></i></button>
+                    <button onclick="window.editProductConsole('${p.id}')" style="color:#facc15; margin-right:10px; cursor:pointer;"><i class="fas fa-edit"></i></button>
+                    <button onclick="window.deleteProductConsole('${p.id}')" style="color:#ef4444; cursor:pointer;"><i class="fas fa-trash-alt"></i></button>
                 </div>
             </div>
         `).join('');
@@ -273,19 +213,16 @@ if(document.getElementById('adminOrdersList')) {
         const orderData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         document.getElementById('adminOrdersList').innerHTML = orderData.map(o => `
             <tr>
-                <td style="font-size:11px;">
-                    <strong>${o.customerName}</strong><br>
-                    <span style="color:#9ca3af;">M: ${o.user}<br>A: ${o.address}, ${o.city}<br>P: ${o.phone}</span>
-                </td>
+                <td style="font-size:11px;"><strong>${o.customerName}</strong><br><span style="color:#9ca3af;">M: ${o.user}<br>A: ${o.address}<br>P: ${o.phone}</span></td>
                 <td style="font-size:11px; color:#9ca3af;">${o.items}</td>
                 <td style="font-weight:700; color:#facc15; font-size:12px;">${o.cost}</td>
                 <td>
-                    <select onchange="changeStatusAction('${o.id}', this.value)" style="margin:0; padding:4px; font-size:11px; background:#14141c; color:white; border-color:#374151;">
+                    <select onchange="window.changeStatusAction('${o.id}', this.value)" style="background:#14141c; color:white; border-color:#374151;">
                         <option value="Pending Verification" ${o.status === 'Pending Verification' ? 'selected' : ''}>Pending</option>
                         <option value="Placed" ${o.status === 'Placed' ? 'selected' : ''}>Placed</option>
                         <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
                     </select>
-                    <button onclick="eraseOrderAction('${o.id}')" style="color:#ef4444; margin-left:8px; font-size:11px; cursor:pointer;"><i class="fas fa-minus-circle"></i></button>
+                    <button onclick="window.eraseOrderAction('${o.id}')" style="color:#ef4444; margin-left:8px; cursor:pointer;"><i class="fas fa-minus-circle"></i></button>
                 </td>
             </tr>
         `).join('');
@@ -318,19 +255,13 @@ window.changeStatusAction = async function(docId, newStatus) {
 
 window.eraseOrderAction = async function(docId) { 
     if(confirm("Erase order record?")) { 
-        try {
-            await deleteDoc(doc(db, "orders", docId));
-            showToast("Order record removed.");
-        } catch(err) {
-            console.error("Order deletion error: ", err);
-        }
+        await deleteDoc(doc(db, "orders", docId));
+        showToast("Order record removed.");
     } 
 };
 
 if (document.getElementById('addProductForm')) {
-    const addProductForm = document.getElementById('addProductForm');
-
-    addProductForm.addEventListener('submit', async (e) => {
+    document.getElementById('addProductForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const editId = document.getElementById('editIndex').value;
         const dynamicPayloadStructure = {
@@ -350,6 +281,6 @@ if (document.getElementById('addProductForm')) {
             await addDoc(collection(db, "products"), dynamicPayloadStructure); 
             showToast("Product added successfully.");
         }
-        addProductForm.reset(); 
+        document.getElementById('addProductForm').reset(); 
     });
 }
