@@ -469,3 +469,27 @@ footer { background-color: #000000; border-top: 1px solid #1f2937; padding: 30px
     .checkout-grid { grid-template-columns: 7fr 5fr; gap: 30px; }
     .footer-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 40px; }
 }
+
+/* MODERN BOTTOM-LEFT TOAST NOTIFICATION */
+.toast-notification {
+    position: fixed;
+    bottom: 20px;
+    left: -350px; /* Shuru mein screen se baahar rahegi */
+    background-color: #14141c;
+    color: #ffffff;
+    border-left: 4px solid #facc15; /* Accent Yellow Border */
+    padding: 14px 20px;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Smooth slide-in effect */
+}
+
+.toast-notification.show {
+    left: 20px; /* Screen ke andar slide ho kar aayegi */
+}
