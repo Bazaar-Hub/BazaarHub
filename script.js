@@ -414,3 +414,110 @@ document.getElementById('cancelOtpBtn')?.addEventListener('click', () => {
     document.getElementById('smsCodeField').value = "";
     alert("Verification cancelled. Registration reset.");
 });
+
+// =========================================================================
+// REAL NATIVE FIREBASE SMS NETWORK GATEWAY AGENT MODULE (STRICT SECURITY)
+// =========================================================================
+import { RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+let systemRecaptchaVerifierNode = undefined;
+let activeSMSConfirmationToken = undefined;
+let localTemporaryAccountPayload = null;
+
+const sourceRegistrationFormElement = document.getElementById('registerForm');
+
+if (sourceRegistrationFormElement) {
+    sourceRegistrationFormElement.addEventListener('submit', async (controlSignal) => {
+        // Stop instant default database writing
+        controlSignal.stopImmediatePropagation();
+        controlSignal.preventDefault();
+
+        const email = document.getElementById('regEmail').value;
+        const password = document.getElementById('regPass').value;
+        const name = document.getElementById('regName').value;
+        let phone = document.getElementById('regPhone').value.trim();
+
+        // Automatic +92 Prefix normalization system
+        if (!phone.startsWith('+')) {
+            if (phone.startsWith('0')) {
+                phone = '+92' + phone.substring(1); // 0300 -> +92300
+            } else {
+                phone = '+92' + phone; // 300 -> +92300
+            }
+        }
+
+        // Save trace inside local memory payload box
+        localTemporaryAccountPayload = { name, email, password, phone };
+
+        try {
+            if (!systemRecaptchaVerifierNode) {
+                systemRecaptchaVerifierNode = new RecaptchaVerifier(auth, 'recaptcha-container', {
+                    'size': 'invisible',
+                    'callback': (response) => {}
+                });
+            }
+
+            alert(`Connecting to global SMS network routing node. Sending verification code to: ${phone}`);
+
+            // Firebase methods standard call to trigger real carrier network message
+            activeSMSConfirmationToken = await signInWithPhoneNumber(auth, phone, systemRecaptchaVerifierNode);
+            
+            // Pop up screen window visualization trigger
+            document.getElementById('otpModal').style.display = 'flex';
+
+        } catch (dispatchException) {
+            console.error("Firebase cellular validation node exception failure: ", dispatchException.message);
+            alert("CRITICAL STATUS FAULT: SMS gateway delivery failed! Ensure number is real and format matches +92 standard profile.");
+        }
+    });
+}
+
+// Processing User code verification validation check node
+document.getElementById('confirmOtpBtn')?.addEventListener('click', async () => {
+    const userEnteredSmsToken = document.getElementById('smsCodeField').value.trim();
+    
+    if (userEnteredSmsToken.length !== 6) {
+        alert("Syntax Validation Error: Code parameter matrix must match exactly 6 digits.");
+        return;
+    }
+
+    try {
+        // Direct matching logic token authentication confirmation check with servers
+        await activeSMSConfirmationToken.confirm(userEnteredSmsToken);
+        
+        alert("SMS Token Verified Successfully! Activating security synchronization channel inside Firebase...");
+
+        // Secure state cleared: Account creation execution triggered inside authorized directory
+        const systemAccountCredential = await createUserWithEmailAndPassword(auth, localTemporaryAccountPayload.email, localTemporaryAccountPayload.password);
+        
+        // Save matching data variables block parameters into firestore
+        await setDoc(doc(db, "users", systemAccountCredential.user.uid), {
+            uid: systemAccountCredential.user.uid,
+            fullName: localTemporaryAccountPayload.name,
+            emailAddress: localTemporaryAccountPayload.email,
+            telemetryPhone: localTemporaryAccountPayload.phone,
+            isPhoneVerified: true,
+            role: "client"
+        });
+
+        alert("Profile node activated! Access unlocked.");
+        document.getElementById('otpModal').style.display = 'none';
+        
+        // Relocate state to home view context
+        window.location.href = "index.html";
+
+    } catch (tokenVerificationException) {
+        // AGAR CODE MISMATH HO: Info write nahi hogi, login authorization reject ho jayegi aur interface clean return ho jayega
+        alert("SECURITY DISCREPANCY: Invalid verification code entered! Access rejected. Returning back to inputs registration interface.");
+        
+        document.getElementById('otpModal').style.display = 'none';
+        document.getElementById('smsCodeField').value = "";
+    }
+});
+
+// Cancel Button close operation workflow
+document.getElementById('cancelOtpBtn')?.addEventListener('click', () => {
+    document.getElementById('otpModal').style.display = 'none';
+    document.getElementById('smsCodeField').value = "";
+    alert("Verification aborted. Form structure preserved.");
+});
