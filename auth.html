@@ -74,5 +74,20 @@
             }
         });
     </script>
+
+    <div id="otpModal" class="auth-wrapper hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(4, 5, 9, 0.95); z-index: 9999; display: flex; justify-content: center; align-items: center;">
+    <div class="auth-card" style="border: 1px solid #facc15; text-align: center;">
+        <h2 class="accent-yellow" style="font-size: 18px; margin-bottom: 10px; color: #facc15;">Phone Number Verification</h2>
+        <p style="font-size: 12px; color: #9ca3af; margin-bottom: 20px;">We have generated a secure verification token for your phone. Please input the OTP code below to activate your account node.</p>
+        
+        <form id="otpVerifyForm">
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label>Enter 6-Digit OTP Code</label>
+                <input type="text" id="inputOtpCode" placeholder="######" maxlength="6" required style="text-align: center; font-size: 18px; letter-spacing: 5px;">
+            </div>
+            <button type="submit" class="form-btn bg-yellow" style="width: 100%;">VERIFY & ACTIVATE PROFILE</button>
+        </form>
+    </div>
+</div>
 </body>
 </html>
