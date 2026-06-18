@@ -431,3 +431,140 @@ window.deleteProductConsole = async function(id) {
         }
     }
 };
+
+// ==========================================
+// FIREBASE REAL-TIME PRODUCT MANAGEMENT SYSTEM
+// ==========================================
+
+// Firebase imports (agar aapke script.js me sabse upar imports me collection, addDoc wagera missing hain to unhe wahan add kar lijiyega)
+import { collection, doc, setDoc, addDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+const productsGrid = document.getElementById('productsGrid'); // Customer side grid
+const adminProductsList = document.getElementById('adminProductsList'); // Admin side list
+
+if (productsGrid || adminProductsList) {
+    // 🟢 Real-time sync: Firebase me kuch bhi badle ga, customer ko foran dikhega
+    onSnapshot(collection(db, "products"), (snapshot) => {
+        let productsHTML = "";
+        let adminHTML = "";
+
+        snapshot.forEach((docSnap) => {
+            const product = docSnap.data();
+            const id = docSnap.id; // Yeh Firebase ki Document String ID hai
+
+            // 1. Customer Screen (index.html) ke liye layout
+            if (productsGrid) {
+                productsHTML += `
+                    <div class="product-card">
+                        <img src="${product.img}" class="product-img" alt="${product.title}">
+                        <div class="product-info">
+                            <span class="category-tag">${product.category}</span>
+                            <h3 class="product-title">${product.title}</h3>
+                            <p class="product-desc">${product.desc}</p>
+                            <div class="product-price-row">
+                                <span class="price-amount">Rs. ${product.price}</span>
+                                <button class="add-to-cart-btn">Add</button>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+
+            // 2. Admin Panel List (admin.html) ke liye layout (Edit aur Delete buttons)
+            if (adminProductsList) {
+                adminHTML += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #1f2937;">
+                        <div>
+                            <strong>${product.title}</strong> (Rs. ${product.price})
+                            <br><span style="font-size:11px; color:#9ca3af;">${product.category}</span>
+                        </div>
+                        <div>
+                            <button onclick="editProductConsole('${id}', '${product.title.replace(/'/g, "\\'")}', '${product.category.replace(/'/g, "\\'")}', ${product.price}, '${product.img}', '${product.desc.replace(/'/g, "\\'")}')" style="color:#facc15; margin-right:15px; cursor:pointer;">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteProductConsole('${id}')" style="color:#ef4444; cursor:pointer;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>`;
+            }
+        });
+
+        if (productsGrid) productsGrid.innerHTML = productsHTML;
+        if (adminProductsList) adminProductsList.innerHTML = adminHTML;
+    });
+}
+
+// Form Submit Event: Add ya Edit karne ke liye
+const productForm = document.getElementById('productCrudForm');
+if (productForm) {
+    productForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const docId = document.getElementById('crudProductId').value;
+        const title = document.getElementById('crudTitle').value.trim();
+        const category = document.getElementById('crudCategory').value.trim();
+        const price = parseFloat(document.getElementById('crudPrice').value);
+        const img = document.getElementById('crudImg').value.trim();
+        const desc = document.getElementById('crudDesc').value.trim();
+
+        const productData = { title, category, price, img, desc };
+
+        try {
+            // 🟢 Agar Id pehle se mojood hai to Edit (Update) hoga
+            if (docId && docId.trim() !== "") {
+                await setDoc(doc(db, "products", String(docId).trim()), productData);
+                alert("Product updated successfully!");
+            } else {
+                // 🟢 Agar Id khali hai to Naya Product Add hoga
+                await addDoc(collection(db, "products"), productData);
+                alert("New product added successfully!");
+            }
+            
+            // Form ko khali/reset karne k liye
+            productForm.reset();
+            document.getElementById('crudProductId').value = "";
+            
+            const submitBtn = document.getElementById('crudFormSubmitBtn');
+            if (submitBtn) {
+                submitBtn.innerText = "SAVE NODE MODULE";
+            }
+        } catch (error) {
+            console.error("Error saving product:", error);
+            alert("Failed to save product: " + error.message);
+        }
+    });
+}
+
+// 🟢 Edit Button par click karne se data form me load karne ka function
+window.editProductConsole = function(id, title, category, price, img, desc) {
+    document.getElementById('crudProductId').value = id;
+    document.getElementById('crudTitle').value = title;
+    document.getElementById('crudCategory').value = category;
+    document.getElementById('crudPrice').value = price;
+    document.getElementById('crudImg').value = img;
+    document.getElementById('crudDesc').value = desc;
+    
+    const submitBtn = document.getElementById('crudFormSubmitBtn');
+    if (submitBtn) {
+        submitBtn.innerText = "UPDATE PRODUCT DATA";
+    }
+};
+
+// 🟢 Delete Button ko handle karne ka safe function (n.indexOf error fix)
+window.deleteProductConsole = async function(id) {
+    if (!id) {
+        alert("Error: Product ID is missing!");
+        return;
+    }
+    
+    if (confirm("Are you sure you want to delete this product?")) {
+        try {
+            const cleanId = String(id).trim();
+            await deleteDoc(doc(db, "products", cleanId));
+            alert("Product deleted successfully!");
+        } catch (error) {
+            console.error("Error deleting product:", error);
+            alert("Delete failed: " + error.message);
+        }
+    }
+};
