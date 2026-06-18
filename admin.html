@@ -9,60 +9,65 @@
 </head>
 <body style="padding: 20px 4%;">
 
-    <header class="admin-header">
+    <header class="admin-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; border-bottom:1px solid #1f2937; padding-bottom:15px;">
         <div>
             <h1 class="accent-yellow" style="font-size: 20px; font-weight: 800; text-transform: uppercase;">Product Catalog Manager</h1>
             <p style="font-size: 11px; color: #9ca3af;">Add custom entries and route multiple item customer checkout arrays pipelines.</p>
         </div>
-        <button onclick="window.location.href='index.html'" class="form-btn bg-yellow" style="width: auto; padding: 8px 16px; margin-top:0; font-size:12px;">Exit Admin Panel</button>
+        <button onclick="window.location.href='index.html'" class="form-btn bg-yellow" style="width: auto; padding: 8px 16px; margin-top:0; font-size:12px; border-radius:8px;">Exit Admin Panel</button>
     </header>
 
-    <div class="admin-layout">
-        <div style="background-color: #0d0d13; border: 1px solid #1f2937; padding: 20px; border-radius: 12px;">
-            <h2 class="accent-yellow" style="font-size: 14px; text-transform: uppercase; margin-bottom: 15px;">Add New Record</h2>
-            <form id="addProductForm">
-                <input type="hidden" id="editIndex">
-                <div class="form-group">
-                    <label>Product Title Name</label>
-                    <input type="text" id="pName" required placeholder="e.g., Cyber Tech Hoodie">
+    <div class="admin-layout" style="display:grid; grid-template-columns: 1fr 1.5fr; gap:30px; align-items:start;">
+        <div style="background-color: #0d0d13; border: 1px solid #1f2937; padding: 25px; border-radius: 12px;">
+            <h2 style="font-size:14px; text-transform:uppercase; margin-bottom:15px; color:#facc15;">Inject New Product Node</h2>
+            <form id="adminProductForm">
+                <div style="margin-bottom:12px;">
+                    <label>Product Title</label>
+                    <input type="text" id="prodTitle" required placeholder="E.g. Wireless Gaming Mouse">
                 </div>
-                <div class="form-group">
-                    <label>Category Label (Lowercase)</label>
-                    <input type="text" id="pCategory" required placeholder="shoes, clothes, watches etc.">
+                <div style="margin-bottom:12px;">
+                    <label>Price Vector (PKR/Rs)</label>
+                    <input type="number" id="prodPrice" required placeholder="E.g. 3500">
                 </div>
-                <div class="form-group">
-                    <label>Price Tag Value (Rs.)</label>
-                    <input type="number" id="pPrice" required placeholder="e.g., 5500">
+                <div style="margin-bottom:12px;">
+                    <label>Image Resource Link (URL)</label>
+                    <input type="url" id="prodImg" required placeholder="https://images.unsplash.com/photo-...">
                 </div>
-                <div class="form-group">
-                    <label>Image Link (Online URL or Local Path)</label>
-                    <input type="text" id="pImage" required placeholder="images/my-pic.png or https://...">
+                <div style="margin-bottom:12px;">
+                    <label>Product Category</label>
+                    <select id="prodCategory" style="width:100%; display:block;">
+                        <option value="Electronics">Electronics</option>
+                        <option value="Clothing">Clothing</option>
+                        <option value="Grocery">Grocery</option>
+                        <option value="Home Decor">Home Decor</option>
+                        <option value="General">General/Other</option>
+                    </select>
                 </div>
-                <div class="form-group">
-                    <label>Product Parameters Specifications</label>
-                    <textarea id="pDesc" rows="2" placeholder="Item description info specs..."></textarea>
+                <div style="margin-bottom:15px;">
+                    <label>Description Log</label>
+                    <textarea id="prodDesc" rows="3" placeholder="Enter custom item descriptions specifications..." style="width:100%;"></textarea>
                 </div>
-                <button type="submit" id="formSubmitBtn" class="form-btn bg-yellow">SAVE NODE MODULE</button>
+                <button type="submit" class="form-btn bg-yellow" style="width:100%; padding:12px; border-radius:8px;">SAVE NODE MODULE</button>
             </form>
         </div>
 
         <div>
             <div style="background-color: #0d0d13; border: 1px solid #1f2937; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-                <h2 style="font-size: 14px; text-transform: uppercase; margin-bottom: 15px;">Current Vault Products</h2>
-                <div id="adminProductsList" style="max-height: 200px; overflow-y: auto;">
+                <h2 style="font-size: 14px; text-transform: uppercase; margin-bottom: 15px; color:#facc15;">Current Vault Products</h2>
+                <div id="adminProductsList" style="max-height: 250px; overflow-y: auto; padding-right:5px;">
                     </div>
             </div>
 
             <div style="background-color: #0d0d13; border: 1px solid #1f2937; padding: 20px; border-radius: 12px;">
-                <h2 style="font-size: 14px; text-transform: uppercase; margin-bottom: 15px;">Customer Orders Tracking Matrix</h2>
-                <div class="table-wrapper">
-                    <table>
+                <h2 style="font-size: 14px; text-transform: uppercase; margin-bottom: 15px; color:#facc15;">Customer Orders Tracking Matrix</h2>
+                <div class="table-wrapper" style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse; text-align:left;">
                         <thead>
-                            <tr>
-                                <th>Logistics Manifest Info</th>
-                                <th>Purchased Items Grid</th>
-                                <th>Status Badge</th>
-                                <th>Workflow Control Dispatches</th>
+                            <tr style="background:#14141c; border-bottom:2px solid #1f2937;">
+                                <th style="padding:10px; font-size:12px; text-transform:uppercase;">Logistics Manifest Info</th>
+                                <th style="padding:10px; font-size:12px; text-transform:uppercase;">Purchased Items Grid</th>
+                                <th style="padding:10px; font-size:12px; text-transform:uppercase;">Total Bill</th>
+                                <th style="padding:10px; font-size:12px; text-transform:uppercase;">Workflow Control Dispatches</th>
                             </tr>
                         </thead>
                         <tbody id="adminOrdersList">
