@@ -372,3 +372,63 @@ async function placeOrder(customerCart, totalAmount) {
         console.error("Order failed: ", error);
     }
 }
+
+// Admin Orders Real-time Listener
+onSnapshot(collection(db, "orders"), (snapshot) => {
+    const ordersContainer = document.getElementById('adminOrdersContainer');
+    ordersContainer.innerHTML = '';
+
+    snapshot.forEach((documentSnapshot) => {
+        const order = documentSnapshot.data();
+        const orderId = documentSnapshot.id;
+
+        const orderBox = document.createElement('div');
+        orderBox.className = 'order-box';
+        orderBox.innerHTML = `
+            <h3>Order ID: ${orderId}</h3>
+            <p>Total: $${order.total}</p>
+            <label>Change Status:</label>
+            <select onchange="handleStatusChange('${orderId}', this.value)">
+                <option value="On the way" ${order.status === 'On the way' ? 'selected' : ''}>On the way</option>
+                <option value="Delivery" ${order.status === 'Delivery' ? 'selected' : ''}>Delivery</option>
+                <option value="Out of stock" ${order.status === 'Out of stock' ? 'selected' : ''}>Out of stock</option>
+                <option value="Delete">Delete Order</option>
+            </select>
+        `;
+        ordersContainer.appendChild(orderBox);
+    });
+});
+
+// Dropdown Handler Function
+window.handleStatusChange = async (orderId, newStatus) => {
+    if (newStatus === 'Delete') {
+        if(confirm("Delete this order permanently?")) {
+            await deleteDoc(doc(db, "orders", orderId));
+        }
+    } else {
+        // Status Update in Firebase
+        const orderRef = doc(db, "orders", orderId);
+        await updateDoc(orderRef, { status: newStatus });
+    }
+};
+
+import { query, where, getDocs } from "firebase/firestore";
+
+// Function to load products by category
+async function loadProductsByCategory(categoryName) {
+    const productsContainer = document.getElementById('customerProductsContainer');
+    productsContainer.innerHTML = '';
+
+    let q = collection(db, "products");
+    
+    // Agar "All" ke ilawa koi category select ho
+    if(categoryName !== 'All') {
+        q = query(collection(db, "products"), where("category", "==", categoryName));
+    }
+
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+        const product = doc.data();
+        // Render your product HTML capsule here...
+    });
+}
