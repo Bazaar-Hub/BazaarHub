@@ -314,3 +314,120 @@ if (logForm) {
         }
     });
 }
+
+// ==========================================
+// 3. PRODUCT MANAGEMENT (FIREBASE INTEGRATION)
+// ==========================================
+
+// Real-time products load karna (Customer aur Admin dono ko real-time show hoga)
+const productsGrid = document.getElementById('productsGrid'); // index.html ke liye
+const adminProductsList = document.getElementById('adminProductsList'); // admin.html ke liye
+
+if (productsGrid || adminProductsList) {
+    // onSnapshot se Firebase ka data real-time sync hota hai (Aapka Point 3)
+    onSnapshot(collection(db, "products"), (snapshot) => {
+        let productsHTML = "";
+        let adminHTML = "";
+
+        snapshot.forEach((docSnap) => {
+            const product = docSnap.data();
+            const id = docSnap.id; // Firebase Document ID
+
+            // 1. Customer View HTML (index.html)
+            if (productsGrid) {
+                productsHTML += `
+                    <div class="product-card">
+                        <img src="${product.img}" class="product-img" alt="${product.title}">
+                        <div class="product-info">
+                            <span class="category-tag">${product.category}</span>
+                            <h3 class="product-title">${product.title}</h3>
+                            <p class="product-desc">${product.desc}</p>
+                            <div class="product-price-row">
+                                <span class="price-amount">Rs. ${product.price}</span>
+                                <button class="add-to-cart-btn" onclick="addToCartWorkflow('${id}', '${product.title}', ${product.price})">Add</button>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+
+            // 2. Admin View List HTML (admin.html)
+            if (adminProductsList) {
+                adminHTML += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #1f2937;">
+                        <div>
+                            <strong>${product.title}</strong> (Rs. ${product.price})
+                            <br><span style="font-size:11px; color:#9ca3af;">${product.category}</span>
+                        </div>
+                        <div>
+                            <button onclick="editProductConsole('${id}', '${product.title}', '${product.category}', ${product.price}, '${product.img}', '${product.desc}')" style="color:#facc15; margin-right:10px;"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteProductConsole('${id}')" style="color:#ef4444;"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>`;
+            }
+        });
+
+        if (productsGrid) productsGrid.innerHTML = productsHTML;
+        if (adminProductsList) adminProductsList.innerHTML = adminHTML;
+    });
+}
+
+// Form Submit: Product Add ya Edit karna
+const productForm = document.getElementById('productCrudForm');
+if (productForm) {
+    productForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const docId = document.getElementById('crudProductId').value;
+        const title = document.getElementById('crudTitle').value.trim();
+        const category = document.getElementById('crudCategory').value.trim();
+        const price = parseFloat(document.getElementById('crudPrice').value);
+        const img = document.getElementById('crudImg').value.trim();
+        const desc = document.getElementById('crudDesc').value.trim();
+
+        const productData = { title, category, price, img, desc };
+
+        try {
+            if (docId) {
+                // Agar ID pehle se hai toh Firebase me EDIT/UPDATE hoga
+                await setDoc(doc(db, "products", docId), productData);
+                alert("Product updated successfully!");
+            } else {
+                // Agar ID nahi hai toh Firebase me naya product ADD hoga
+                await addDoc(collection(db, "products"), productData);
+                alert("New product added successfully!");
+            }
+            
+            // Form Reset karein
+            productForm.reset();
+            document.getElementById('crudProductId').value = "";
+            document.getElementById('crudFormSubmitBtn').innerText = "SAVE NODE MODULE";
+        } catch (error) {
+            console.error("Error saving product:", error);
+            alert("Failed to save product: " + error.message);
+        }
+    });
+}
+
+// Edit Button Click Logic (Form me data load karna)
+window.editProductConsole = function(id, title, category, price, img, desc) {
+    document.getElementById('crudProductId').value = id;
+    document.getElementById('crudTitle').value = title;
+    document.getElementById('crudCategory').value = category;
+    document.getElementById('crudPrice').value = price;
+    document.getElementById('crudImg').value = img;
+    document.getElementById('crudDesc').value = desc;
+    document.getElementById('crudFormSubmitBtn').innerText = "UPDATE PRODUCT DATA";
+};
+
+// Delete Button Click Logic
+window.deleteProductConsole = async function(id) {
+    if (confirm("Are you sure you want to delete this product?")) {
+        try {
+            await deleteDoc(doc(db, "products", id));
+            alert("Product deleted successfully!");
+        } catch (error) {
+            console.error("Error deleting product:", error);
+            alert("Delete failed: " + error.message);
+        }
+    }
+};
