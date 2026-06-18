@@ -238,29 +238,34 @@ window.eraseOrderAction = async function(docId) {
 };
 
 if (document.getElementById('addProductForm')) {
-    const addProductForm = document.getElementById('addProductForm');
+    // Real-time Products Listener
+onSnapshot(collection(db, "products"), (snapshot) => {
+    const productsList = document.getElementById('adminProductsList'); // Ya jo bhi aapka container ho
+    productsList.innerHTML = ''; // Clear purana data
 
-    addProductForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const editId = document.getElementById('editIndex').value;
-        const dynamicPayloadStructure = {
-            name: document.getElementById('pName').value,
-            category: document.getElementById('pCategory').value,
-            price: parseInt(document.getElementById('pPrice').value),
-            image: document.getElementById('pImage').value,
-            description: document.getElementById('pDesc').value
-        };
+    snapshot.forEach((doc) => {
+        const product = doc.data();
+        const productId = doc.id; // Yeh unique ID har product ko milti hai
 
-        if (editId !== '') {
-            await setDoc(doc(db, "products", editId), dynamicPayloadStructure);
-            document.getElementById('editIndex').value = '';
-            document.getElementById('formSubmitBtn').innerText = "SAVE NODE MODULE";
-        } else { 
-            await addDoc(collection(db, "products"), dynamicPayloadStructure); 
-        }
-        addProductForm.reset(); 
+        const productRow = document.createElement('div');
+        productRow.className = 'product-card';
+        productRow.innerHTML = `
+            <img src="${product.image}" width="50">
+            <p>${product.title} (${product.category}) - $${product.price}</p>
+            <button onclick="editProduct('${productId}')">Edit</button>
+            <button onclick="deleteProduct('${productId}')">Delete</button>
+        `;
+        productsList.appendChild(productRow);
     });
-}
+});
+
+// Delete Function using Firebase ID
+window.deleteProduct = async (id) => {
+    if(confirm("Are you sure you want to delete this?")) {
+        await deleteDoc(doc(db, "products", id));
+    }
+};
+    });
 
 // ==========================================
 // 1. REGISTRATION (Naya Account Banane Ke Liye)
