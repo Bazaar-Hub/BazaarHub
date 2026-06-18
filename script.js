@@ -568,3 +568,122 @@ window.deleteProductConsole = async function(id) {
         }
     }
 };
+
+// ==========================================
+// 1. CUSTOMER SIDE REAL-TIME PRODUCTS SHOW
+// ==========================================
+// Yeh hissa har customer ko real-time products dikhayega bina refresh kiye
+const customerProductsGrid = document.getElementById('productsGrid');
+
+if (customerProductsGrid) {
+    onSnapshot(collection(db, "products"), (snapshot) => {
+        let productsHTML = "";
+        snapshot.forEach((docSnap) => {
+            const product = docSnap.data();
+            const id = docSnap.id;
+            
+            productsHTML += `
+                <div class="product-card">
+                    <img src="${product.img || 'https://via.placeholder.com/150'}" class="product-img" alt="${product.title}">
+                    <div class="product-info">
+                        <span class="category-tag">${product.category}</span>
+                        <h3 class="product-title">${product.title}</h3>
+                        <p class="product-desc">${product.desc}</p>
+                        <div class="product-price-row">
+                            <span class="price-amount">Rs. ${product.price}</span>
+                            <button class="add-to-cart-btn" onclick="addToCartWorkflow('${id}', '${product.title.replace(/'/g, "\\'")}', ${product.price})">Add</button>
+                        </div>
+                    </div>
+                </div>`;
+        });
+        customerProductsGrid.innerHTML = productsHTML;
+    });
+}
+
+// Global scope me cart function daalna taake HTML buttons se click ho sake
+window.addToCartWorkflow = function(id, title, price) {
+    // Agar aap LocalStorage cart use kar rahe hain to uski logic yahan chalegi
+    alert(`${title} added to cart!`);
+};
+
+
+// ==========================================
+// 2. ORDERS TO FIREBASE & ADMIN REAL-TIME SHOW
+// ==========================================
+
+// A. CUSTOMER SIDE: Order Form Submit (checkout.html)
+const checkoutForm = document.getElementById('checkoutForm');
+if (checkoutForm) {
+    checkoutForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Form se customer ki details lena
+        const firstName = document.getElementById('custFirstName')?.value || "";
+        const lastName = document.getElementById('custLastName')?.value || "";
+        const address = document.getElementById('custAddress')?.value || "";
+        const city = document.getElementById('custCity')?.value || "";
+        const phone = document.getElementById('custPhone')?.value || "";
+        
+        // Firebase me order bhejna
+        try {
+            await addDoc(collection(db, "orders"), {
+                user: `${firstName} ${lastName}`,
+                address: `${address}, ${city}`,
+                phone: phone,
+                items: "Cart Items", // Agar aapke paas cart array hai to yahan pass karein
+                cost: document.getElementById('checkoutSummaryTotalDisplay')?.innerText || "Rs. 0",
+                status: "Pending Verification",
+                timestamp: new Date()
+            });
+            
+            alert("Order Transmitted Successfully to Admin Matrix!");
+            window.location.href = "index.html";
+        } catch (error) {
+            console.error("Order Submit Error:", error);
+            alert("Order delivery failed: " + error.message);
+        }
+    });
+}
+
+// B. ADMIN SIDE: Orders List Table Display (admin.html)
+const adminOrdersList = document.getElementById('adminOrdersList');
+if (adminOrdersList) {
+    // Firebase se direct admin panel me orders load karna (Real-time)
+    onSnapshot(collection(db, "orders"), (snapshot) => {
+        let ordersHTML = "";
+        snapshot.forEach((docSnap) => {
+            const order = docSnap.data();
+            const orderId = docSnap.id;
+            
+            ordersHTML += `
+                <tr>
+                    <td style="font-size:11px;">
+                        <strong>M:</strong> ${order.user}<br>
+                        <strong>A:</strong> ${order.address}<br>
+                        <strong>P:</strong> ${order.phone}
+                    </td>
+                    <td>${order.items}</td>
+                    <td style="font-weight:700; color:#facc15;">${order.cost}</td>
+                    <td>
+                        <select onchange="updateOrderStatusInFirebase('${orderId}', this.value)" style="margin:0; padding:5px; font-size:11px; background:#14141c; color:white; border-color:#374151;">
+                            <option value="Pending Verification" ${order.status === 'Pending Verification' ? 'selected' : ''}>Pending</option>
+                            <option value="Placed" ${order.status === 'Placed' ? 'selected' : ''}>Placed</option>
+                            <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                        </select>
+                    </td>
+                </tr>`;
+        });
+        adminOrdersList.innerHTML = ordersHTML;
+    });
+}
+
+// Admin status change function
+window.updateOrderStatusInFirebase = async function(orderId, newStatus) {
+    try {
+        await setDoc(doc(db, "orders", orderId), { status: newStatus }, { merge: true });
+        alert(`Order status updated to: ${newStatus}`);
+    } catch (error) {
+        console.error("Status Update Error:", error);
+        alert("Failed to update status");
+    }
+};
