@@ -351,3 +351,24 @@ window.registerUserAccount = async function(e) {
         alert("Failed to create user sequence node: " + err.message);
     }
 };
+
+// Customer Order Placement Function
+async function placeOrder(customerCart, totalAmount) {
+    const orderData = {
+        items: customerCart,
+        total: totalAmount,
+        status: "On the way", // Default status
+        timestamp: new Date()
+    };
+
+    try {
+        // Central Cloud Database me save
+        const docRef = await addDoc(collection(db, "orders"), orderData);
+        
+        // Cart clear karein (Sirf cart ke liye local storage use kar sakte hain)
+        localStorage.removeItem('cart'); 
+        alert("Order Placed Successfully! Order ID: " + docRef.id);
+    } catch (error) {
+        console.error("Order failed: ", error);
+    }
+}
