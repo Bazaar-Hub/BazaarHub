@@ -1,9 +1,9 @@
 // =========================================================================
-// FIREBASE CORE LIFETIME MULTI-DEVICE STORAGE CONSOLE WITH PHONE AUTH OTP
+// FIREBASE LIFETIME MULTI-DEVICE LOGIN & REGISTER SYSTEM (INTERCONNECTED)
 // =========================================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, addDoc, deleteDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAPlpnfGWTiUQlyl2vH6uM_Ae6_EQ8YW5E",
@@ -18,331 +18,248 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let currentSessionUser = null;
-let cachedUserProfileData = null;
-let systemProductsArray = [];
-let localCartCache = JSON.parse(localStorage.getItem('bazaarhub_cart_cache')) || [];
-let activeTargetCategory = "ALL";
-let IS_ADMIN_MODE = false;
+let globalProducts = [];
+let localCart = JSON.parse(localStorage.getItem('bazaarhub_cart')) || [];
 
-// Registration Temp State Blocks
-let temporaryRegistrationPayload = null;
-let firebaseConfirmationResult = null;
-let appRecaptchaVerifier = null;
-
-// =========================================================================
-// 1. IDENTITY ROUTING CONTROLLER
-// =========================================================================
-onAuthStateChanged(auth, async (user) => {
-    const adminSessionFlag = localStorage.getItem('activeAdminSession');
-    
-    if (adminSessionFlag === "true") {
-        IS_ADMIN_MODE = true;
-        currentSessionUser = { email: "OwnerBH", uid: "ADMIN-MASTER-ROOT" };
-        bootAppFramework();
-        return;
-    }
+// ==========================================
+// 1. GLOBAL AUTH MONITOR & REDIRECT LOOPS GUARD
+// ==========================================
+onAuthStateChanged(auth, (user) => {
+    const currentPage = window.location.pathname;
 
     if (user) {
-        currentSessionUser = user;
-        IS_ADMIN_MODE = false;
-        
-        const userDocRef = doc(db, "users", user.uid);
-        const userDocSnap = await getDoc(userDocRef);
-        if (userDocSnap.exists()) {
-            cachedUserProfileData = userDocSnap.data();
+        if (currentPage.includes('auth.html')) {
+            window.location.href = "index.html";
         }
-        
-        bootAppFramework();
+        setupAppRealtimeStreams();
     } else {
-        currentSessionUser = null;
-        cachedUserProfileData = null;
-        IS_ADMIN_MODE = false;
-        showAuthScreenStructure();
+        if (!currentPage.includes('auth.html')) {
+            window.location.href = "auth.html";
+        }
     }
 });
 
-function bootAppFramework() {
-    document.getElementById('registerScreen').classList.add('hidden');
-    document.getElementById('loginScreen').classList.add('hidden');
-    document.getElementById('adminScreen').classList.add('hidden');
-    document.getElementById('verificationScreen').classList.add('hidden');
-    document.getElementById('mainAppHub').classList.remove('hidden');
+// ==========================================
+// 2. DIRECT REGISTRATION PIPELINE (NO OTP)
+// ==========================================
+const regForm = document.getElementById('registerForm');
+if (regForm) {
+    regForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('regName').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const phone = document.getElementById('regPhone').value.trim();
+        const password = document.getElementById('regPass').value;
 
-    if (IS_ADMIN_MODE) {
-        document.getElementById('clientNavLinks').classList.add('hidden');
-        document.getElementById('navCartWidget').classList.add('hidden');
-        document.getElementById('adminNavLinks').classList.remove('hidden');
-        showSection('admin-panel');
-    } else {
-        document.getElementById('clientNavLinks').classList.remove('hidden');
-        document.getElementById('navCartWidget').classList.remove('hidden');
-        document.getElementById('adminNavLinks').classList.add('hidden');
-        showSection('catalog');
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await setDoc(doc(db, "users", userCredential.user.uid), {
+                name: name,
+                email: email,
+                phone: phone,
+                role: "client"
+            });
+            alert("Account successfully created without verification!");
+            window.location.href = "index.html"; 
+        } catch (error) {
+            alert("Registration Failed: " + error.message);
+        }
+    });
+}
+
+// ==========================================
+// 3. SECURE LOGIN PIPELINE PROCESS
+// ==========================================
+const logForm = document.getElementById('loginForm');
+if (logForm) {
+    logForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPass').value;
+
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            alert("Login Successful!");
+            window.location.href = "index.html"; 
+        } catch (error) {
+            alert("Login Failed: " + error.message);
+        }
+    });
+}
+
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+        await signOut(auth);
+        window.location.href = "auth.html";
+    });
+}
+
+// ==========================================
+// 4. REALTIME CLOUD CHANNELS DATA PIPELINE
+// ==========================================
+function setupAppRealtimeStreams() {
+    onSnapshot(collection(db, "products"), (snapshot) => {
+        globalProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderCatalogUI();
+        renderAdminProducts();
+    });
+
+    const adminOrdersList = document.getElementById('adminOrdersList');
+    if (adminOrdersList) {
+        onSnapshot(collection(db, "orders"), (snapshot) => {
+            const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            adminOrdersList.innerHTML = orders.map(o => `
+                <tr>
+                    <td><b>Addr:</b> ${o.address}<br><b>Phone:</b> ${o.phone}</td>
+                    <td>${o.itemsSummary}</td>
+                    <td class="accent-yellow" style="font-weight:800;">Rs. ${o.totalCost}</td>
+                    <td><span style="background:#1e2235; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:700; color:#facc15;">${o.status}</span></td>
+                </tr>
+            `).join('');
+        });
     }
-    initializeDataRealtimeStreams();
 }
 
-function showAuthScreenStructure() {
-    document.getElementById('mainAppHub').classList.add('hidden');
-    switchScreen('register');
-    initRecaptchaSystem();
+// ==========================================
+// 5. CATALOG UI INTERACTIVE RENDERERS
+// ==========================================
+function renderCatalogUI() {
+    const grid = document.getElementById('productsGrid');
+    if (!grid) return;
+
+    if (globalProducts.length === 0) {
+        grid.innerHTML = `<p style="color:#9ca3af; text-align:center; grid-column: 1/-1; padding: 40px 0;">No products deployed inside cloud pipeline.</p>`;
+        return;
+    }
+
+    grid.innerHTML = globalProducts.map(p => `
+        <div class="product-card">
+            <img src="${p.image}" class="product-img">
+            <div class="product-title">${p.name}</div>
+            <div class="product-desc">${p.description}</div>
+            <div class="product-price">Rs. ${parseFloat(p.price).toLocaleString()}</div>
+            <button class="form-btn bg-yellow addToCartBtn" data-id="${p.id}">Add To Basket</button>
+        </div>
+    `).join('');
+
+    document.querySelectorAll('.addToCartBtn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const pId = e.target.getAttribute('data-id');
+            const item = globalProducts.find(x => x.id === pId);
+            if(item) {
+                localCart.push(item);
+                localStorage.setItem('bazaarhub_cart', JSON.stringify(localCart));
+                updateCartWidgetCount();
+                
+                // Micro-feedback UI alert animation
+                e.target.innerText = "ADDED TO BASKET! ✓";
+                e.target.style.backgroundColor = "#10b981";
+                e.target.style.color = "#ffffff";
+                setTimeout(() => {
+                    e.target.innerText = "Add To Basket";
+                    e.target.style.backgroundColor = "#facc15";
+                    e.target.style.color = "#000000";
+                }, 1500);
+            }
+        });
+    });
 }
 
-window.switchScreen = function(type) {
-    document.getElementById('registerScreen').classList.add('hidden');
-    document.getElementById('loginScreen').classList.add('hidden');
-    document.getElementById('adminScreen').classList.add('hidden');
-    document.getElementById('verificationScreen').classList.add('hidden');
+function updateCartWidgetCount() {
+    const counter = document.getElementById('cartCount');
+    if(counter) counter.innerText = localCart.length;
+}
+
+// ==========================================
+// 6. ORDER PROCESSING MATRIX
+// ==========================================
+const checkoutItemsWrap = document.getElementById('checkoutSummaryItemsContainer');
+if (checkoutItemsWrap) {
+    let priceSum = 0;
+    checkoutItemsWrap.innerHTML = localCart.map(i => {
+        priceSum += parseFloat(i.price);
+        return `<div class="summary-item"><span>${i.name}</span><span class="accent-yellow" style="font-weight:700;">Rs. ${i.price}</span></div>`;
+    }).join('');
     
-    if(type === 'register') {
-        document.getElementById('registerScreen').classList.remove('hidden');
-        initRecaptchaSystem();
-    }
-    if(type === 'login') document.getElementById('loginScreen').classList.remove('hidden');
-    if(type === 'admin') document.getElementById('adminScreen').classList.remove('hidden');
-};
+    const displayTotal = document.getElementById('checkoutSummaryTotalDisplay');
+    if(displayTotal) displayTotal.innerText = "Rs. " + priceSum.toLocaleString();
 
-// =========================================================================
-// 2. PHONE AUTH REAL SMS INTEGRATION CORE ENGINE
-// =========================================================================
-function initRecaptchaSystem() {
-    if (!appRecaptchaVerifier) {
-        appRecaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-            'size': 'invisible',
-            'callback': (response) => {
-                console.log("reCAPTCHA solved permanently.");
+    const checkForm = document.getElementById('checkoutForm');
+    if(checkForm) {
+        checkForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(localCart.length === 0) { alert("Your basket matrix is empty."); return; }
+
+            const orderPayload = {
+                userUid: auth.currentUser ? auth.currentUser.uid : "GUEST",
+                address: document.getElementById('custAddress').value.trim(),
+                city: document.getElementById('custCity').value.trim(),
+                phone: document.getElementById('custPhone').value.trim(),
+                itemsSummary: localCart.map(i => i.name).join(', '),
+                totalCost: priceSum,
+                status: "Pending Dispatch",
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                await addDoc(collection(db, "orders"), orderPayload);
+                alert("Order successfully transmitted directly to cloud dashboard pipeline!");
+                localCart = [];
+                localStorage.removeItem('bazaarhub_cart');
+                window.location.href = "index.html";
+            } catch (err) {
+                alert("Order Registry Error: " + err.message);
             }
         });
     }
 }
 
-window.registerUserAccount = async function(e) {
-    e.preventDefault();
-    const phoneNum = document.getElementById('regPhone').value.trim();
-    const regBtn = document.getElementById('regSubmitBtn');
+// ==========================================
+// 7. ADMIN TERMINAL CONTROL PARAMETERS
+// ==========================================
+const addProductForm = document.getElementById('addProductForm');
+if (addProductForm) {
+    addProductForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {
+            name: document.getElementById('pName').value.trim(),
+            category: document.getElementById('pCategory').value.trim().toUpperCase(),
+            price: parseFloat(document.getElementById('pPrice').value),
+            image: document.getElementById('pImage').value.trim(),
+            description: document.getElementById('pDesc').value.trim()
+        };
 
-    temporaryRegistrationPayload = {
-        name: document.getElementById('regName').value.trim(),
-        email: document.getElementById('regEmail').value.trim(),
-        phone: phoneNum,
-        pass: document.getElementById('regPass').value
-    };
-
-    regBtn.innerText = "Processing Security Check...";
-    regBtn.disabled = true;
-
-    try {
-        // Dispatch real SMS code natively via Firebase Gateway
-        firebaseConfirmationResult = await signInWithPhoneNumber(auth, phoneNum, appRecaptchaVerifier);
-        
-        alert("Real secure OTP code dispatched successfully directly to: " + phoneNum);
-        document.getElementById('registerScreen').classList.add('hidden');
-        document.getElementById('verificationScreen').classList.remove('hidden');
-    } catch (err) {
-        alert("SMS Transmission System Anomaly: " + err.message);
-        regBtn.innerText = "Send SMS OTP Code";
-        regBtn.disabled = false;
-        if(appRecaptchaVerifier) appRecaptchaVerifier.render().then(id => appRecaptchaVerifier.reset(id));
-    }
-};
-
-window.handleVerificationSubmit = async function(e) {
-    e.preventDefault();
-    const smsOtpCode = document.getElementById('phoneCode').value.trim();
-
-    if (!firebaseConfirmationResult) {
-        alert("Verification context is expired. Refresh registry.");
-        return;
-    }
-
-    try {
-        // Step 1: Validate Mobile Code directly over security layer
-        const verificationTokenResult = await firebaseConfirmationResult.confirm(smsOtpCode);
-        const certifiedAuthUserInstance = verificationTokenResult.user;
-
-        // Step 2: Bind profile logic mapping securely to permanent system Firestore memory block
-        await setDoc(doc(db, "users", certifiedAuthUserInstance.uid), {
-            uid: certifiedAuthUserInstance.uid,
-            fullName: temporaryRegistrationPayload.name,
-            emailAddress: temporaryRegistrationPayload.email,
-            telemetryPhone: temporaryRegistrationPayload.phone,
-            role: "client"
-        });
-
-        // Step 3: Set actual cipher auth credentials update layer for absolute email persistence tracking
-        alert("Mobile verified completely! Security pipeline configuration deployed.");
-        temporaryRegistrationPayload = null;
-        location.reload(); 
-    } catch (err) {
-        alert("Cryptographic verification code mismatched or expired: " + err.message);
-    }
-};
-
-window.loginUserPortal = async function(e) {
-    e.preventDefault();
-    const email = document.getElementById('loginEmail').value.trim();
-    const pass = document.getElementById('loginPass').value;
-    try {
-        localStorage.removeItem('activeAdminSession');
-        await signInWithEmailAndPassword(auth, email, pass);
-        alert("Authentication clearing logged successfully!");
-    } catch (err) {
-        alert("Login Failure sequence: " + err.message);
-    }
-};
-
-window.handleAdminLogin = function(e) {
-    e.preventDefault();
-    const user = document.getElementById('adminUser').value.trim();
-    const pass = document.getElementById('adminPass').value;
-
-    if (user === "OwnerBH" && pass === "bh26_777!@") {
-        IS_ADMIN_MODE = true;
-        localStorage.setItem('activeAdminSession', "true");
-        currentSessionUser = { email: "OwnerBH", uid: "ADMIN-MASTER-ROOT" };
-        bootAppFramework();
-        alert("Root configuration panel deployment sequence completed.");
-    } else {
-        alert("Admin keys rejection protocol executed.");
-    }
-};
-
-window.handleLogout = async function() {
-    localStorage.removeItem('activeAdminSession');
-    await signOut(auth);
-    location.reload();
-};
-
-// =========================================================================
-// 3. NAVIGATION MANAGEMENT ENGINE
-// =========================================================================
-window.showSection = function(sectionId) {
-    const pages = ['catalogPage', 'checkoutPage', 'myOrdersPage', 'adminPanelPage'];
-    pages.forEach(p => document.getElementById(p).classList.add('hidden'));
-
-    if(sectionId === 'catalog') document.getElementById('catalogPage').classList.remove('hidden');
-    if(sectionId === 'checkout') {
-        document.getElementById('checkoutPage').classList.remove('hidden');
-        populateCheckoutFieldsAuto();
-    }
-    if(sectionId === 'my-orders') document.getElementById('myOrdersPage').classList.remove('hidden');
-    if(sectionId === 'admin-panel') document.getElementById('adminPanelPage').classList.remove('hidden');
-    
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-};
-
-// =========================================================================
-// 4. SYNC PIPELINES & DATA RENDERS
-// =========================================================================
-function initializeDataRealtimeStreams() {
-    onSnapshot(collection(db, "products"), (snapshot) => {
-        systemProductsArray = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderClientCatalogUI();
-        if (IS_ADMIN_MODE) renderAdminConsoleProductsVault();
+        try {
+            await addDoc(collection(db, "products"), payload);
+            alert("Asset parameters injected perfectly!");
+            addProductForm.reset();
+        } catch(err) {
+            alert("Database write error: " + err.message);
+        }
     });
-
-    if (IS_ADMIN_MODE) {
-        onSnapshot(collection(db, "orders"), (snapshot) => {
-            const globalOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            renderAdminGlobalOrdersMatrixTable(globalOrders);
-        });
-    } else if (currentSessionUser) {
-        const userOrdersQuery = query(collection(db, "orders"), where("userUid", "==", currentSessionUser.uid));
-        onSnapshot(userOrdersQuery, (snapshot) => {
-            const clientOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            renderClientPersonalOrdersTrackingList(clientOrders);
-        });
-    }
 }
 
-function renderClientCatalogUI() {
-    const targetGrid = document.getElementById('productsGrid');
-    if (!targetGrid) return;
-    
-    if (systemProductsArray.length === 0) {
-        targetGrid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:30px; color:#9ca3af;">No products inside this pipeline.</p>`;
-        return;
-    }
+function renderAdminProducts() {
+    const adminList = document.getElementById('adminProductsList');
+    if (!adminList) return;
 
-    targetGrid.innerHTML = systemProductsArray.map(p => `
-        <div class="product-card" style="background:#0d0d13; border:1px solid #1f2937; border-radius:12px; padding:15px; display:flex; flex-direction:column; justify-content:space-between;">
-            <img src="${p.image}" class="product-img" style="width:100%; height:180px; object-fit:cover; border-radius:8px;">
-            <div class="product-title" style="font-size:16px; font-weight:700; margin:12px 0 6px 0;">${p.name}</div>
-            <div class="product-price" style="font-size:18px; font-weight:800; color:#facc15; margin-bottom:12px;">Rs. ${parseFloat(p.price).toLocaleString()}</div>
-            <button class="bg-yellow card-btn" style="width:100%; padding:10px; border-radius:6px; font-size:12px; font-weight:700;" onclick="window.addBasketNodeItem('${p.id}')">Add To Cart</button>
+    adminList.innerHTML = globalProducts.map(p => `
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#11131f; padding:10px 14px; border-radius:8px; margin-bottom:10px; font-size:12px; border:1px solid #1e2235;">
+            <span><b>${p.name}</b> (Rs. ${p.price})</span>
+            <button class="deleteProductBtn" data-id="${p.id}" style="color:#ef4444; font-weight:bold; cursor:pointer;"><i class="fas fa-trash-alt"></i> Delete</button>
         </div>
     `).join('');
+
+    document.querySelectorAll('.deleteProductBtn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            const targetId = e.currentTarget.getAttribute('data-id');
+            if(confirm("Are you sure you want to delete this product?")) {
+                await deleteDoc(doc(db, "products", targetId));
+                alert("Product asset deleted from Cloud database.");
+            }
+        });
+    });
 }
 
-window.toggleCartSidebar = function(state) {
-    const drawer = document.getElementById('cartSidebarOverlay');
-    if(!drawer) return;
-    if (state) drawer.classList.add('open');
-    else drawer.classList.remove('open');
-};
-
-window.addBasketNodeItem = function(id) {
-    const selection = systemProductsArray.find(p => p.id === id);
-    if (!selection) return;
-
-    const existingMatch = localCartCache.find(item => item.id === id);
-    if(existingMatch) existingMatch.quantity++;
-    else localCartCache.push({ id: selection.id, name: selection.name, price: selection.price, image: selection.image, quantity: 1 });
-    
-    commitCartStateToMemoryStorage();
-    window.toggleCartSidebar(true);
-};
-
-function commitCartStateToMemoryStorage() {
-    localStorage.setItem('bazaarhub_cart_cache', JSON.stringify(localCartCache));
-    updateLiveBasketCountWidgetUI();
-}
-
-function updateLiveBasketCountWidgetUI() {
-    const totalQtyCount = localCartCache.reduce((acc, current) => acc + current.quantity, 0);
-    document.getElementById('cartCount').innerText = totalQtyCount;
-    const wrapper = document.getElementById('cartItemsContainer');
-    if (!wrapper) return;
-
-    if (localCartCache.length === 0) {
-        wrapper.innerHTML = `<p style="text-align:center; color:#9ca3af; margin-top:40px; font-size:12px;">Basket is empty.</p>`;
-        document.getElementById('cartAggregatedTotal').innerText = "Rs. 0";
-        return;
-    }
-
-    let computationTotal = 0;
-    wrapper.innerHTML = localCartCache.map(i => {
-        computationTotal += (i.price * i.quantity);
-        return `
-            <div class="cart-item">
-                <div style="flex:1;">
-                    <div style="font-size:13px; font-weight:700;">${i.name}</div>
-                    <div style="color:#facc15; font-size:12px;">Rs. ${i.price} (x${i.quantity})</div>
-                </div>
-            </div>
-        `;
-    }).join('');
-    document.getElementById('cartAggregatedTotal').innerText = "Rs. " + computationTotal.toLocaleString();
-}
-
-function populateCheckoutFieldsAuto() {
-    if (cachedUserProfileData) {
-        document.getElementById('custFName').value = cachedUserProfileData.fullName || "";
-        document.getElementById('custEmail').value = cachedUserProfileData.emailAddress || "";
-        document.getElementById('custPhone').value = cachedUserProfileData.telemetryPhone || "";
-    }
-}
-
-function renderClientPersonalOrdersTrackingList(orders) {
-    const tbody = document.getElementById('myOrdersTableBody');
-    if (!tbody) return;
-    tbody.innerHTML = orders.map(o => `
-        <tr><td>${o.orderId}</td><td>${o.itemsSummaryStream}</td><td>${o.aggregatedCost}</td><td>${o.logisticsStatus}</td></tr>
-    `).join('');
-}
-
-function renderAdminConsoleProductsVault() {}
-function renderAdminGlobalOrdersMatrixTable(orders) {}
-
-updateLiveBasketCountWidgetUI();
+updateCartWidgetCount();
