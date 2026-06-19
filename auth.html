@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div class="auth-wrapper">
         <div class="auth-card">
             <div class="auth-tabs">
@@ -46,7 +45,7 @@
                     <input type="password" id="regPass" placeholder="Min 6 characters" required>
                 </div>
                 <button type="submit" class="form-btn bg-yellow">CREATE ACCOUNT</button>
-            </form>        
+            </form>
         </div>
     </div>
 
@@ -59,7 +58,6 @@
             const loginForm = document.getElementById('loginForm');
             const registerForm = document.getElementById('registerForm');
 
-            // Pehle check karo ke elements real me exist karte hain ya nahi
             if(loginTab && registerTab && loginForm && registerForm) {
                 loginTab.addEventListener('click', () => {
                     loginTab.classList.add('active');
