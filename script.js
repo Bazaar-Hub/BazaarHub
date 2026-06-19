@@ -5,7 +5,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebas
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, collection, addDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-// Firebase App Config
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyAPlpnfGWTiUQlyl2vH6uM_Ae6_EQ8YW5E",
   authDomain: "bazaarhubnew-79dee.firebaseapp.com",
@@ -19,17 +19,15 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// 🟢 FIX FOR MULTI-DEVICE LOGIN: Global Auth Session Persistence configuration
-// Is se kisi bhi device ya browser par user logging out ke bagair persisted rahega
+// 🟢 CROSS-BROWSER LOGIN FIX: Set explicit persistence to LOCAL storage before any auth request
 setPersistence(auth, browserLocalPersistence)
-  .then(() => { console.log("Auth Persistence State initialized to LOCAL."); })
-  .catch((err) => { console.error("Persistence Initialization Error:", err); });
+  .then(() => { console.log("Firebase Auth Persistence set to LOCAL globally."); })
+  .catch((err) => { console.error("Persistence Configuration Error:", err); });
 
-// Global Auth Monitor State Pipeline
+// Dynamic Auth State Observers Pipeline
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        console.log("Active Session Token Identifier Detected:", user.uid);
-        // Agar user login hone ke baad ghalti se register/auth page par ho, to index.html bhej dein
+        console.log("Verified Active Session UID:", user.uid);
         if (window.location.pathname.includes("auth.html")) {
             window.location.href = "index.html";
         }
@@ -39,10 +37,10 @@ onAuthStateChanged(auth, (user) => {
 });
 
 // =========================================================================
-// SECTION 1: AUTHENTICATION (REGISTER & LOGIN FIXES)
+// SECTION 1: AUTHENTICATION (REGISTER & MULTI-BROWSER LOGIN)
 // =========================================================================
 
-// A. Account Creation Router Engine
+// A. Registration Logic Pipeline
 const regForm = document.getElementById('registerForm');
 if (regForm) {
     regForm.addEventListener('submit', async (e) => {
@@ -53,22 +51,21 @@ if (regForm) {
 
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            // User Meta Cluster in Firestore Architecture
             await setDoc(doc(db, "users", userCredential.user.uid), {
                 name: name,
                 email: email,
                 role: "client"
             });
-            alert("Account successfully created inside Cloud Node!");
+            alert("Account successfully registered on Firebase Node!");
             window.location.href = "index.html";
         } catch (error) {
-            console.error("Reg Error Node:", error.message);
+            console.error("Registration Core Crash:", error.message);
             alert("Registration Failed: " + error.message);
         }
     });
 }
 
-// B. Secure Access Terminal Login Router (Fix for different users login check)
+// B. Login Engine Terminal (Fix for multi-browser and explicit account cross-checking)
 const logForm = document.getElementById('loginForm');
 if (logForm) {
     logForm.addEventListener('submit', async (e) => {
@@ -77,33 +74,35 @@ if (logForm) {
         const password = document.getElementById('loginPass').value;
 
         try {
+            // Force browser local initialization block on each request
+            await setPersistence(auth, browserLocalPersistence);
             await signInWithEmailAndPassword(auth, email, password);
             alert("Access Granted! Login Successful.");
             window.location.href = "index.html"; 
         } catch (error) {
-            console.error("Authentication Matrix Error:", error.message);
-            alert("Login Failed: Unverified Credentials - " + error.message);
+            console.error("Authentication Core Crash:", error.message);
+            alert("Login Failed: " + error.message);
         }
     });
 }
 
 // =========================================================================
-// SECTION 2: REAL-TIME CATALOG SYNCHRONIZATION (ADMIN + CUSTOMER VIEW)
+// SECTION 2: REAL-TIME CATALOG DATA STREAM STREAMING (NO STATIC PRODUCTS)
 // =========================================================================
-const productsGrid = document.getElementById('productsGrid'); // index.html grid layout
-const adminProductsList = document.getElementById('adminProductsList'); // admin.html catalog box
+const productsGrid = document.getElementById('productsGrid'); 
+const adminProductsList = document.getElementById('adminProductsList'); 
 
 if (productsGrid || adminProductsList) {
-    // 🟢 Snapshot data streaming listeners: Real-time update for ALL customer tabs globally!
+    // 🟢 Real-time Sync Pipeline: Purged all static files, data comes directly from Firebase
     onSnapshot(collection(db, "products"), (snapshot) => {
         let productsHTML = "";
         let adminHTML = "";
 
         snapshot.forEach((docSnap) => {
             const product = docSnap.data();
-            const id = docSnap.id; // Cloud String Data Identifier Document ID
+            const id = docSnap.id; 
 
-            // Customer Dynamic Cards Compilation (index.html)
+            // User Side Dynamic Render Engine (index.html)
             if (productsGrid) {
                 productsHTML += `
                     <div class="product-card">
@@ -120,7 +119,7 @@ if (productsGrid || adminProductsList) {
                     </div>`;
             }
 
-            // Admin List Vault Entries Compilation (admin.html)
+            // Admin Side Dashboard Console Table (admin.html)
             if (adminProductsList) {
                 adminHTML += `
                     <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid #1f2937; background:#14141c; margin-bottom:5px; border-radius:6px;">
@@ -129,10 +128,10 @@ if (productsGrid || adminProductsList) {
                             <br><span style="font-size:11px; color:#9ca3af;">${product.category}</span>
                         </div>
                         <div>
-                            <button onclick="editProductConsole('${id}', '${product.title.replace(/'/g, "\\'")}', '${product.category.replace(/'/g, "\\'")}', ${product.price}, '${product.img}', '${product.desc.replace(/'/g, "\\'")}')" style="color:#facc15; margin-right:15px; font-size:16px; background:none; cursor:pointer;">
+                            <button onclick="editProductConsole('${id}', '${product.title.replace(/'/g, "\\'")}', '${product.category.replace(/'/g, "\\'")}', ${product.price}, '${product.img}', '${product.desc.replace(/'/g, "\\'")}')" style="color:#facc15; margin-right:15px; font-size:16px; background:none; border:none; cursor:pointer;">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button onclick="deleteProductConsole('${id}')" style="color:#ef4444; font-size:16px; background:none; cursor:pointer;">
+                            <button onclick="deleteProductConsole('${id}')" style="color:#ef4444; font-size:16px; background:none; border:none; cursor:pointer;">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -140,13 +139,13 @@ if (productsGrid || adminProductsList) {
             }
         });
 
-        if (productsGrid) productsGrid.innerHTML = productsHTML;
-        if (adminProductsList) adminProductsList.innerHTML = adminHTML;
+        if (productsGrid) productsGrid.innerHTML = productsHTML || `<p style="padding:20px; color:#9ca3af;">No products inside database nodes. Populate from Admin Panel.</p>`;
+        if (adminProductsList) adminProductsList.innerHTML = adminHTML || `<p style="padding:15px; color:#9ca3af;">No active inventory listed.</p>`;
     });
 }
 
 // =========================================================================
-// SECTION 3: PRODUCT DATABASE MANAGEMENT (CRUD ENGINE LOGIC)
+// SECTION 3: PRODUCT BACKEND TRANSACTION CONTROL (CRUD PIPELINE)
 // =========================================================================
 const productForm = document.getElementById('productCrudForm');
 if (productForm) {
@@ -164,28 +163,28 @@ if (productForm) {
 
         try {
             if (docId && docId.trim() !== "") {
-                // UPDATE PIPELINE: Target specified document string
+                // UPDATE PIPELINE
                 await setDoc(doc(db, "products", String(docId).trim()), productData);
-                alert("Database node structure changed successfully!");
+                alert("Database entry updated successfully!");
             } else {
-                // CREATE PIPELINE: Route a brand new generated asset entry data
+                // CREATE PIPELINE
                 await addDoc(collection(db, "products"), productData);
-                alert("New product asset injected successfully into cloud databases!");
+                alert("New product injected into Firebase live storage!");
             }
             
-            // Clean Terminal UI Reset
+            // Post-submit interface cleanup
             productForm.reset();
             document.getElementById('crudProductId').value = "";
             const submitBtn = document.getElementById('crudFormSubmitBtn');
             if (submitBtn) submitBtn.innerText = "SAVE NODE MODULE";
         } catch (error) {
-            console.error("Database Write Crash Intercept:", error);
-            alert("Transaction Write Process Terminated: " + error.message);
+            console.error("CRUD Database Transaction Intercept Failure:", error);
+            alert("Database write error: " + error.message);
         }
     });
 }
 
-// Global scope initialization for UI console interactions
+// Global window mappings for layout events processing
 window.editProductConsole = function(id, title, category, price, img, desc) {
     document.getElementById('crudProductId').value = id;
     document.getElementById('crudTitle').value = title;
@@ -200,26 +199,24 @@ window.editProductConsole = function(id, title, category, price, img, desc) {
 
 window.deleteProductConsole = async function(id) {
     if (!id) {
-        alert("Operation Error: Unique data target tracking string parameter is null.");
+        alert("Action Error: Missing document database identifier token.");
         return;
     }
     
-    if (confirm("Are you certain you want to purge this product entity entirely?")) {
+    if (confirm("Are you sure you want to permanently delete this product?")) {
         try {
             await deleteDoc(doc(db, "products", String(id).trim()));
-            alert("Entity permanently wiped from database structure.");
+            alert("Product entry successfully wiped from Cloud Storage.");
         } catch (error) {
-            console.error("Delete process crash:", error);
-            alert("Purge failed: " + error.message);
+            console.error("Purge Error Pipeline Intercept:", error);
+            alert("Delete action failed: " + error.message);
         }
     }
 };
 
 // =========================================================================
-// SECTION 4: LIVE LOGISTICS ORDERS MATRIX INJECTION
+// SECTION 4: TRANSACTIONS & LOGISTICS FLOW SYSTEM (ORDERS GATEWAY)
 // =========================================================================
-
-// Customer Checkout System integration to cloud database pipeline
 const checkoutForm = document.getElementById('checkoutForm');
 if (checkoutForm) {
     checkoutForm.addEventListener('submit', async (e) => {
@@ -237,21 +234,20 @@ if (checkoutForm) {
                 user: `${firstName} ${lastName}`,
                 address: `${address}, ${city}`,
                 phone: phone,
-                items: "Standard Purchased Cart Package", // Replace with array parsing if you want granular breakdowns
+                items: "Standard Customer Inventory Manifest Package",
                 cost: grandTotal,
                 status: "Pending Verification",
                 timestamp: new Date()
             });
             
-            alert("Order Transmitted Successfully to Admin Matrix!");
+            alert("Order Transmitted Successfully to Firebase Tracking Control Node!");
             window.location.href = "index.html";
         } catch (error) {
-            alert("Order delivery pipeline transmission crash: " + error.message);
+            alert("Order delivery pipeline transmission failed: " + error.message);
         }
     });
 }
 
-// Admin Real-time Orders Matrix Terminal Renderer
 const adminOrdersList = document.getElementById('adminOrdersList');
 if (adminOrdersList) {
     onSnapshot(collection(db, "orders"), (snapshot) => {
@@ -278,20 +274,19 @@ if (adminOrdersList) {
                     </td>
                 </tr>`;
         });
-        adminOrdersList.innerHTML = ordersHTML;
+        adminOrdersList.innerHTML = ordersHTML || `<tr><td colspan="4" style="padding:15px; text-align:center; color:#9ca3af;">No incoming client transactions recorded.</td></tr>`;
     });
 }
 
 window.updateOrderStatusInFirebase = async function(orderId, newStatus) {
     try {
         await setDoc(doc(db, "orders", orderId), { status: newStatus }, { merge: true });
-        alert(`Order workflow condition metrics re-routed: ${newStatus}`);
+        alert(`Order lifecycle shifted state: ${newStatus}`);
     } catch (error) {
-        alert("Failed to sync system lifecycle state modification.");
+        alert("Failed to sync system status lifecycle.");
     }
 };
 
-// Simple Mock function for index.html button workflows compatibility mapping
 window.addToCartWorkflow = function(id, title, price) {
-    alert(`${title} mapped into workspace transaction bucket cache! (Price: Rs. ${price})`);
+    alert(`${title} mapped into workspace transaction bucket! (Price: Rs. ${price})`);
 };
