@@ -21,44 +21,22 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Global Arrays to Hold Realtime Data Stream Channels
-let products = [];
-let orders = [];
+// Global access ke liye (agar kisi dusri direct script me use karna ho)
+window.auth = auth;
+window.db = db;
 
-// ==========================================
-// AUTOMATED AUTH STATE ROUTING PIPELINE
-// ==========================================
-onAuthStateChanged(auth, async (user) => {
-    const isAuthPage = window.location.pathname.includes('auth.html');
-    const isAdminPage = window.location.pathname.includes('admin.html');
-
+// Lifetime Device Session Persistence (Login automatic save rahega dusre browsers me bhi)
+onAuthStateChanged(auth, (user) => {
     if (user) {
-        try {
-            // Firestore data retrieve workflow node
-            const userDoc = await getDocs(query(collection(db, "users")));
-            let currentUserRole = "client";
-            
-            // Checking actual targeted user structural metadata parameters
-            const matchDoc = await getDocs(query(collection(db, "users"), where("email", "==", user.email)));
-            if (!matchDoc.empty) {
-                currentUserRole = matchDoc.docs[0].data().role || "client";
-            }
-
-            if (isAuthPage) {
-                if (currentUserRole === "admin") {
-                    window.location.href = "admin.html";
-                } else {
-                    window.location.href = "index.html";
-                }
-            }
-            if (isAdminPage && currentUserRole !== "admin") {
-                window.location.href = "index.html";
-            }
-        } catch (err) {
-            console.error("Auth routing tracking validation node dropped:", err);
+        console.log("Firebase Connected! User logged in:", user.email);
+        // Agar user already logged in hai aur login/auth page par hai, toh direct home page bhejein
+        if (window.location.pathname.includes("auth.html")) {
+            window.location.href = "index.html";
         }
     } else {
-        if (!isAuthPage) {
+        console.log("No user logged in currently.");
+        // Agar authenticated nahi hai aur index/admin page par hai, toh auth page par redirect karein
+        if (!window.location.pathname.includes("auth.html")) {
             window.location.href = "auth.html";
         }
     }
