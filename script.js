@@ -1,11 +1,10 @@
 // =========================================================================
-// FIREBASE CORE LIFETIME MULTI-DEVICE LOGISTICS STORAGE CONSOLE ARCHITECTURE
+// FIREBASE CORE LIFETIME MULTI-DEVICE STORAGE CONSOLE ARCHITECTURE
 // =========================================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, collection, addDoc, deleteDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-// Your web app's Firebase configuration 
 const firebaseConfig = {
   apiKey: "AIzaSyAPlpnfGWTiUQlyl2vH6uM_Ae6_EQ8YW5E",
   authDomain: "bazaarhubnew-79dee.firebaseapp.com",
@@ -15,7 +14,6 @@ const firebaseConfig = {
   appId: "1:452492018395:web:6c3cf8d956ce7fe45b42fe"
 };
 
-// Initialize Core Engines
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -26,12 +24,10 @@ let systemProductsArray = [];
 let localCartCache = JSON.parse(localStorage.getItem('bazaarhub_cart_cache')) || [];
 let activeTargetCategory = "ALL";
 let IS_ADMIN_MODE = false;
-
-// Simulated cache variable placeholder variables for verification code matching pipelines
 let temporaryRegistrationPayload = null;
 
 // =========================================================================
-// 1. LIFETIME MULTI-DEVICE AUTO AUTH REDIRECT CHANNEL GATEWAY PIPELINE
+// 1. IDENTITY ROUTING CONTROLLER
 // =========================================================================
 onAuthStateChanged(auth, async (user) => {
     const adminSessionFlag = localStorage.getItem('activeAdminSession');
@@ -47,7 +43,6 @@ onAuthStateChanged(auth, async (user) => {
         currentSessionUser = user;
         IS_ADMIN_MODE = false;
         
-        // Fetch User Data to push inside profile mapping console checkout inputs
         const userDocRef = doc(db, "users", user.uid);
         const userDocSnap = await getDoc(userDocRef);
         if (userDocSnap.exists()) {
@@ -89,7 +84,6 @@ function showAuthScreenStructure() {
     switchScreen('register');
 }
 
-// Global scope attachment actions
 window.switchScreen = function(type) {
     document.getElementById('registerScreen').classList.add('hidden');
     document.getElementById('loginScreen').classList.add('hidden');
@@ -102,22 +96,17 @@ window.switchScreen = function(type) {
 };
 
 // =========================================================================
-// 2. INTERACTIVE ACCOUNT CREATION & DUAL VERIFICATION SIMULATORS
+// 2. AUTHENTICATION LOGISTICS PROTOCOLS
 // =========================================================================
 window.registerUserAccount = function(e) {
     e.preventDefault();
-    
-    // Core parameters mapping trace data capture layout pipeline
     temporaryRegistrationPayload = {
         name: document.getElementById('regName').value.trim(),
         email: document.getElementById('regEmail').value.trim(),
         phone: document.getElementById('regPhone').value.trim(),
         pass: document.getElementById('regPass').value
     };
-
-    // Dispatch simulated system alerts to signify incoming 6 digit tracking payloads
     alert("Verification codes dispatched!\nEmail Code Simulation: 123456\nSMS Code Simulation: 789012");
-    
     document.getElementById('registerScreen').classList.add('hidden');
     document.getElementById('verificationScreen').classList.remove('hidden');
 };
@@ -129,14 +118,12 @@ window.handleVerificationSubmit = async function(e) {
 
     if (emailCodeInput === "123456" && phoneCodeInput === "789012" && temporaryRegistrationPayload) {
         try {
-            // Commit permanent cloud authentication instance node registry cluster mapping data
             const credentials = await createUserWithEmailAndPassword(
                 auth, 
                 temporaryRegistrationPayload.email, 
                 temporaryRegistrationPayload.pass
             );
             
-            // Save inside Firestore to make data structure permanent and protected from lifetime clearing loops
             await setDoc(doc(db, "users", credentials.user.uid), {
                 uid: credentials.user.uid,
                 fullName: temporaryRegistrationPayload.name,
@@ -152,7 +139,7 @@ window.handleVerificationSubmit = async function(e) {
             alert("Cryptographic Registry Write Failure: " + err.message);
         }
     } else {
-        alert("Verification clearance validation failed! Invalid code metrics matched.");
+        alert("Verification clearance validation failed!");
     }
 };
 
@@ -179,9 +166,9 @@ window.handleAdminLogin = function(e) {
         localStorage.setItem('activeAdminSession', "true");
         currentSessionUser = { email: "OwnerBH", uid: "ADMIN-MASTER-ROOT" };
         bootAppFramework();
-        alert("Root configuration panel deployment authorization sequence completed.");
+        alert("Root configuration panel deployment sequence completed.");
     } else {
-        alert("Access Keys Invalid! Admin terminal deployment protocol rejected.");
+        alert("Admin keys rejection protocol executed.");
     }
 };
 
@@ -192,7 +179,7 @@ window.handleLogout = async function() {
 };
 
 // =========================================================================
-// 3. UI TAB NAVIGATION SYSTEM CONTROLLER FLUID DYNAMICS
+// 3. NAVIGATION MANAGEMENT ENGINE
 // =========================================================================
 window.showSection = function(sectionId) {
     const pages = ['catalogPage', 'checkoutPage', 'myOrdersPage', 'adminPanelPage', 'supportPage'];
@@ -218,10 +205,9 @@ window.scrollToShopSection = function() {
 };
 
 // =========================================================================
-// 4. DATA LOGISTICS & REALTIME CONTENT STREAMS
+// 4. SYNC PIPELINES (REALTIME CHANNELS)
 // =========================================================================
 function initializeDataRealtimeStreams() {
-    // Realtime Products Synchronizer Pipeline Channels Stream
     onSnapshot(collection(db, "products"), (snapshot) => {
         systemProductsArray = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderClientCatalogUI();
@@ -229,7 +215,6 @@ function initializeDataRealtimeStreams() {
         if (IS_ADMIN_MODE) renderAdminConsoleProductsVault();
     });
 
-    // Realtime Global/Client Orders Synchronizer Tracking System Architecture Channels
     if (IS_ADMIN_MODE) {
         onSnapshot(collection(db, "orders"), (snapshot) => {
             const globalOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -264,7 +249,6 @@ function renderClientCatalogUI() {
     if (!targetGrid) return;
     
     const visibleFilteredItems = systemProductsArray.filter(p => activeTargetCategory === "ALL" || p.category === activeTargetCategory);
-    
     if (visibleFilteredItems.length === 0) {
         targetGrid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:30px; color:#9ca3af;">No products are deployed inside this instance matrix pipeline.</p>`;
         return;
@@ -287,10 +271,11 @@ function renderClientCatalogUI() {
 }
 
 // =========================================================================
-// 5. MEMORY CART MATRIX SLIDER DRAWER & PROCESSING LOGIC
+// 5. STORAGE BASKET ENGINE DRAWER
 // =========================================================================
 window.toggleCartSidebar = function(state) {
     const drawer = document.getElementById('cartSidebarOverlay');
+    if(!drawer) return;
     if (state) drawer.classList.add('open');
     else drawer.classList.remove('open');
 };
@@ -304,6 +289,7 @@ window.addBasketNodeItem = function(id) {
     else localCartCache.push({ id: selection.id, name: selection.name, price: selection.price, image: selection.image, quantity: 1 });
     
     commitCartStateToMemoryStorage();
+    window.toggleCartSidebar(true);
 };
 
 window.changeCartQtyNode = function(id, delta) {
@@ -327,7 +313,7 @@ function updateLiveBasketCountWidgetUI() {
     if (!wrapper) return;
 
     if (localCartCache.length === 0) {
-        wrapper.innerHTML = `<p style="text-align:center; color:#9ca3af; margin-top:40px; font-size:12px;">Your basket allocation memory data stream is zero.</p>`;
+        wrapper.innerHTML = `<p style="text-align:center; color:#9ca3af; margin-top:40px; font-size:12px;">Your basket data stream is zero.</p>`;
         document.getElementById('cartAggregatedTotal').innerText = "Rs. 0";
         return;
     }
@@ -354,7 +340,7 @@ function updateLiveBasketCountWidgetUI() {
 }
 
 // =========================================================================
-// 6. CHECKOUT FORM VERIFICATION INTEGRITY PIPELINES
+// 6. PROCESSING FIELD AUTOMATIONS & VERIFICATIONS
 // =========================================================================
 function populateCheckoutFieldsAuto() {
     if (cachedUserProfileData) {
@@ -406,15 +392,15 @@ document.getElementById('checkoutForm').addEventListener('submit', async (e) => 
         localCartCache = [];
         commitCartStateToMemoryStorage();
         document.getElementById('checkoutForm').reset();
-        alert("Logistics sequence order transmission target placed inside cloud data logs successfully!");
+        alert("Logistics sequence order transmission target saved successfully!");
         window.showSection('my-orders');
     } catch (err) {
-        alert("Database transaction crash error: " + err.message);
+        alert("Database transaction error: " + err.message);
     }
 });
 
 // =========================================================================
-// 7. CLIENT TRACKING MATRIX & ACTIVE RATING DESK LAYOUTS
+// 7. CLIENT RATING TERMINALS
 // =========================================================================
 function renderClientPersonalOrdersTrackingList(orders) {
     const tbody = document.getElementById('myOrdersTableBody');
@@ -456,15 +442,15 @@ function renderClientPersonalOrdersTrackingList(orders) {
 
 window.commitCustomerRatingScoreTarget = async function(docId, calculatedScoreValue) {
     try {
-        await setDoc(doc, db, "orders", docId), { ratingScore: calculatedScoreValue }, { merge: true };
-        alert(`Thank you for rating this dispatch item module with ${calculatedScoreValue} Stars!`);
+        await setDoc(doc(db, "orders", docId), { ratingScore: calculatedScoreValue }, { merge: true });
+        alert(`Thank you for rating with ${calculatedScoreValue} Stars!`);
     } catch (err) {
-        console.error("Failed to commit star log to matrix platform structural tree", err);
+        console.error("Failed to commit score target log", err);
     }
 };
 
 // =========================================================================
-// 8. ADMINISTRATIVE ENGINE PANEL CONTROLS TERMINAL DESK
+// 8. ADMINISTRATIVE WORKSPACE ACTIONS
 // =========================================================================
 document.getElementById('addProductForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -487,9 +473,9 @@ document.getElementById('addProductForm').addEventListener('submit', async (e) =
             await addDoc(collection(db, "products"), structuralFormPayload);
         }
         document.getElementById('addProductForm').reset();
-        alert("Cloud storage assets array structural configuration data changed successfully!");
+        alert("Cloud storage assets updated successfully!");
     } catch (err) {
-        alert("Operation runtime halting anomaly encountered: " + err.message);
+        alert("Operation halting anomaly encountered: " + err.message);
     }
 });
 
@@ -545,11 +531,10 @@ function renderAdminGlobalOrdersMatrixTable(orders) {
     }
 
     listTableBodyRef.innerHTML = orders.map(o => {
-        // Multi-Day auto tracking garbage collection data manager loop parameters engine
         let automaticEraseOptionHtml = "";
         if (o.logisticsStatus === "Delivered" && o.epochTimestamp) {
             const timeDifferenceCalculatedInMilliseconds = Date.now() - o.epochTimestamp;
-            const thresholdLimitInDaysConvert = 2 * 24 * 60 * 60 * 1000; // 2 to 3 days capacity buffer
+            const thresholdLimitInDaysConvert = 2 * 24 * 60 * 60 * 1000;
             
             if (timeDifferenceCalculatedInMilliseconds >= thresholdLimitInDaysConvert) {
                 automaticEraseOptionHtml = `<option value="Delete">4. Delete (Auto Expired)</option>`;
@@ -583,27 +568,26 @@ function renderAdminGlobalOrdersMatrixTable(orders) {
 
 window.executeAdminOrderStatusShiftAction = async function(docId, chosenStatePathValue) {
     if (chosenStatePathValue === "Manual Delete" || chosenStatePathValue === "Delete") {
-        if(confirm("Confirm manual execution deletion trace command parameters to save cluster space?")) {
+        if(confirm("Confirm manual execution deletion trace command parameters?")) {
             await deleteDoc(doc(db, "orders", docId));
             alert("Order entry purged.");
         }
     } else {
         try {
             await setDoc(doc(db, "orders", docId), { logisticsStatus: chosenStatePathValue }, { merge: true });
-            alert(`Logistics pipeline status shifted parameters to: ${chosenStatePathValue}`);
+            alert(`Logistics status shifted to: ${chosenStatePathValue}`);
         } catch (err) {
-            console.error("Failed to alter remote document matrix coordinates: ", err);
+            console.error("Failed to alter remote document parameters: ", err);
         }
     }
 };
 
 // =========================================================================
-// 9. WHATSAPP ENGINE RADIAL WIDGET INTERACTIVE TOGGLES
+// 9. WHATSAPP LIVE CHAT CONTROLS
 // =========================================================================
 window.toggleWhatsAppWidget = function() {
     const cardElement = document.getElementById('whatsappChatCard');
-    cardElement.classList.toggle('active');
+    if(cardElement) cardElement.classList.toggle('active');
 };
 
-// Initialize App System Modules Loop Checkup On Initial Window Boot Instance Load
 updateLiveBasketCountWidgetUI();
