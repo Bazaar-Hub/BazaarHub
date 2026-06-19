@@ -91,7 +91,7 @@
         .auth-switch-text span { color: #facc15; cursor: pointer; font-weight: 600; text-decoration: underline; }
 
         /* ==========================================================================
-           NAVBAR DESIGN (Left: Logo, Center: Tabs, Right: Cart & Logout)
+           NAVBAR DESIGN
            ========================================================================== */
         nav {
             background: #000000;
@@ -189,7 +189,7 @@
         .cart-footer { padding: 20px; border-top: 1px solid #1f2937; background: #07070a; }
 
         /* ==========================================================================
-           DATA LOGISTICS TABLES & CODES
+           TABLES & GENERAL DATA LAYOUTS
            ========================================================================== */
         .checkout-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px; }
         @media(max-width: 768px) { .checkout-grid { grid-template-columns: 1fr; } }
@@ -221,7 +221,7 @@
         .btn-whatsapp { background: #25d366; }
 
         /* ==========================================================================
-           WHATSAPP FLOATING SYSTEM ENGINE
+           WHATSAPP ENGINE
            ========================================================================== */
         .whatsapp-floating-engine { position: fixed; bottom: 25px; right: 25px; z-index: 999; display: flex; flex-direction: column; align-items: flex-end; }
         .whatsapp-trigger-bubble { background: #25d366; color: white; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 4px 15px rgba(37,211,102,0.4); cursor: pointer; }
@@ -232,13 +232,10 @@
         .wa-bubble-msg { background: #1f2937; padding: 10px; border-radius: 0 8px 8px 8px; font-size: 13px; }
         .wa-card-footer { padding: 10px; background: #14141c; }
 
-        /* ==========================================================================
-           ADMIN MANAGEMENT DESK
-           ========================================================================== */
+        /* ADMIN LAYOUT */
         .admin-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; }
         @media(max-width: 950px) { .admin-layout { grid-template-columns: 1fr; } }
 
-        /* FOOTER DESIGN */
         footer { 
             background: #000000; 
             border-top: 1px solid rgba(250, 204, 21, 0.1); 
@@ -255,14 +252,14 @@
 </head>
 <body>
 
-    <!-- 1. ACCOUNT VERIFICATION MODAL CODES -->
+    <!-- Verification Screen Modal -->
     <div id="verificationScreen" class="auth-container hidden">
         <div class="auth-card">
             <div class="auth-header">
                 <h2>SECURITY <span class="accent-yellow">VERIFICATION</span></h2>
                 <p>Verification codes have been dispatched</p>
             </div>
-            <form id="verifyForm" onsubmit="handleVerificationSubmit(event)">
+            <form id="verifyForm" onsubmit="window.handleVerificationSubmit(event)">
                 <label style="font-size:12px;">Email Verification Code (Dispatched to Email)</label>
                 <input type="text" id="emailCode" placeholder="Enter 6-digit email code" required>
                 
@@ -274,7 +271,7 @@
         </div>
     </div>
 
-    <!-- 2. REGISTER SCREEN -->
+    <!-- Register Screen -->
     <div id="registerScreen" class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
@@ -301,7 +298,7 @@
         </div>
     </div>
 
-    <!-- 3. LOGIN SCREEN -->
+    <!-- Login Screen -->
     <div id="loginScreen" class="auth-container hidden">
         <div class="auth-card">
             <div class="auth-header">
@@ -321,14 +318,14 @@
         </div>
     </div>
 
-    <!-- 4. ADMIN LOGIN SCREEN -->
+    <!-- Admin Login Screen -->
     <div id="adminScreen" class="auth-container hidden">
         <div class="auth-card">
             <div class="auth-header">
                 <h2 style="color:#ef4444;"><i class="fas fa-user-shield"></i> ADMIN <span class="accent-yellow">PORTAL</span></h2>
                 <p>Execute administrative parameters authentication</p>
             </div>
-            <form id="adminForm" onsubmit="handleAdminLogin(event)">
+            <form id="adminForm" onsubmit="window.handleAdminLogin(event)">
                 <label style="font-size:12px;">Admin Username</label>
                 <input type="text" id="adminUser" placeholder="Enter Admin Identity String" required>
                 
@@ -341,7 +338,7 @@
         </div>
     </div>
 
-    <!-- 5. MAIN HUB ARCHITECTURE (VISIBLE POST AUTH) -->
+    <!-- Main Hub Application Framework -->
     <div id="mainAppHub" class="hidden">
         <nav>
             <div class="nav-logo-box" onclick="showSection('catalog')">
@@ -363,13 +360,27 @@
                     <i class="fas fa-shopping-cart"></i>
                     <span id="cartCount" class="cart-count">0</span>
                 </div>
-                <button onclick="handleLogout()" style="color:#ef4444; font-size:14px; font-weight:600;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                <button onclick="window.handleLogout()" style="color:#ef4444; font-size:14px; font-weight:600;"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
         </nav>
 
+        <!-- CART DRAWER OVERLAY WRAPPER -->
+        <div class="cart-sidebar" id="cartSidebarOverlay">
+            <div class="cart-header">
+                <h3><i class="fas fa-shopping-cart accent-yellow"></i> Your Storage Basket</h3>
+                <button onclick="toggleCartSidebar(false)" style="color:white; font-size:18px;"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="cart-items-wrapper" id="cartItemsContainer"></div>
+            <div class="cart-footer">
+                <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:bold;">
+                    <span>Subtotal Stream:</span><span id="cartAggregatedTotal" class="accent-yellow">Rs. 0</span>
+                </div>
+                <button onclick="toggleCartSidebar(false); showSection('checkout');" class="auth-btn bg-yellow" style="margin:0;">Proceed To Checkout</button>
+            </div>
+        </div>
+
         <div id="viewBox">
-            
-            <!-- HOME TAB VIEWPORT -->
+            <!-- HOME / CATALOG VIEWPORT -->
             <div id="catalogPage">
                 <section class="hero">
                     <h1>BazaarHub</h1>
@@ -382,7 +393,7 @@
                 </main>
             </div>
 
-            <!-- CART CHECKOUT SCREEN PARAMETERS -->
+            <!-- CHECKOUT PAGE VIEWPORT -->
             <div id="checkoutPage" class="container hidden">
                 <h2 class="section-title">Logistics Processing Checkout</h2>
                 <div class="checkout-grid">
@@ -419,7 +430,7 @@
                 </div>
             </div>
 
-            <!-- MY ORDER LIST SCREEN MODULE -->
+            <!-- MY ORDER LIST SCREEN -->
             <div id="myOrdersPage" class="container hidden">
                 <h2 class="section-title">My Order Tracking Matrices</h2>
                 <div class="checkout-box" style="overflow-x: auto; background:transparent; padding:0; border:none;">
@@ -437,7 +448,7 @@
                 </div>
             </div>
 
-            <!-- ADMINISTRATIVE CENTRAL CONTROLS TERMINAL DESK -->
+            <!-- ADMIN CONTROLS SCREEN -->
             <div id="adminPanelPage" class="container hidden">
                 <h2 class="section-title" style="color:#ef4444;">Central Admin Management Portal</h2>
                 <div class="admin-layout">
@@ -487,7 +498,7 @@
                 </div>
             </div>
 
-            <!-- CONTACT US INFORMATION TERMINAL SCREEN -->
+            <!-- CONTACT US SCREEN -->
             <div id="supportPage" class="container hidden">
                 <h2 class="section-title">Contact Us Help Desks Gateway</h2>
                 <div class="contact-grid">
@@ -502,11 +513,10 @@
                         <h3 style="margin-bottom:20px;">External Direct Secure Dispatches</h3>
                         <a href="https://facebook.com" target="_blank" class="social-btn btn-facebook"><i class="fab fa-facebook-f"></i> Contact on Facebook</a>
                         <a href="https://instagram.com" target="_blank" class="social-btn btn-instagram"><i class="fab fa-instagram"></i> Follow on Instagram</a>
-                        <button onclick="toggleWhatsAppWidget()" class="social-btn btn-whatsapp"><i class="fab fa-whatsapp"></i> Chat via Whatsapp</button>
+                        <button onclick="window.toggleWhatsAppWidget()" class="social-btn btn-whatsapp"><i class="fab fa-whatsapp"></i> Chat via Whatsapp</button>
                     </div>
                 </div>
             </div>
-
         </div>
 
         <!-- FLOATING LIVE WHATSAPP ENGINE LAYOUT -->
@@ -517,7 +527,7 @@
                         <div style="width:30px; height:30px; background:#25d366; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">BH</div>
                         <div><h4 style="font-size:13px;">BazaarHub Help Center</h4><p style="font-size:10px; color:#d1d5db;">Online System Node</p></div>
                     </div>
-                    <button onclick="toggleWhatsAppWidget()" style="color:white;"><i class="fas fa-times"></i></button>
+                    <button onclick="window.toggleWhatsAppWidget()" style="color:white;"><i class="fas fa-times"></i></button>
                 </div>
                 <div class="wa-card-body"><div class="wa-bubble-msg">Welcome to BazaarHub network service engine! Send your query trace path directly.</div></div>
                 <div class="wa-card-footer">
@@ -526,10 +536,9 @@
                     </a>
                 </div>
             </div>
-            <div class="whatsapp-trigger-bubble" onclick="toggleWhatsAppWidget()"><i class="fab fa-whatsapp"></i></div>
+            <div class="whatsapp-trigger-bubble" onclick="window.toggleWhatsAppWidget()"><i class="fab fa-whatsapp"></i></div>
         </div>
 
-        <!-- DYNAMIC SYSTEM FOOTER -->
         <footer>
             <div id="footerLogo">@bazaarhub Pakistan</div>
             <div class="footer-socials">
@@ -540,5 +549,7 @@
         </footer>
     </div>
 
+    <!-- SCRIPT DEPLOYMENT MATRIX REFERENCE LINK -->
+    <script type="module" src="script.js"></script>
 </body>
 </html>
