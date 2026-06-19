@@ -7,13 +7,13 @@ import { getFirestore, doc, setDoc, collection, query, where, getDocs, addDoc, d
 
 // Your web app's Firebase configuration (FINAL CORRECTED WITH DATABASE URL)
 const firebaseConfig = {
-  apiKey: "AIzaSyBQ5JXRZUqW75b78Lf90SgsncohByPHaoE",
-  authDomain: "bazaarhub-7fad9.firebaseapp.com",
-  projectId: "bazaarhub-7fad9",
-  storageBucket: "bazaarhub-7fad9.firebasestorage.app",
-  messagingSenderId: "234144258685",
-  appId: "1:234144258685:web:01743589d514f78a64ef14",
-  databaseURL: "https://bazaarhub-7fad9-default-rtdb.asia-southeast1.firebasedatabase.app"
+  apiKey: "AIzaSyAPlpnfGWTiUQlyl2vH6uM_Ae6_EQ8YW5E",
+  authDomain: "bazaarhubnew-79dee.firebaseapp.com",
+  databaseURL: "https://bazaarhubnew-79dee-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "bazaarhubnew-79dee",
+  storageBucket: "bazaarhubnew-79dee.firebasestorage.app",
+  messagingSenderId: "452492018395",
+  appId: "1:452492018395:web:6c3cf8d956ce7fe45b42fe"
 };
 
 // Initialize Firebase
