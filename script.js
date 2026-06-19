@@ -1,19 +1,18 @@
 // =========================================================================
-// FIREBASE REAL-TIME MULTI-DEVICE MANAGEMENT SYSTEM (BAZAARHUB)
+// FIREBASE LIFETIME MULTI-DEVICE LOGIN & REGISTER SYSTEM (INTEGRATED)
 // =========================================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, collection, addDoc, deleteDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, collection, query, where, getDocs, addDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-// Firebase Configuration (Corrected & Finalized)
+// Your web app's NEW Firebase configuration (Bazaarhubnew)
 const firebaseConfig = {
-  apiKey: "AIzaSyBQ5JXRZUqW75b78Lf90SgsncohByPHaoE",
-  authDomain: "bazaarhub-7fad9.firebaseapp.com",
-  projectId: "bazaarhub-7fad9",
-  storageBucket: "bazaarhub-7fad9.firebasestorage.app",
-  messagingSenderId: "234144258685",
-  appId: "1:234144258685:web:01743589d514f78a64ef14",
-  databaseURL: "https://bazaarhub-7fad9-default-rtdb.asia-southeast1.firebasedatabase.app"
+  apiKey: "AIzaSyAPlpnfGWTiUQlyl2vH6uM_Ae6_EQ8YW5E",
+  authDomain: "bazaarhubnew-79dee.firebaseapp.com",
+  projectId: "bazaarhubnew-79dee",
+  storageBucket: "bazaarhubnew-79dee.firebasestorage.app",
+  messagingSenderId: "452492018395",
+  appId: "1:452492018395:web:6c3cf8d956ce7fe45b42fe"
 };
 
 // Initialize Firebase
@@ -21,6 +20,57 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+let currentSessionUser = null;
+let products = [];
+
+// Expose Auth functions to window object
+window.loginUserPortal = async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const pass = document.getElementById('loginPass').value;
+    try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        alert("Authentication node established successfully.");
+        window.location.href = "index.html";
+    } catch (err) {
+        alert("Error mapping access profile: " + err.message);
+    }
+};
+
+window.registerUserAccount = async function(e) {
+    e.preventDefault();
+    const name = document.getElementById('regName').value;
+    const email = document.getElementById('regEmail').value;
+    const phone = document.getElementById('regPhone').value;
+    const pass = document.getElementById('regPass').value;
+
+    try {
+        const credentials = await createUserWithEmailAndPassword(auth, email, pass);
+        await setDoc(doc(db, "users", credentials.user.uid), {
+            uid: credentials.user.uid,
+            fullName: name,
+            emailAddress: email,
+            telemetryPhone: phone,
+            role: "client"
+        });
+        alert("User cryptography profile registered successfully inside cluster database.");
+        window.location.href = "index.html";
+    } catch(err) {
+        alert("Failed to create user sequence node: " + err.message);
+    }
+};
+
+// Listen to auth state channel changes
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        currentSessionUser = user;
+        if (document.getElementById('checkoutForm')) {
+            loadCheckoutModuleProfileData(user.uid);
+        }
+    } else {
+        currentSessionUser = null;
+    }
+});
 // Global Arrays for Live Updates
 let localProductsArray = [];
 
