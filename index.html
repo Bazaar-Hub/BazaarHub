@@ -154,6 +154,7 @@
             pointer-events: none;
             border: 1px solid transparent;
             background: linear-gradient(135deg, #facc15, transparent, #ef4444) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: destination-out;
             mask-composite: exclude;
             opacity: 0;
@@ -207,7 +208,11 @@
             animation: 3dLogoSpin 4s infinite linear;
         }
         
-
+        @keyframes 3dLogoSpin {
+            0% { transform: perspective(100px) rotateY(0deg); }
+            50% { transform: perspective(100px) rotateY(180deg); }
+            100% { transform: perspective(100px) rotateY(360deg); }
+        }
 
         .logo-text { font-size: 22px; font-weight: 900; letter-spacing: 1px; }
         
@@ -485,6 +490,7 @@
 
         footer { background: #030409; border-top: 1px solid rgba(250, 204, 21, 0.1); padding: 40px 6%; margin-top: 90px; text-align: center; color: #9ca3af; font-size: 14px; position: relative; }
     </style>
+    <script type="module" src="script.js"></script>
 </head>
 <body>
 
@@ -812,6 +818,22 @@
         let LOGGED_IN_USER_PHONE = "";
         let IS_ADMIN_MODE = false;
 
+        // Auto Load Active Session on Window Load to prevent registering loop
+        window.addEventListener('DOMContentLoaded', () => {
+            const currentSessionUser = localStorage.getItem('activeUserSessionPhone');
+            const isAdminSession = localStorage.getItem('activeAdminSession');
+
+            if (isAdminSession === "true") {
+                IS_ADMIN_MODE = true;
+                LOGGED_IN_USER_PHONE = "ADMIN-MASTER-TOKEN";
+                bootAppFramework();
+            } else if (currentSessionUser) {
+                LOGGED_IN_USER_PHONE = currentSessionUser;
+                IS_ADMIN_MODE = false;
+                bootAppFramework();
+            }
+        });
+
         function saveDatabasesToLocalStorage() {
             localStorage.setItem('bazaar_products', JSON.stringify(PRODUCT_DATABASE));
             localStorage.setItem('bazaar_orders', JSON.stringify(CENTRAL_ORDERS_DB));
@@ -828,7 +850,6 @@
 
         function handleRegister(e) {
             e.preventDefault();
-            // Data ko alag alag keys me store kar rahay hain taake login validation asan ho
             localStorage.setItem('storedUserName', document.getElementById('regName').value.trim());
             localStorage.setItem('storedUserEmail', document.getElementById('regEmail').value.trim());
             localStorage.setItem('storedUserPhone', document.getElementById('regPhone').value.trim());
@@ -851,7 +872,10 @@
                 LOGGED_IN_USER_PHONE = savedPhone;
                 IS_ADMIN_MODE = false;
                 
-                // Alert trigger hone ke baad seedha dashboard load hoga, infinite register loop khatam
+                // Active session storage coordinates mapping setup
+                localStorage.setItem('activeUserSessionPhone', savedPhone);
+                localStorage.removeItem('activeAdminSession');
+                
                 alert('Access Granted! Booting System Node Hub.');
                 bootAppFramework();
             } else {
@@ -867,6 +891,10 @@
             if(user === "OwnerBH" && pass === "bh777!@") {
                 IS_ADMIN_MODE = true;
                 LOGGED_IN_USER_PHONE = "ADMIN-MASTER-TOKEN";
+                
+                localStorage.setItem('activeAdminSession', "true");
+                localStorage.removeItem('activeUserSessionPhone');
+                
                 bootAppFramework();
             } else {
                 alert('Root Protocol Denied! Access keys invalid.');
@@ -893,7 +921,11 @@
             initWorkspaceEngine();
         }
 
-        function handleLogout() { location.reload(); }
+        function handleLogout() { 
+            localStorage.removeItem('activeUserSessionPhone');
+            localStorage.removeItem('activeAdminSession');
+            location.reload(); 
+        }
 
         function showSection(sectionId) {
             document.getElementById('catalogPage').classList.add('hidden');
@@ -905,7 +937,6 @@
             if(sectionId === 'catalog') document.getElementById('catalogPage').classList.remove('hidden');
             if(sectionId === 'checkout') {
                 document.getElementById('checkoutPage').classList.remove('hidden');
-                // Auto fill system parameters from active local database nodes
                 if(!IS_ADMIN_MODE) {
                     document.getElementById('billEmail').value = localStorage.getItem('storedUserEmail') || "";
                     document.getElementById('billPhone').value = LOGGED_IN_USER_PHONE || "";
@@ -964,7 +995,6 @@
             `).join('');
         }
 
-        // Keyframe injector logic for dynamic stagger cards loading animation
         const styleSheet = document.styleSheets[0];
         styleSheet.insertRule(`
             @keyframes cardRevealMove {
@@ -1039,9 +1069,6 @@
             showSection('checkout');
         }
 
-        /* ==========================================================================
-           DYNAMIC CONFETTI PARTY POPPER ENGINE (LEFT & RIGHT BURST)
-           ========================================================================== */
         function triggerPartyPoppersAnimation() {
             const totalParticles = 70;
             const colors = ['#facc15', '#ef4444', '#3b82f6', '#10b981', '#a855f7', '#ff7849'];

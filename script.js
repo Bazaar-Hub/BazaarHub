@@ -5,11 +5,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebas
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, collection, query, where, getDocs, addDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-// Your web app's Firebase configuration (FINAL CORRECTED WITH DATABASE URL)
+// Your web app's NEW Firebase configuration (Bazaarhubnew)
 const firebaseConfig = {
   apiKey: "AIzaSyAPlpnfGWTiUQlyl2vH6uM_Ae6_EQ8YW5E",
   authDomain: "bazaarhubnew-79dee.firebaseapp.com",
-  databaseURL: "https://bazaarhubnew-79dee-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "bazaarhubnew-79dee",
   storageBucket: "bazaarhubnew-79dee.firebasestorage.app",
   messagingSenderId: "452492018395",
@@ -21,59 +20,272 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Global access ke liye (agar kisi dusri direct script me use karna ho)
-window.auth = auth;
-window.db = db;
+let currentSessionUser = null;
+let products = [];
 
-// Lifetime Device Session Persistence (Login automatic save rahega dusre browsers me bhi)
+// Expose Auth functions to window object
+window.loginUserPortal = async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const pass = document.getElementById('loginPass').value;
+    try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        alert("Authentication node established successfully.");
+        window.location.href = "index.html";
+    } catch (err) {
+        alert("Error mapping access profile: " + err.message);
+    }
+};
+
+window.registerUserAccount = async function(e) {
+    e.preventDefault();
+    const name = document.getElementById('regName').value;
+    const email = document.getElementById('regEmail').value;
+    const phone = document.getElementById('regPhone').value;
+    const pass = document.getElementById('regPass').value;
+
+    try {
+        const credentials = await createUserWithEmailAndPassword(auth, email, pass);
+        await setDoc(doc(db, "users", credentials.user.uid), {
+            uid: credentials.user.uid,
+            fullName: name,
+            emailAddress: email,
+            telemetryPhone: phone,
+            role: "client"
+        });
+        alert("User cryptography profile registered successfully inside cluster database.");
+        window.location.href = "index.html";
+    } catch(err) {
+        alert("Failed to create user sequence node: " + err.message);
+    }
+};
+
+// Listen to auth state channel changes
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        console.log("Firebase Connected! User logged in:", user.email);
-        // Agar user already logged in hai aur login/auth page par hai, toh direct home page bhejein
-        if (window.location.pathname.includes("auth.html")) {
-            window.location.href = "index.html";
+        currentSessionUser = user;
+        if (document.getElementById('checkoutForm')) {
+            loadCheckoutModuleProfileData(user.uid);
         }
     } else {
-        console.log("No user logged in currently.");
-        // Agar authenticated nahi hai aur index/admin page par hai, toh auth page par redirect karein
-        if (!window.location.pathname.includes("auth.html")) {
-            window.location.href = "auth.html";
-        }
+        currentSessionUser = null;
     }
 });
 
+// Checkout specific script logic
+async function loadCheckoutModuleProfileData(uid) {
+    try {
+        const querySnapshot = await getDocs(query(collection(db, "users"), where("uid", "==", uid)));
+        if (!querySnapshot.empty) {
+            const data = querySnapshot.docs[0].data();
+            const fullNameArray = data.fullName ? data.fullName.split(" ") : ["", ""];
+            if (document.getElementById('custFName')) document.getElementById('custFName').value = fullNameArray[0] || "";
+            if (document.getElementById('custLName')) document.getElementById('custLName').value = fullNameArray[1] || "";
+            if (document.getElementById('custPhone')) document.getElementById('custPhone').value = data.telemetryPhone || "";
+        }
+    } catch(err) {
+        console.error("Profile extraction runtime halt: ", err);
+    }
+}
+
+if (document.getElementById('checkoutForm')) {
+    const checkoutForm = document.getElementById('checkoutForm');
+    const localCartArray = JSON.parse(localStorage.getItem('bazaarhub_cart_cache')) || [];
+    const summaryContainer = document.getElementById('checkoutSummaryItemsContainer');
+    const totalDisplay = document.getElementById('checkoutSummaryTotalDisplay');
+
+    const calculatedTotalSum = localCartArray.reduce((acc, currentItem) => acc + (currentItem.price * currentItem.quantity), 0);
+    if(totalDisplay) totalDisplay.innerText = "Rs. " + calculatedTotalSum;
+
+    if (summaryContainer) {
+        if(localCartArray.length === 0) {
+            summaryContainer.innerHTML = `<p style="font-size:12px; color:#9ca3af;">No items detected in local cart array trace.</p>`;
+        } else {
+            summaryContainer.innerHTML = localCartArray.map(item => `
+                <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; padding-bottom:6px; border-bottom:1px dashed #1f2937;">
+                    <span>${item.name} (x${item.quantity})</span>
+                    <span style="color:#facc15; font-weight:700;">Rs. ${item.price * item.quantity}</span>
+                </div>
+            `).join('');
+        }
+    }
+
+    checkoutForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if(localCartArray.length === 0) {
+            alert("Checkout queue contains zero entries. Aborting payload transmission.");
+            return;
+        }
+
+        const serializedItemsPayloadString = localCartArray.map(i => `${i.name} [x${i.quantity}]`).join(', ');
+        const structuralOrderDocumentNode = {
+            firstName: document.getElementById('custFName').value,
+            lastName: document.getElementById('custLName').value,
+            address: document.getElementById('custAddress').value,
+            city: document.getElementById('custCity').value,
+            phone: document.getElementById('custPhone').value,
+            items: serializedItemsPayloadString,
+            cost: "Rs. " + calculatedTotalSum,
+            status: "Pending Verification",
+            timestamp: Date.now(),
+            user: currentSessionUser ? currentSessionUser.email : "anonymous-node"
+        };
+
+        try {
+            await addDoc(collection(db, "orders"), structuralOrderDocumentNode);
+            localStorage.removeItem('bazaarhub_cart_cache');
+            alert("Order dispatch metadata trace transmitted into Firestore console successfully!");
+            window.location.href = "index.html";
+        } catch(err) {
+            alert("Logistics order database execution failure: " + err.message);
+        }
+    });
+}
+
+// =========================================================================
+// REALTIME DATA FETCH FOR ADMIN MANAGEMENT PORTAL (INTEGRATED SNAPSHOTS)
+// =========================================================================
+if (document.getElementById('adminProductsList') || document.getElementById('adminOrdersList')) {
+    onSnapshot(collection(db, "products"), (snapshot) => {
+        products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderAdminConsoleUIProducts();
+    });
+
+    onSnapshot(collection(db, "orders"), (snapshot) => {
+        const activeOrdersArr = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderAdminConsoleUIOrders(activeOrdersArr);
+    });
+}
+
+function renderAdminConsoleUIProducts() {
+    const listRef = document.getElementById('adminProductsList');
+    if(!listRef) return;
+    if(products.length === 0) {
+        listRef.innerHTML = `<p style="font-size:12px; color:#9ca3af;">Zero entries inside cloud collection module.</p>`;
+        return;
+    }
+    listRef.innerHTML = products.map(p => `
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#14141c; padding:10px; border-radius:6px; margin-bottom:8px; border:1px solid #1f2937;">
+            <div>
+                <span style="font-weight:700; font-size:13px;">${p.name}</span>
+                <span style="font-size:11px; color:#facc15; margin-left:10px;">Rs. ${p.price} [${p.category}]</span>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button onclick="window.editProductConsole('${p.id}')" style="background:#1f2937; color:#facc15; font-size:11px; padding:4px 8px; border-radius:4px;"><i class="fas fa-edit"></i></button>
+                <button onclick="window.deleteProductConsole('${p.id}')" style="background:rgba(239,68,68,0.1); color:#ef4444; font-size:11px; padding:4px 8px; border-radius:4px;"><i class="fas fa-trash-alt"></i></button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderAdminConsoleUIOrders(orders) {
+    const listRef = document.getElementById('adminOrdersList');
+    if(!listRef) return;
+    if(orders.length === 0) {
+        listRef.innerHTML = `<tr><td colspan="4" style="text-align:center; font-size:12px; color:#9ca3af; padding:20px 0;">No logs caught inside order intercept channel.</td></tr>`;
+        return;
+    }
+    listRef.innerHTML = orders.map(o => `
+        <tr style="border-bottom:1px solid #1f2937;">
+            <td style="font-size:11px; padding:10px 5px;">
+                <strong>${o.firstName} ${o.lastName}</strong><br>
+                <span style="color:#9ca3af;">M: ${o.user}<br>Tel: ${o.phone}<br>A: ${o.address}, ${o.city}</span>
+            </td>
+            <td style="font-size:11px; padding:10px 5px; color:#9ca3af;">${o.items}</td>
+            <td style="font-size:12px; font-weight:800; color:#facc15; padding:10px 5px;">${o.cost}</td>
+            <td style="padding:10px 5px;">
+                <select onchange="window.changeStatusAction('${o.id}', this.value)" style="margin:0; padding:4px; font-size:11px; background:#14141c; color:white; border-color:#374151;">
+                    <option value="Pending Verification" ${o.status === 'Pending Verification' ? 'selected' : ''}>Pending</option>
+                    <option value="Placed" ${o.status === 'Placed' ? 'selected' : ''}>Placed</option>
+                    <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                </select>
+                <button onclick="window.eraseOrderAction('${o.id}')" style="background:transparent; color:#ef4444; margin-left:8px; font-size:11px;"><i class="fas fa-trash"></i></button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+window.editProductConsole = function(id) {
+    const itemRef = products.find(p => p.id === id);
+    if(!itemRef) return;
+    document.getElementById('editIndex').value = id;
+    document.getElementById('pName').value = itemRef.name; 
+    document.getElementById('pCategory').value = itemRef.category;
+    document.getElementById('pPrice').value = itemRef.price; 
+    document.getElementById('pImage').value = itemRef.image;
+    document.getElementById('pDesc').value = itemRef.description || ''; 
+    document.getElementById('formSubmitBtn').innerText = "UPDATE PRODUCT";
+};
+
+window.deleteProductConsole = async function(id) { 
+    if(confirm("Confirm asset record removal?")) { 
+        await deleteDoc(doc(db, "products", id));
+    } 
+};
+
+window.changeStatusAction = async function(docId, newStatus) { 
+    await setDoc(doc(db, "orders", docId), { status: newStatus }, { merge: true });
+};
+
+window.eraseOrderAction = async function(docId) { 
+    if(confirm("Erase order record?")) { 
+        try {
+            await deleteDoc(doc(db, "orders", docId));
+        } catch(err) {
+            console.error("Order deletion error: ", err);
+        }
+    } 
+};
+
+if (document.getElementById('addProductForm')) {
+    const addProductForm = document.getElementById('addProductForm');
+
+    addProductForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const editId = document.getElementById('editIndex').value;
+        const dynamicPayloadStructure = {
+            name: document.getElementById('pName').value,
+            category: document.getElementById('pCategory').value,
+            price: parseInt(document.getElementById('pPrice').value),
+            image: document.getElementById('pImage').value,
+            description: document.getElementById('pDesc').value
+        };
+
+        if (editId !== '') {
+            await setDoc(doc(db, "products", editId), dynamicPayloadStructure);
+            document.getElementById('editIndex').value = '';
+            document.getElementById('formSubmitBtn').innerText = "SAVE NODE MODULE";
+        } else { 
+            await addDoc(collection(db, "products"), dynamicPayloadStructure); 
+        }
+        addProductForm.reset(); 
+    });
+}
+
 // ==========================================
-// 1. REGISTER (Account Creation & Database Save)
+// 1. REGISTRATION (Naya Account Banane Ke Liye)
 // ==========================================
 const regForm = document.getElementById('registerForm');
 if (regForm) {
     regForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
-        const name = document.getElementById('regName').value;
         const email = document.getElementById('regEmail').value;
-        const phone = document.getElementById('regPhone').value; 
         const password = document.getElementById('regPass').value;
-
-        if (password.length < 6) {
-            alert("Password must be at least 6 characters long!");
-            return;
-        }
+        const name = document.getElementById('regName').value;
 
         try {
-            // Creating user identity instance record on Firebase Auth Cluster
+            // Firebase Auth me user create ho raha hai
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             
-            // Saving telemetry records parameters safely inside centralized firestore catalog
+            // User ka extra data (Name) Firestore database me save karne ke liye
             await setDoc(doc(db, "users", userCredential.user.uid), {
                 name: name,
                 email: email,
-                phone: phone,
-                role: "client" // default role assignation protocol
+                role: "client" // default role
             });
 
             alert("Account successfully created!");
-            window.location.href = "index.html"; 
+            window.location.href = "index.html"; // Login ke baad home page pr bhejne k liye
         } catch (error) {
             console.error("Reg Error:", error.message);
             alert("Registration Failed: " + error.message);
@@ -82,7 +294,7 @@ if (regForm) {
 }
 
 // ==========================================
-// 2. LOGIN (Session Persistence Engine)
+// 2. LOGIN (Kisi bhi Browser se Sign In Ke Liye)
 // ==========================================
 const logForm = document.getElementById('loginForm');
 if (logForm) {
@@ -92,6 +304,7 @@ if (logForm) {
         const password = document.getElementById('loginPass').value;
 
         try {
+            // Firebase Auth se login validation
             await signInWithEmailAndPassword(auth, email, password);
             alert("Login Successful!");
             window.location.href = "index.html"; 
@@ -100,147 +313,4 @@ if (logForm) {
             alert("Login Failed: " + error.message);
         }
     });
-}
-
-// =========================================================================
-// REALTIME PRODUCTS DATA MATRIX & DYNAMIC DISPATCH CATALOG CODES (DOM CONTROLS)
-// =========================================================================
-const adminProdContainer = document.getElementById('adminProductsList');
-const storeProdContainer = document.getElementById('storefrontProductsGrid');
-
-if (adminProdContainer || storeProdContainer) {
-    onSnapshot(collection(db, "products"), (snapshot) => {
-        products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        
-        if (adminProdContainer) {
-            adminProdContainer.innerHTML = products.map(p => `
-                <div style="display:flex; justify-content:space-between; align-items:center; background:#14141c; padding:8px 12px; margin-bottom:8px; border-radius:6px; border:1px solid #1f2937;">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <img src="${p.image}" style="width:35px; height:35px; border-radius:4px; object-fit:cover;">
-                        <div>
-                            <div style="font-size:13px; font-weight:700;">${p.name}</div>
-                            <div style="font-size:11px; color:#facc15;">Rs. ${p.price} | ${p.category}</div>
-                        </div>
-                    </div>
-                    <div style="display:flex; gap:6px;">
-                        <button onclick="editProductConsole('${p.id}')" style="color:#facc15; font-size:12px;"><i class="fas fa-edit"></i></button>
-                        <button onclick="deleteProductConsole('${p.id}')" style="color:#ef4444; font-size:12px;"><i class="fas fa-trash"></i></button>
-                    </div>
-                </div>
-            `).join('');
-        }
-        
-        if (storeProdContainer) {
-            if (products.length === 0) {
-                storeProdContainer.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:4px; color:#9ca3af;">No computational asset vectors loaded.</div>`;
-            } else {
-                storeProdContainer.innerHTML = products.map(p => `
-                    <div class="product-card">
-                        <img src="${p.image}" class="product-img" alt="${p.name}">
-                        <div class="product-info">
-                            <span class="product-tag">${p.category}</span>
-                            <h3 class="product-title">${p.name}</h3>
-                            <p style="font-size:11px; color:#9ca3af; margin:4px 0 8px 0; height:32px; overflow:hidden;">${p.description || ''}</p>
-                            <div class="product-meta">
-                                <span class="product-price">Rs. ${p.price}</span>
-                                <button onclick="injectItemToCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${p.image}')" class="add-cart-btn"><i class="fas fa-shopping-basket"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        }
-    });
-}
-
-// =========================================================================
-// CENTRAL REALTIME LOGISTICS DISPATCH MANAGERS (ADMIN MATRIX CONSOLE NODES)
-// =========================================================================
-const adminOrdersTableBody = document.getElementById('adminOrdersList');
-if (adminOrdersTableBody) {
-    onSnapshot(collection(db, "orders"), (snapshot) => {
-        orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        
-        orders.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
-
-        adminOrdersTableBody.innerHTML = orders.map(o => `
-            <tr>
-                <td>
-                    <div style="font-weight:700; font-size:13px; color:#ffffff;">${o.customerName}</div>
-                    <div style="font-size:11px; color:#9ca3af; margin-top:2px;">
-                        <i class="fas fa-phone" style="font-size:10px;"></i> ${o.customerPhone}<br>
-                        <i class="fas fa-envelope" style="font-size:10px;"></i> ${o.userEmail || 'Guest'}<br>
-                        <i class="fas fa-map-marker-alt" style="font-size:10px;"></i> ${o.customerAddress}, ${o.customerCity}
-                    </div>
-                </td>
-                <td style="font-size:12px; max-width:250px; white-space:normal; word-break:break-word;">
-                    ${o.cartItems ? o.cartItems.map(i => `<div style="margin-bottom:2px;">• ${i.name} <span style="color:#9ca3af;">(x${i.quantity})</span></div>`).join('') : ''}
-                </td>
-                <td style="font-weight:700; color:#facc15; font-size:13px;">Rs. ${o.totalAmount}</td>
-                <td>
-                    <select onchange="changeStatusAction('${o.id}', this.value)" style="margin:0; padding:6px; font-size:12px; background:#14141c; color:white; border:1px solid #374151; border-radius:6px;">
-                        <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                        <option value="Dispatched" ${o.status === 'Dispatched' ? 'selected' : ''}>Dispatched</option>
-                        <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-                    </select>
-                    <button onclick="eraseOrderAction('${o.id}')" style="margin-left:8px; color:#ef4444; font-size:12px;"><i class="fas fa-trash-alt"></i></button>
-                </td>
-            </tr>
-        `).join('');
-    });
-}
-
-// =========================================================================
-// ADMIN CONTROL PANEL INTERFACES EXPOSED LOGICAL METHODS
-// =========================================================================
-const addProductForm = document.getElementById('addProductForm');
-if (addProductForm) {
-    addProductForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const id = document.getElementById('editIndex').value;
-        const dynamicPayloadStructure = {
-            name: document.getElementById('pName').value,
-            category: document.getElementById('pCategory').value,
-            price: parseFloat(document.getElementById('pPrice').value),
-            image: document.getElementById('pImage').value,
-            description: document.getElementById('pDesc').value
-        };
-
-        if (id) {
-            await setDoc(doc(db, "products", id), dynamicPayloadStructure);
-            document.getElementById('editIndex').value = '';
-            document.getElementById('formSubmitBtn').innerText = "SAVE NODE MODULE";
-        } else { 
-            await addDoc(collection(db, "products"), dynamicPayloadStructure); 
-        }
-        addProductForm.reset(); 
-    });
-
-    window.editProductConsole = function(id) {
-        const itemRef = products.find(p => p.id === id);
-        if(!itemRef) return;
-        document.getElementById('editIndex').value = id;
-        document.getElementById('pName').value = itemRef.name; 
-        document.getElementById('pCategory').value = itemRef.category;
-        document.getElementById('pPrice').value = itemRef.price; 
-        document.getElementById('pImage').value = itemRef.image;
-        document.getElementById('pDesc').value = itemRef.description || ''; 
-        document.getElementById('formSubmitBtn').innerText = "UPDATE PRODUCT";
-    };
-
-    window.deleteProductConsole = async function(id) { 
-        if(confirm("Confirm asset record removal?")) { 
-            await deleteDoc(doc(db, "products", id));
-        } 
-    };
-    
-    window.changeStatusAction = async function(docId, newStatus) { 
-        await setDoc(doc(db, "orders", docId), { status: newStatus }, { merge: true });
-    };
-    
-    window.eraseOrderAction = async function(docId) { 
-        if(confirm("Delete this logistics routing track entry?")) {
-            await deleteDoc(doc(db, "orders", docId));
-        }
-    };
 }

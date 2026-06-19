@@ -469,3 +469,25 @@ footer { background-color: #000000; border-top: 1px solid #1f2937; padding: 30px
     .checkout-grid { grid-template-columns: 7fr 5fr; gap: 30px; }
     .footer-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 40px; }
 }
+
+/* SMOOTH TOAST NOTIFICATIONS DESIGN */
+.toast-notification {
+    position: fixed;
+    bottom: 20px;
+    left: -400px;
+    background-color: #14141c;
+    color: #ffffff;
+    padding: 14px 24px;
+    border-radius: 8px;
+    border-left: 4px solid #facc15;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 99999;
+    transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.toast-notification.show {
+    left: 20px;
+}
