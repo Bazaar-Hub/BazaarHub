@@ -131,44 +131,6 @@
         }
 
         /* ==========================================================================
-           HERO SECTION & CATEGORIES
-           ========================================================================== */
-        .hero { 
-            text-align: center; 
-            padding: 60px 20px; 
-            background: radial-gradient(circle at top, rgba(250,204,21,0.08) 0%, transparent 70%);
-        }
-        .hero h1 { font-size: 42px; font-weight: 900; margin-bottom: 10px; }
-        .hero p { color: #facc15; font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
-        .section-title { font-size: 24px; font-weight: 800; margin-bottom: 30px; text-transform: uppercase; border-bottom: 1px solid #1f2937; padding-bottom: 10px; }
-        
-        .filter-capsules { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
-        .capsule { background: #14141c; border: 1px solid #1f2937; padding: 8px 20px; border-radius: 20px; font-size: 12px; color: #ffffff; font-weight: 700; text-transform: uppercase; }
-        .capsule.active, .capsule:hover { background: #facc15; color: #000000; border-color: #facc15; }
-
-        /* ==========================================================================
-           PRODUCT CARDS GRID
-           ========================================================================== */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; }
-        .product-card { 
-            background: #0d0d13;
-            border: 1px solid #1f2937; 
-            border-radius: 12px; 
-            overflow: hidden; 
-            padding: 15px; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between;
-        }
-        .product-img { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; }
-        .product-title { font-size: 16px; font-weight: 700; margin: 12px 0 6px 0; }
-        .product-desc { font-size: 12px; color: #9ca3af; margin-bottom: 12px; }
-        .product-price { font-size: 18px; font-weight: 800; color: #facc15; margin-bottom: 12px; }
-        .card-btn { width: 100%; padding: 10px; border-radius: 6px; font-size: 12px; font-weight: 700; }
-
-        /* ==========================================================================
            CART DRAWER SIDEBAR
            ========================================================================== */
         .cart-sidebar { 
@@ -188,95 +150,42 @@
         .qty-val { padding: 0 10px; font-size: 13px; font-weight: 700; }
         .cart-footer { padding: 20px; border-top: 1px solid #1f2937; background: #07070a; }
 
-        /* ==========================================================================
-           TABLES & GENERAL DATA LAYOUTS
-           ========================================================================== */
         .checkout-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px; }
-        @media(max-width: 768px) { .checkout-grid { grid-template-columns: 1fr; } }
-        .checkout-box { background: #0d0d13; border: 1px solid #1f2937; padding: 25px; border-radius: 12px; }
-        
         table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 15px; }
         th { padding: 12px; background: #14141c; color: #9ca3af; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #1f2937; }
         td { padding: 14px 12px; border-bottom: 1px solid #1f2937; font-size: 13px; }
-        
         .status-badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
         .status-otw { background: #f59e0b; color: #000; }
         .status-delivered { background: #10b981; color: #fff; }
         .status-oos { background: #ef4444; color: #fff; }
-
         .star-node { font-size: 16px; color: #4b5563; cursor: pointer; margin-right: 2px; }
         .star-node.selected { color: #facc15; }
-
-        /* ==========================================================================
-           CONTACT & SUPPORT STYLES
-           ========================================================================== */
-        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        @media(max-width: 768px) { .contact-grid { grid-template-columns: 1fr; } }
-        .contact-node { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; font-size: 15px; }
-        .contact-node i { font-size: 20px; color: #facc15; width: 30px; }
-        
-        .social-btn { width: 100%; max-width: 280px; padding: 12px; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; margin-bottom: 15px; color: #fff; }
-        .btn-facebook { background: #1877f2; }
-        .btn-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
-        .btn-whatsapp { background: #25d366; }
-
-        /* ==========================================================================
-           WHATSAPP ENGINE
-           ========================================================================== */
-        .whatsapp-floating-engine { position: fixed; bottom: 25px; right: 25px; z-index: 999; display: flex; flex-direction: column; align-items: flex-end; }
-        .whatsapp-trigger-bubble { background: #25d366; color: white; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 4px 15px rgba(37,211,102,0.4); cursor: pointer; }
-        .whatsapp-chat-matrix-card { width: 300px; background-color: #14141c; border: 1px solid #1f2937; border-radius: 12px; overflow: hidden; margin-bottom: 15px; display: none; flex-direction: column; }
-        .whatsapp-chat-matrix-card.active { display: flex; }
-        .wa-card-header { background: #075e54; padding: 12px; display: flex; align-items: center; justify-content: space-between; color: white; }
-        .wa-card-body { padding: 15px; background: #0d0d13; min-height: 80px; }
-        .wa-bubble-msg { background: #1f2937; padding: 10px; border-radius: 0 8px 8px 8px; font-size: 13px; }
-        .wa-card-footer { padding: 10px; background: #14141c; }
-
-        /* ADMIN LAYOUT */
         .admin-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; }
-        @media(max-width: 950px) { .admin-layout { grid-template-columns: 1fr; } }
-
-        footer { 
-            background: #000000; 
-            border-top: 1px solid rgba(250, 204, 21, 0.1); 
-            padding: 20px 5%; 
-            margin-top: 50px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            color: #9ca3af;
-            font-size: 14px;
-        }
-        .footer-socials { display: flex; gap: 15px; font-size: 18px; }
     </style>
 </head>
 <body>
 
-    <!-- Verification Screen Modal -->
     <div id="verificationScreen" class="auth-container hidden">
         <div class="auth-card">
             <div class="auth-header">
-                <h2>SECURITY <span class="accent-yellow">VERIFICATION</span></h2>
-                <p>Verification codes have been dispatched</p>
+                <h2>PHONE <span class="accent-yellow">OTP VERIFICATION</span></h2>
+                <p id="otpStatusText">Enter the 6-digit real SMS verification code sent to your phone</p>
             </div>
             <form id="verifyForm" onsubmit="window.handleVerificationSubmit(event)">
-                <label style="font-size:12px;">Email Verification Code (Dispatched to Email)</label>
-                <input type="text" id="emailCode" placeholder="Enter 6-digit email code" required>
+                <label style="font-size:12px;">SMS OTP Code</label>
+                <input type="text" id="phoneCode" placeholder="Enter 6-digit SMS OTP" required maxLength="6">
                 
-                <label style="font-size:12px;">SMS Verification Code (Dispatched to Phone Number)</label>
-                <input type="text" id="phoneCode" placeholder="Enter 6-digit SMS code" required>
-                
-                <button type="submit" class="auth-btn bg-yellow">Verify & Confirm Account</button>
+                <button type="submit" class="auth-btn bg-yellow">Verify Code & Confirm Login</button>
             </form>
+            <p class="auth-switch-text"><span onclick="location.reload()">← Back to Registration</span></p>
         </div>
     </div>
 
-    <!-- Register Screen -->
     <div id="registerScreen" class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
                 <h2>BAZAAR<span class="accent-yellow">HUB</span></h2>
-                <p>Create your permanent user registration profile</p>
+                <p>Create your permanent profile via Mobile Verification</p>
             </div>
             <form id="registerForm" onsubmit="window.registerUserAccount(event)">
                 <label style="font-size:12px;">Full Name</label>
@@ -285,20 +194,21 @@
                 <label style="font-size:12px;">Email Registry</label>
                 <input type="email" id="regEmail" placeholder="name@domain.com" required>
                 
-                <label style="font-size:12px;">Phone Number</label>
-                <input type="tel" id="regPhone" placeholder="e.g. 03001234567" required>
+                <label style="font-size:12px;">Phone Number (With Country Code)</label>
+                <input type="tel" id="regPhone" placeholder="e.g. +923001234567" required>
                 
                 <label style="font-size:12px;">Password Cipher Key</label>
                 <input type="password" id="regPass" placeholder="Create secret password" required>
                 
-                <button type="submit" class="auth-btn bg-yellow">Create Account</button>
+                <div id="recaptcha-container"></div>
+                
+                <button type="submit" class="auth-btn bg-yellow" id="regSubmitBtn">Send SMS OTP Code</button>
             </form>
             <p class="auth-switch-text">Already registered? <span onclick="switchScreen('login')">Login Here</span></p>
             <p class="auth-switch-text" style="margin-top:15px; font-size:12px; color:#facc15;" onclick="switchScreen('admin')"><i class="fas fa-user-shield"></i> Access Admin Terminal Panel</p>
         </div>
     </div>
 
-    <!-- Login Screen -->
     <div id="loginScreen" class="auth-container hidden">
         <div class="auth-card">
             <div class="auth-header">
@@ -318,7 +228,6 @@
         </div>
     </div>
 
-    <!-- Admin Login Screen -->
     <div id="adminScreen" class="auth-container hidden">
         <div class="auth-card">
             <div class="auth-header">
@@ -338,7 +247,6 @@
         </div>
     </div>
 
-    <!-- Main Hub Application Framework -->
     <div id="mainAppHub" class="hidden">
         <nav>
             <div class="nav-logo-box" onclick="showSection('catalog')">
@@ -347,7 +255,6 @@
             </div>
             <div class="nav-center" id="clientNavLinks">
                 <a href="#" onclick="showSection('catalog'); return false;">Home</a>
-                <a href="#" onclick="scrollToShopSection(); return false;">Shop</a>
                 <a href="#" onclick="showSection('my-orders'); return false;">My Order List</a>
                 <a href="#" onclick="showSection('support'); return false;">Contact Us</a>
             </div>
@@ -364,7 +271,6 @@
             </div>
         </nav>
 
-        <!-- CART DRAWER OVERLAY WRAPPER -->
         <div class="cart-sidebar" id="cartSidebarOverlay">
             <div class="cart-header">
                 <h3><i class="fas fa-shopping-cart accent-yellow"></i> Your Storage Basket</h3>
@@ -380,24 +286,13 @@
         </div>
 
         <div id="viewBox">
-            <!-- HOME / CATALOG VIEWPORT -->
             <div id="catalogPage">
-                <section class="hero">
-                    <h1>BazaarHub</h1>
-                    <p>Shop now buy now</p>
-                </section>
-                <main class="container" id="shopCatalogSection">
-                    <h2 class="section-title">Products Vault & Categories</h2>
-                    <div class="filter-capsules" id="categoryChipsBox"></div>
-                    <div id="productsGrid" class="grid"></div>
-                </main>
+                <div id="productsGrid" class="grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:25px; padding:40px 4%;"></div>
             </div>
 
-            <!-- CHECKOUT PAGE VIEWPORT -->
-            <div id="checkoutPage" class="container hidden">
-                <h2 class="section-title">Logistics Processing Checkout</h2>
+            <div id="checkoutPage" class="container hidden" style="padding:40px 4%;">
                 <div class="checkout-grid">
-                    <div class="checkout-box">
+                    <div class="checkout-box" style="background:#0d0d13; border:1px solid #1f2937; padding:25px; border-radius:12px;">
                         <h3><i class="fas fa-truck accent-yellow"></i> Shipping Metadata</h3>
                         <form id="checkoutForm">
                             <label style="font-size:12px;">Full Identity Name</label>
@@ -410,146 +305,54 @@
                             <input type="tel" id="custPhone" readonly style="opacity:0.6; background:#1f2937;">
 
                             <label style="font-size:12px;">Delivery Destination Address Location</label>
-                            <input type="text" id="custAddress" placeholder="Enter your full destination delivery address" required>
+                            <input type="text" id="custAddress" placeholder="Enter delivery address" required>
                             
                             <label style="font-size:12px;">Payment Method Channel Protocol</label>
                             <select id="custPaymentMode" required>
                                 <option value="Cash On Delivery (COD)" selected>Cash On Delivery (COD)</option>
                             </select>
-
-                            <button type="submit" class="auth-btn bg-yellow" style="margin-top:15px;">Place Checkout Order Target</button>
+                            <button type="submit" class="auth-btn bg-yellow">Place Checkout Order Target</button>
                         </form>
                     </div>
-                    <div class="checkout-box">
-                        <h3><i class="fas fa-shopping-basket accent-yellow"></i> Basket Summary</h3>
-                        <div id="checkoutSummaryItemsContainer" style="margin-top:15px;"></div>
-                        <div style="display:flex; justify-content:space-between; margin-top:20px; padding-top:15px; border-top:1px dashed #374151; font-weight:800;">
-                            <span>TOTAL COST DUE:</span><span class="accent-yellow" id="checkoutSummaryTotalDisplay">Rs. 0</span>
-                        </div>
-                    </div>
                 </div>
             </div>
 
-            <!-- MY ORDER LIST SCREEN -->
-            <div id="myOrdersPage" class="container hidden">
+            <div id="myOrdersPage" class="container hidden" style="padding:40px 4%;">
                 <h2 class="section-title">My Order Tracking Matrices</h2>
-                <div class="checkout-box" style="overflow-x: auto; background:transparent; padding:0; border:none;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Purchased Items Stack</th>
-                                <th>Fee Total</th>
-                                <th>Logistics Tracking Status / Ratings Matrix</th>
-                            </tr>
-                        </thead>
-                        <tbody id="myOrdersTableBody"></tbody>
-                    </table>
-                </div>
+                <table>
+                    <thead>
+                        <tr><th>Order ID</th><th>Purchased Items Stack</th><th>Fee Total</th><th>Status</th></tr>
+                    </thead>
+                    <tbody id="myOrdersTableBody"></tbody>
+                </table>
             </div>
 
-            <!-- ADMIN CONTROLS SCREEN -->
-            <div id="adminPanelPage" class="container hidden">
-                <h2 class="section-title" style="color:#ef4444;">Central Admin Management Portal</h2>
+            <div id="adminPanelPage" class="container hidden" style="padding:40px 4%;">
                 <div class="admin-layout">
-                    <div class="checkout-box">
-                        <h3 style="color:#facc15;"><i class="fas fa-plus-circle"></i> Inject / Update Product Struct</h3>
+                    <div class="checkout-box" style="background:#0d0d13; border:1px solid #1f2937; padding:25px; border-radius:12px;">
+                        <h3>Inject Product</h3>
                         <form id="addProductForm">
                             <input type="hidden" id="editIndex">
-                            
-                            <label style="font-size:11px;">Product Display Title String</label>
-                            <input type="text" id="pName" placeholder="e.g. Premium Leather Sneakers" required>
-                            
-                            <label style="font-size:11px;">Category Token Allocation Key</label>
-                            <input type="text" id="pCategory" placeholder="e.g. Shoes" required>
-                            
-                            <label style="font-size:11px;">Numeric Pricing Unit Value (Rs.)</label>
-                            <input type="number" id="pPrice" placeholder="e.g. 4500" required>
-                            
-                            <label style="font-size:11px;">Image CDN Destination Target URL</label>
-                            <input type="url" id="pImage" placeholder="https://images.unsplash.com/..." required>
-                            
-                            <label style="font-size:11px;">Product Log Description Text</label>
-                            <textarea id="pDesc" rows="3" placeholder="Describe core parameters specs..." required></textarea>
-                            
-                            <button type="submit" id="formSubmitBtn" class="auth-btn bg-yellow">Save Asset Node Module</button>
+                            <input type="text" id="pName" placeholder="Product Name" required>
+                            <input type="text" id="pCategory" placeholder="Category" required>
+                            <input type="number" id="pPrice" placeholder="Price" required>
+                            <input type="url" id="pImage" placeholder="Image URL" required>
+                            <textarea id="pDesc" placeholder="Description" required></textarea>
+                            <button type="submit" id="formSubmitBtn" class="auth-btn bg-yellow">Save Asset</button>
                         </form>
-
-                        <h3 style="font-size:14px; margin-top:25px; margin-bottom:10px; color:#ef4444;"><i class="fas fa-boxes"></i> Vault Items List</h3>
-                        <div id="adminProductsList" style="max-height:250px; overflow-y:auto;"></div>
+                        <div id="adminProductsList" style="margin-top:20px;"></div>
                     </div>
-
-                    <div class="checkout-box">
-                        <h3 style="color:#3b82f6;"><i class="fas fa-network-wired"></i> Global User Orders Pipeline Processing Matrix</h3>
-                        <div style="overflow-x:auto; margin-top:15px;">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Customer Logistics Details</th>
-                                        <th>Items Payload Stream</th>
-                                        <th>Cost</th>
-                                        <th>Logistics Dispatched / Management Options</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="adminOrdersList"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CONTACT US SCREEN -->
-            <div id="supportPage" class="container hidden">
-                <h2 class="section-title">Contact Us Help Desks Gateway</h2>
-                <div class="contact-grid">
-                    <div class="checkout-box">
-                        <h3 style="color:#facc15; margin-bottom:20px;"><i class="fas fa-id-card-alt"></i> Information Terminal Channel</h3>
-                        <div class="contact-node"><i class="fas fa-envelope"></i> <span>bazaarhub@email.com</span></div>
-                        <div class="contact-node"><i class="fas fa-globe"></i> <span>www.bazaarhub.com</span></div>
-                        <div class="contact-node"><i class="fas fa-phone-alt"></i> <span>+92 300 1234567</span></div>
-                        <div class="contact-node"><i class="fas fa-map-marker-alt"></i> <span>Core Distribution Matrix Center, Karachi, Sindh, Pakistan</span></div>
-                    </div>
-                    <div class="checkout-box" style="display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <h3 style="margin-bottom:20px;">External Direct Secure Dispatches</h3>
-                        <a href="https://facebook.com" target="_blank" class="social-btn btn-facebook"><i class="fab fa-facebook-f"></i> Contact on Facebook</a>
-                        <a href="https://instagram.com" target="_blank" class="social-btn btn-instagram"><i class="fab fa-instagram"></i> Follow on Instagram</a>
-                        <button onclick="window.toggleWhatsAppWidget()" class="social-btn btn-whatsapp"><i class="fab fa-whatsapp"></i> Chat via Whatsapp</button>
+                    <div class="checkout-box" style="background:#0d0d13; border:1px solid #1f2937; padding:25px; border-radius:12px;">
+                        <h3>Global Orders</h3>
+                        <table>
+                            <tbody id="adminOrdersList"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- FLOATING LIVE WHATSAPP ENGINE LAYOUT -->
-        <div class="whatsapp-floating-engine" id="whatsappFloatingWidget">
-            <div class="whatsapp-chat-matrix-card" id="whatsappChatCard">
-                <div class="wa-card-header">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <div style="width:30px; height:30px; background:#25d366; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">BH</div>
-                        <div><h4 style="font-size:13px;">BazaarHub Help Center</h4><p style="font-size:10px; color:#d1d5db;">Online System Node</p></div>
-                    </div>
-                    <button onclick="window.toggleWhatsAppWidget()" style="color:white;"><i class="fas fa-times"></i></button>
-                </div>
-                <div class="wa-card-body"><div class="wa-bubble-msg">Welcome to BazaarHub network service engine! Send your query trace path directly.</div></div>
-                <div class="wa-card-footer">
-                    <a id="waDirectLink" href="https://wa.me/923001234567?text=Hi%20BazaarHub%20Support" target="_blank" class="auth-btn btn-whatsapp" style="margin:0; text-align:center; display:block;">
-                        <i class="fab fa-whatsapp"></i> Dispatch Message Stream
-                    </a>
-                </div>
-            </div>
-            <div class="whatsapp-trigger-bubble" onclick="window.toggleWhatsAppWidget()"><i class="fab fa-whatsapp"></i></div>
-        </div>
-
-        <footer>
-            <div id="footerLogo">@bazaarhub Pakistan</div>
-            <div class="footer-socials">
-                <a href="https://facebook.com" target="_blank" style="color:#1877f2;"><i class="fab fa-facebook"></i></a>
-                <a href="https://instagram.com" target="_blank" style="color:#e1306c;"><i class="fab fa-instagram"></i></a>
-                <a href="https://wa.me/923001234567" target="_blank" style="color:#25d366;"><i class="fab fa-whatsapp"></i></a>
-            </div>
-        </footer>
     </div>
 
-    <!-- SCRIPT DEPLOYMENT MATRIX REFERENCE LINK -->
     <script type="module" src="script.js"></script>
 </body>
 </html>
