@@ -43,6 +43,16 @@ Firebase Auth blocks sign-in from domains it doesn't recognize.
 2. Click **Add domain** and add `<your-username>.github.io`.
 3. Confirm **Authentication → Sign-in method → Email/Password** is enabled.
 
+## 3b. Turn on phone (SMS) verification
+
+New accounts now have to confirm a real phone number by SMS code before they can browse or order — this is what stops fake signups and fake orders. It needs two things set up in Firebase first, or registration will get stuck on the "Send Code" step:
+
+1. **Upgrade to the Blaze (pay-as-you-go) plan.** Firebase Console → **Upgrade project**. Phone Auth doesn't work on the free Spark plan. SMS costs roughly $0.01–$0.06 per code depending on the recipient's country — Firebase gives you a small free daily quota for testing on top of that.
+2. Firebase Console → **Authentication → Sign-in method** → enable **Phone**.
+3. Make sure the same domain from step 3 (`<your-username>.github.io`, plus `localhost` while testing) is in **Authorized domains** — phone sign-in uses reCAPTCHA, which checks this list too.
+
+While testing, Firebase lets you add **test phone numbers** (Authentication → Sign-in method → Phone → Phone numbers for testing) with a fixed code like `123456` — these don't send real SMS or cost anything, which is handy before you've upgraded billing.
+
 ## 4. Lock down your database (important before sharing the link)
 
 Your Firebase `apiKey` is meant to be public — that's normal and not a leak. What actually protects your data is **Firestore Security Rules**, and a fresh project is often left wide open ("test mode").
@@ -64,5 +74,7 @@ There's no sign-up option for admin accounts on purpose — you grant it by hand
 ## Notes
 
 - The whole site requires sign-in — visiting any page while logged out redirects to `auth.html`.
+- New accounts must verify a phone number (Pakistani format, e.g. `03001234567`) before they can browse or order. Admin accounts are exempt, since you vet those by hand anyway.
+- The actual fraud-blocking happens in `firestore.rules`, via Firebase's own verified-phone record on the account (not a value sitting in a document) — so it can't be bypassed by editing data directly in the browser.
 - Cart contents are stored in the browser (`localStorage`), so they're per-device, not per-account.
 - The order **status** dropdown in the admin console writes straight to Firestore (`Pending Dispatch → Shipped → Delivered → Cancelled`).
