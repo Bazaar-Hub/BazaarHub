@@ -1,0 +1,48 @@
+rules_version = '2';
+
+// =========================================================================
+// BAZAARHUB — FIRESTORE SECURITY RULES
+// Paste this into Firebase Console → Firestore Database → Rules → Publish.
+// Without rules like these, anyone with your apiKey (which is always public
+// in client-side code) can read and write your entire database.
+// =========================================================================
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Each user can read their own profile (needed for the admin-role check).
+    // Only an existing admin can promote/demote roles — users can edit their
+    // own name/phone but can't grant themselves admin access.
+    match /users/{userId} {
+      allow read: if isSignedIn() && request.auth.uid == userId;
+      allow create: if isSignedIn() && request.auth.uid == userId
+                    && request.resource.data.role == 'client';
+      allow update: if isAdmin()
+                    || (isSignedIn() && request.auth.uid == userId
+                        && request.resource.data.role == resource.data.role);
+      allow delete: if isAdmin();
+    }
+
+    // Anyone signed in can browse the catalog; only admins can change it.
+    match /products/{productId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Customers can place an order and read only their own orders.
+    // Only admins can read the full order list or update order status.
+    match /orders/{orderId} {
+      allow create: if isSignedIn() && request.resource.data.userUid == request.auth.uid;
+      allow read: if isAdmin() || (isSignedIn() && resource.data.userUid == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+  }
+}
