@@ -7,66 +7,68 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body style="padding: 20px 4%;">
+<body style="padding: 40px 5%;">
 
-    <header class="admin-header">
+    <header class="admin-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; animation: fadeInLeft var(--transition-slow) forwards;">
         <div>
-            <h1 class="accent-yellow" style="font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">Product Catalog Manager</h1>
-            <p style="font-size: 12px; color: #9ca3af;">Inject custom structural assets and track incoming client purchase orders pipelines.</p>
+            <p class="subheading" style="color: var(--danger); font-weight: 800;"><i class="fas fa-user-shield"></i> SECURE CONTROL CORE</p>
+            <h1 class="heading-primary accent-text" style="margin-bottom: 5px;">Product Catalog Manager</h1>
+            <p style="color: var(--text-secondary); font-size: 14px;">Inject premium assets and track client purchase pipeline in real-time.</p>
         </div>
-        <button onclick="window.location.href='index.html'" class="form-btn bg-yellow" style="width: auto; padding: 10px 20px; margin-top:0; font-size:12px; font-weight: 800;">Exit Admin Panel</button>
+        <button onclick="window.location.href='index.html'" class="btn-primary" style="width: auto; padding: 12px 24px; font-size: 13px;">Exit Control Panel</button>
     </header>
 
-    <div class="admin-layout">
-        <div style="background-color: #0b0b12; border: 1px solid #1e2235; padding: 25px; border-radius: 16px;">
-            <h2 style="font-size: 15px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; letter-spacing: 0.5px;">Inject Product Asset</h2>
+    <div class="admin-layout" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 35px; animation: fadeInScale var(--transition-slow) 0.1s forwards; opacity: 0;">
+        
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-bright); padding: 35px; border-radius: 24px; position: relative; overflow: hidden;">
+            <h2 style="font-size: 18px; font-weight: 900; text-transform: uppercase; margin-bottom: 25px; letter-spacing: 1px;" class="accent-text"><i class="fas fa-plus-circle"></i> Inject New Asset</h2>
+            
             <form id="addProductForm">
                 <div class="input-group">
-                    <label>Product Domain Name</label>
-                    <input type="text" id="pName" placeholder="e.g. Wireless Headset Pro" required>
+                    <input type="text" id="pName" required placeholder=" ">
+                    <label>Product Display Name</label>
                 </div>
                 <div class="input-group">
-                    <label>Category Stream Tag</label>
-                    <input type="text" id="pCategory" placeholder="e.g. ELECTRONICS" required>
+                    <input type="number" id="pPrice" required placeholder=" ">
+                    <label>Asset Base Value (PKR)</label>
                 </div>
                 <div class="input-group">
-                    <label>Price Rate Value (PKR)</label>
-                    <input type="number" id="pPrice" placeholder="e.g. 3500" required>
+                    <input type="url" id="pImg" required placeholder=" ">
+                    <label>Cloud Image Resource URL</label>
                 </div>
                 <div class="input-group">
-                    <label>Source Image Asset URL Link</label>
-                    <input type="url" id="pImage" placeholder="https://images.unsplash.com/..." required>
+                    <textarea id="pDesc" required rows="3" placeholder=" " style="resize: none;"></textarea>
+                    <label>Asset Parameter Description</label>
                 </div>
-                <div class="input-group">
-                    <label>Feature Structural Descriptions</label>
-                    <textarea id="pDesc" rows="3" placeholder="Write specifications text details..." required></textarea>
-                </div>
-                <button type="submit" id="formSubmitBtn" class="form-btn bg-yellow">SAVE NODE MODULE</button>
+                <button type="submit" class="btn-primary" style="margin-top: 10px;">Save Node Module</button>
             </form>
         </div>
 
-        <div>
-            <div style="background-color: #0b0b12; border: 1px solid #1e2235; padding: 25px; border-radius: 16px; margin-bottom: 25px;">
-                <h2 style="font-size: 15px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; letter-spacing: 0.5px;">Current Vault Products</h2>
-                <div id="adminProductsList" style="max-height: 240px; overflow-y: auto; padding-right: 5px;"></div>
+        <div style="display: flex; flex-direction: column; gap: 30px;">
+            
+            <div style="background-color: var(--bg-card); border: 1px solid var(--border-bright); padding: 30px; border-radius: 24px;">
+                <h2 style="font-size: 15px; font-weight: 900; text-transform: uppercase; margin-bottom: 20px; letter-spacing: 0.5px;"><i class="fas fa-boxes"></i> Current Vault Products</h2>
+                <div id="adminProductsList" style="max-height: 260px; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 12px;">
+                    </div>
             </div>
 
-            <div style="background-color: #0b0b12; border: 1px solid #1e2235; padding: 25px; border-radius: 16px;">
-                <h2 style="font-size: 15px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; letter-spacing: 0.5px;">Customer Orders Tracking Matrix</h2>
-                <div class="table-wrapper">
-                    <table>
+            <div style="background-color: var(--bg-card); border: 1px solid var(--border-bright); padding: 30px; border-radius: 24px;">
+                <h2 style="font-size: 15px; font-weight: 900; text-transform: uppercase; margin-bottom: 20px; letter-spacing: 0.5px;" class="accent-text"><i class="fas fa-stream"></i> Logistics Matrix</h2>
+                <div class="table-wrapper" style="border: 1px solid var(--border-dim); border-radius: 12px; overflow: hidden; background: #050508;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
                         <thead>
-                            <tr>
-                                <th>Logistics Info</th>
-                                <th>Items</th>
-                                <th>Cost</th>
-                                <th>Workflow Status</th>
+                            <tr style="background-color: #121220; color: var(--accent); border-bottom: 1px solid var(--border-bright);">
+                                <th style="padding: 14px;">Client Logistics</th>
+                                <th style="padding: 14px;">Items</th>
+                                <th style="padding: 14px;">Value</th>
                             </tr>
                         </thead>
-                        <tbody id="adminOrdersList"></tbody>
+                        <tbody id="adminOrdersList">
+                            </tbody>
                     </table>
                 </div>
             </div>
+
         </div>
     </div>
 
