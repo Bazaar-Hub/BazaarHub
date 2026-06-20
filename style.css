@@ -1,21 +1,48 @@
-/* Global Reset & Futuristic Aesthetic Theme */
+/* =========================================================
+   BazaarHub - Master UI Styling System
+   Focus: Premium, Dark Mode, High-Impact Marketing, Micro-Animations
+   ========================================================= */
+
+/* 1. Global Reset & Theme Variables
+   ========================================================= */
+:root {
+    /* Color Palette */
+    --bg-main: #030305; /* Futuristic Dark */
+    --bg-card: #0b0b12; /* Slightly Lighter Card Gray */
+    --accent: #facc15; /* Warning Yellow (BazaarHub Accent) */
+    --accent-glow: rgba(250, 204, 21, 0.4);
+    --text-primary: #ffffff;
+    --text-secondary: #9ca3af;
+    --border-dim: #1e2235;
+    --border-bright: #222533;
+    --success: #10b981;
+    --danger: #ef4444;
+
+    /* Spacing & Transitions */
+    --ease-standard: cubic-bezier(0.25, 0.8, 0.25, 1);
+    --transition-fast: 0.2s var(--ease-standard);
+    --transition-slow: 0.4s var(--ease-standard);
+    --transition-mega: 0.6s var(--ease-standard);
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: all var(--transition-slow); /* Applying standard transition globally */
 }
 
 body {
-    background-color: #030305;
-    color: #ffffff;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
     line-height: 1.4;
     overflow-x: hidden;
+    /* Clean futuristic pattern */
     background-image: 
-        linear-gradient(rgba(250, 204, 21, 0.01) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(250, 204, 21, 0.01) 1px, transparent 1px);
-    background-size: 30px 30px;
+        linear-gradient(rgba(250, 204, 21, 0.005) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(250, 204, 21, 0.005) 1px, transparent 1px);
+    background-size: 40px 40px;
 }
 
 a {
@@ -29,11 +56,12 @@ button {
     background: none;
 }
 
-/* Dynamic Keyframes for High-End Animations */
+/* 2. Keyframes for Professional Animations
+   ========================================================= */
 @keyframes neonGlow {
-    0% { box-shadow: 0 0 5px rgba(250, 204, 21, 0.2); }
+    0% { box-shadow: 0 0 5px var(--accent-glow); }
     50% { box-shadow: 0 0 20px rgba(250, 204, 21, 0.6); }
-    100% { box-shadow: 0 0 5px rgba(250, 204, 21, 0.2); }
+    100% { box-shadow: 0 0 5px var(--accent-glow); }
 }
 
 @keyframes cardFloat {
@@ -43,392 +71,439 @@ button {
 }
 
 @keyframes fadeInScale {
-    from { opacity: 0; transform: scale(0.95) translateY(15px); }
+    from { opacity: 0; transform: scale(0.95) translateY(20px); }
     to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-@keyframes pulseBorder {
-    0% { border-color: rgba(250, 204, 21, 0.2); }
-    50% { border-color: rgba(250, 204, 21, 0.8); }
-    100% { border-color: rgba(250, 204, 21, 0.2); }
+@keyframes fadeInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
 }
 
-/* Forms & Animated Inputs Style */
+@keyframes pulseBorder {
+    0% { border-color: var(--border-bright); }
+    50% { border-color: var(--accent); }
+    100% { border-color: var(--border-bright); }
+}
+
+@keyframes successBounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); background-color: var(--success); }
+    100% { transform: scale(1); }
+}
+
+@keyframes shimmer {
+    100% { left: 150%; }
+}
+
+/* 3. Reusable Layout Containers & Text
+   ========================================================= */
+.container {
+    width: 90%;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 60px 0;
+    opacity: 0;
+    animation: fadeInScale var(--transition-slow) forwards;
+    animation-delay: 0.1s;
+}
+
+.heading-primary {
+    font-size: 28px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+}
+
+.subheading {
+    font-size: 14px;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.accent-text {
+    color: var(--accent);
+    text-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* 4. Global Interactivity Components
+   ========================================================= */
+/* Advanced Animated Inputs */
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+label {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+    pointer-events: none; /* Let clicks pass through to input */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 input, textarea, select {
     width: 100%;
-    background-color: #0d0d15;
-    border: 1px solid #222533;
-    border-radius: 10px;
-    padding: 12px 14px;
-    color: #ffffff;
-    font-size: 14px;
-    margin-top: 5px;
+    background-color: var(--bg-card);
+    border: 2px solid var(--border-bright);
+    border-radius: 12px;
+    padding: 16px 14px 10px 14px; /* Space at top for label */
+    color: var(--text-primary);
+    font-size: 15px;
 }
 
 input:focus, textarea:focus, select:focus {
     outline: none;
-    border-color: #facc15;
-    box-shadow: 0 0 15px rgba(250, 204, 21, 0.3);
+    border-color: var(--accent);
     background-color: #121220;
-    transform: translateX(4px);
+    box-shadow: 0 0 15px rgba(250, 204, 21, 0.15);
 }
 
-label {
-    font-size: 12px;
-    color: #9ca3af;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-}
-
-.input-group {
-    margin-bottom: 16px;
-    text-align: left;
-}
-
-/* Accent Mechanics */
-.bg-yellow {
-    background-color: #facc15;
-    color: #000000;
-    box-shadow: 0 4px 14px rgba(250, 204, 21, 0.3);
-}
-
-.bg-yellow:hover {
-    background-color: #ffffff;
-    color: #000000;
-    box-shadow: 0 6px 20px rgba(255, 255, 255, 0.4);
-    transform: translateY(-3px);
-}
-
-.accent-yellow {
-    color: #facc15;
-    text-shadow: 0 0 8px rgba(250, 204, 21, 0.3);
-}
-
-.form-btn {
-    width: 100%;
-    padding: 14px;
-    border-radius: 10px;
+/* Label movement on focus/data */
+input:focus + label,
+input:not(:placeholder-shown) + label,
+textarea:focus + label,
+textarea:not(:placeholder-shown) + label {
+    top: 10px;
+    left: 10px;
+    font-size: 11px;
+    color: var(--accent);
     font-weight: 800;
-    font-size: 14px;
-    margin-top: 10px;
-    letter-spacing: 1px;
+}
+
+/* High-Impact Marketing Buttons */
+.btn-primary {
+    display: inline-block;
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent) 0%, #ffffff 100%);
+    color: #000000;
+    border-radius: 12px;
+    padding: 16px;
+    font-weight: 800;
+    font-size: 15px;
     text-transform: uppercase;
+    letter-spacing: 1.5px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 6px 18px var(--accent-glow);
+    border: 1px solid var(--accent);
 }
 
-.form-btn:active {
-    transform: scale(0.97);
-}
-
-.hidden {
-    display: none !important;
+.btn-primary::after {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(45deg);
+    transition: all var(--transition-slow);
     opacity: 0;
 }
 
-/* Premium Navigation Glassmorphism Bar */
+.btn-primary:hover {
+    box-shadow: 0 10px 25px rgba(255, 255, 255, 0.3);
+    transform: translateY(-4px) scale(1.02);
+}
+
+.btn-primary:hover::after {
+    opacity: 1;
+    transform: rotate(45deg) scale(0.6);
+}
+
+.btn-primary:active {
+    transform: translateY(-1px) scale(0.98);
+}
+
+.btn-added {
+    animation: successBounce var(--transition-fast) forwards;
+}
+
+/* 5. Navigation Bar (Redesigned)
+   ========================================================= */
 nav {
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(3, 3, 5, 0.85); /* Glassmorphism start */
     backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--border-dim);
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 18px 5%;
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 1000;
 }
 
-.nav-logo-box {
+.nav-logo {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     cursor: pointer;
 }
 
-.nav-logo-box:hover .logo-badge {
-    transform: rotate(360deg);
-    background-color: #ffffff;
-}
-
-.logo-badge {
-    background-color: #facc15;
+.logo-icon {
+    background-color: var(--accent);
     color: #000000;
     font-weight: 900;
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
+    width: 38px; height: 38px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 20px;
-    box-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.nav-logo:hover .logo-icon {
+    transform: rotate(360deg);
+    background-color: #ffffff;
 }
 
 .logo-text {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 900;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
 }
 
-.logo-text span {
-    color: #facc15;
+.nav-links {
+    display: flex;
+    gap: 40px;
 }
 
-.nav-center {
-    display: none;
-}
-
-.nav-center a {
-    position: relative;
-    font-weight: 600;
+.nav-links a {
+    font-weight: 700;
     font-size: 14px;
-    color: #9ca3af;
+    color: var(--text-secondary);
+    position: relative;
     padding: 6px 0;
 }
 
-.nav-center a:hover {
-    color: #facc15;
+.nav-links a:hover {
+    color: var(--accent);
 }
 
-.nav-center a::after {
+.nav-links a::after {
     content: '';
     position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: 0;
-    left: 0;
-    background-color: #facc15;
-    transition: width 0.3s ease;
+    width: 0; height: 2px;
+    bottom: 0; left: 0;
+    background-color: var(--accent);
+    transition: width var(--transition-fast) ease;
 }
 
-.nav-center a:hover::after {
+.nav-links a:hover::after {
     width: 100%;
 }
 
 .nav-right {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 25px;
 }
 
-.cart-icon {
-    font-size: 22px;
+.nav-cart {
+    font-size: 24px;
     position: relative;
     cursor: pointer;
 }
 
-.cart-icon:hover {
-    color: #facc15;
-    transform: scale(1.15) rotate(-5deg);
+.nav-cart:hover {
+    color: var(--accent);
+    transform: scale(1.1);
 }
 
 .cart-count {
     position: absolute;
-    top: -6px;
-    right: -10px;
-    background-color: #ef4444;
+    top: -8px; right: -12px;
+    background-color: var(--danger);
     color: #ffffff;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: bold;
     border-radius: 50%;
-    width: 18px;
-    height: 18px;
+    width: 20px; height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
 }
 
-/* Authentic Interactive UI Containers */
+.nav-logout:hover {
+    color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+/* 6. Page Specific Layouts
+   ========================================================= */
+
+/* A. INDEX.HTML (Home/Catalog) */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.product-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-bright);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    animation: fadeInScale var(--transition-slow) forwards;
+}
+
+.product-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    border-color: var(--accent);
+    box-shadow: 0 15px 40px var(--accent-glow);
+}
+
+/* Shimmer animation overlay for cards on hover */
+.product-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -150%;
+    width: 100%; height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255,255,255, 0.03), transparent);
+    transform: skewX(-25deg);
+}
+
+.product-card:hover::before {
+    animation: shimmer 1.2s infinite;
+}
+
+.product-image {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    border-radius: 14px;
+}
+
+.product-title {
+    font-size: 17px;
+    font-weight: 800;
+    margin-top: 16px;
+    letter-spacing: 0.5px;
+}
+
+.product-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 8px 0 18px 0;
+    flex-grow: 1;
+}
+
+.product-price {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--accent);
+    margin-bottom: 15px;
+    text-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* B. AUTH.HTML (Login/Register) */
 .auth-wrapper {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
+    position: relative;
 }
 
 .auth-card {
-    background-color: #0b0b12;
-    border: 1px solid rgba(250, 204, 21, 0.1);
-    border-radius: 20px;
-    padding: 40px 35px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 24px;
+    padding: 50px 40px;
     width: 100%;
-    max-width: 420px;
+    max-width: 440px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+    position: relative;
+    overflow: hidden;
+    animation: fadeInScale var(--transition-slow) var(--transition-fast) forwards; /* delayed slightly */
+    opacity: 0;
+}
+
+/* Auth card pulsing border animation */
+.auth-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: 24px;
+    border: 2px solid transparent;
+    animation: pulseBorder 3s infinite;
+    pointer-events: none;
+}
+
+.auth-logo {
     text-align: center;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-    animation: fadeInScale 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    margin-bottom: 35px;
+}
+
+.auth-logo .logo-icon {
+    width: 50px; height: 50px;
+    font-size: 28px;
+    margin: 0 auto 15px auto;
+}
+
+.auth-logo-text {
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: 2px;
 }
 
 .auth-tabs {
     display: flex;
-    border-bottom: 2px solid #1a1c29;
-    margin-bottom: 25px;
+    border-bottom: 2px solid var(--border-dim);
+    margin-bottom: 30px;
 }
 
 .tab-btn {
     flex: 1;
-    padding: 12px;
-    color: #6b7280;
+    padding: 14px;
+    color: var(--text-secondary);
     font-weight: 700;
     font-size: 14px;
     border-bottom: 3px solid transparent;
 }
 
 .tab-btn:hover {
-    color: #ffffff;
+    color: var(--text-primary);
 }
 
 .tab-btn.active {
-    color: #facc15;
-    border-bottom-color: #facc15;
-    text-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    text-shadow: 0 0 10px var(--accent-glow);
 }
 
-/* Layout Grid Stream Structure */
-.container {
-    padding: 40px 5%;
-    max-width: 1300px;
-    margin: 0 auto;
-    animation: fadeInScale 0.5s ease-out forwards;
+.hidden {
+    display: none !important;
 }
 
-.grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 25px;
-}
-
-/* Animated Product Showcase Cards */
-.product-card {
-    background-color: #0b0b12;
-    border: 1px solid #1e2235;
-    border-radius: 16px;
-    padding: 18px;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    overflow: hidden;
-}
-
-.product-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    border-color: #facc15;
-    box-shadow: 0 12px 30px rgba(250, 204, 21, 0.15);
-}
-
-.product-img {
-    width: 100%;
-    height: 160px;
-    object-fit: cover;
-    border-radius: 12px;
-}
-
-.product-card:hover .product-img {
-    transform: scale(1.05);
-}
-
-.product-title {
-    font-size: 16px;
-    font-weight: 700;
-    margin-top: 14px;
-    letter-spacing: 0.3px;
-}
-
-.product-desc {
-    font-size: 12px;
-    color: #9ca3af;
-    margin: 6px 0 14px 0;
-    flex-grow: 1;
-}
-
-.product-price {
-    font-size: 18px;
-    font-weight: 800;
-    color: #facc15;
-    margin-bottom: 12px;
-}
-
-/* Checkout System Mechanics Panels */
-.checkout-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 30px;
-}
-
-.manifest-card, .summary-card {
-    background-color: #0b0b12;
-    border: 1px solid #1e2235;
-    border-radius: 16px;
-    padding: 25px;
-    animation: fadeInScale 0.6s ease forwards;
-}
-
-.summary-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 12px 0;
-    border-bottom: 1px solid #1e2235;
-    font-size: 14px;
-}
-
-.summary-item:hover {
-    background: rgba(250, 204, 21, 0.03);
-    padding-left: 5px;
-}
-
-/* Admin Dashboard Interface Design */
-.admin-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    animation: fadeInScale 0.4s ease forwards;
-}
-
-.admin-layout {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 30px;
-}
-
-.table-wrapper {
-    overflow-x: auto;
-    border-radius: 12px;
-    border: 1px solid #1e2235;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    text-align: left;
-}
-
-th, td {
-    padding: 14px 16px;
-    border-bottom: 1px solid #1e2235;
-}
-
-th {
-    color: #9ca3af;
-    background-color: #11131f;
-    text-transform: uppercase;
-    font-size: 11px;
-    letter-spacing: 0.8px;
-}
-
-tr:hover td {
-    background-color: #121422;
-    color: #facc15;
-}
-
-/* Responsive Structural Breakdown Node Media Queries */
+/* 7. Mobile First Responsive Structure
+   ========================================================= */
 @media (min-width: 768px) {
-    nav { padding: 18px 6%; }
-    .nav-center { display: flex; gap: 30px; }
-    .grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; }
-    .product-img { height: 180px; }
-    .checkout-grid { grid-template-columns: 1.3fr 1fr; }
-    .admin-layout { grid-template-columns: 1fr 1.4fr; }
+    .container { padding: 80px 0; }
+    .heading-primary { font-size: 32px; }
+}
+
+@media (max-width: 991px) {
+    .nav-links {
+        display: none; /* Hide standard links on tablet/mobile */
+    }
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
 }
