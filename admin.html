@@ -3,85 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BazaarHub - Admin Matrix Console</title>
+    <title>BazaarHub - Admin Workspace</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.2">
 </head>
-<body style="padding: 0;">
+<body style="padding: 20px 4%;">
 
-    <nav>
-        <div class="nav-logo-box" onclick="window.location.href='index.html'">
-            <div class="logo-badge">B</div>
-            <div class="logo-text">BAZAAR<span class="accent-yellow">HUB</span></div>
+    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #1f2937; padding-bottom: 15px;">
+        <div>
+            <h1 class="accent-yellow" style="font-size: 20px; font-weight: 800; text-transform: uppercase;">Product Catalog Manager</h1>
+            <p style="font-size: 11px; color: #9ca3af;">Inject entries and route database real-time client records pipelines.</p>
         </div>
-        <button onclick="window.location.href='index.html'" class="form-btn bg-yellow" style="width: auto; padding: 10px 22px; margin-top:0; font-size:12px;">Exit Admin Panel</button>
-    </nav>
+        <button onclick="window.location.href='index.html'" class="form-btn bg-yellow" style="width: auto; padding: 8px 16px; margin-top:0; font-size:12px;">Exit Admin Panel</button>
+    </header>
 
-    <div class="container">
-        <header class="admin-header">
-            <div>
-                <h1 class="accent-yellow" style="font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px;">Product Catalog Manager</h1>
-                <p style="font-size: 13px; color: #9ca3af; margin-top: 4px;">Inject custom structural assets and track incoming client purchase orders pipelines.</p>
-            </div>
-        </header>
-
-        <div class="admin-layout">
-            <div style="background-color: var(--card-glass); border: 1px solid var(--border-subtle); padding: 30px; border-radius: 20px;">
-                <h2 style="font-size: 16px; font-weight: 800; text-transform: uppercase; margin-bottom: 24px; letter-spacing: 0.5px;">Inject Product Asset</h2>
-                <form id="addProductForm">
-                    <div class="input-group">
-                        <label>Product Domain Name</label>
-                        <input type="text" id="pName" placeholder="e.g. Wireless Headset Pro" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Category Stream Tag</label>
-                        <input type="text" id="pCategory" placeholder="e.g. ELECTRONICS" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Price Rate Value (PKR)</label>
-                        <input type="number" id="pPrice" placeholder="e.g. 3500" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Source Image Asset URL Link</label>
-                        <input type="url" id="pImage" placeholder="https://images.unsplash.com/..." required>
-                    </div>
-                    <div class="input-group">
-                        <label>Feature Structural Descriptions</label>
-                        <textarea id="pDesc" rows="3" placeholder="Write specifications text details..." required></textarea>
-                    </div>
-                    <button type="submit" id="formSubmitBtn" class="form-btn bg-yellow" style="margin-top: 10px;">SAVE NODE MODULE</button>
-                </form>
-            </div>
-
-            <div>
-                <div style="background-color: var(--card-glass); border: 1px solid var(--border-subtle); padding: 30px; border-radius: 20px; margin-bottom: 30px;">
-                    <h2 style="font-size: 16px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; letter-spacing: 0.5px;">Current Vault Products</h2>
-                    <div id="adminProductsList" style="max-height: 260px; overflow-y: auto; padding-right: 5px;"></div>
+    <div class="admin-layout">
+        <div style="background-color: #0b0b11; border: 1px solid #1f2937; padding: 25px; border-radius: 12px; height: fit-content;">
+            <h2 style="font-size: 14px; text-transform: uppercase; margin-bottom: 15px; font-weight:700;">Inject Custom Product Node</h2>
+            <form id="addProductForm">
+                <div class="input-group">
+                    <label>Product Domain Name</label>
+                    <input type="text" id="pName" placeholder="e.g. Wireless Headset Pro" required>
                 </div>
+                <div class="input-group">
+                    <label>Category Tag</label>
+                    <input type="text" id="pCategory" placeholder="e.g. GADGETS" required>
+                </div>
+                <div class="input-group">
+                    <label>Price Rate Value (PKR)</label>
+                    <input type="number" id="pPrice" placeholder="e.g. 4500" required>
+                </div>
+                <div class="input-group">
+                    <label>Source Image Asset URL Link</label>
+                    <input type="url" id="pImage" placeholder="https://images.unsplash.com/..." required>
+                </div>
+                <div class="input-group">
+                    <label>Structural Descriptions</label>
+                    <textarea id="pDesc" rows="3" placeholder="Write specifications text details..." required></textarea>
+                </div>
+                <button type="submit" class="form-btn bg-yellow">SAVE NODE MODULE</button>
+            </form>
+        </div>
 
-                <div style="background-color: var(--card-glass); border: 1px solid var(--border-subtle); padding: 30px; border-radius: 20px;">
-                    <h2 style="font-size: 16px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; letter-spacing: 0.5px;">Customer Orders Tracking Matrix</h2>
-                    <div class="table-wrapper">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Logistics Info</th>
-                                    <th>Items</th>
-                                    <th>Cost</th>
-                                    <th>Workflow Status</th>
-                                </tr>
-                            </table>
-                            <div style="max-height: 300px; overflow-y: auto;">
-                                <table>
-                                    <tbody id="adminOrdersList"></tbody>
-                                </table>
-                            </div>
-                    </div>
+        <div>
+            <div style="background-color: #0b0b11; border: 1px solid #1f2937; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                <h2 style="font-size: 14px; text-transform: uppercase; margin-bottom: 15px; font-weight:700;">Current Vault Products</h2>
+                <div id="adminProductsList" style="max-height: 200px; overflow-y: auto;"></div>
+            </div>
+
+            <div style="background-color: #0b0b11; border: 1px solid #1f2937; padding: 20px; border-radius: 12px;">
+                <h2 style="font-size: 14px; text-transform: uppercase; margin-bottom: 15px; font-weight:700;">Customer Orders Tracking Matrix</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Logistics Manifest Info</th>
+                                <th>Purchased Items Grid</th>
+                                <th>Status Badge</th>
+                                <th>Workflow Control Dispatches</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminOrdersList"></tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <script type="module" src="script.js"></script>
+    <script type="module" src="script.js?v=2.2"></script>
 </body>
 </html>
