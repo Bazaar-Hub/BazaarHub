@@ -3,53 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BazaarHub - Everything Marketplace | Master Platform</title>
-    <!-- Use FontAwesome for iconic symbols -->
+    <title>BazaarHub - Master Platform</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Redesigned Main Navigation with High-Impact Aesthetic -->
     <nav>
-        <div class="nav-logo" onclick="window.location.href='index.html'">
-            <div class="logo-icon">B</div>
-            <div class="logo-text">BAZAAR<span class="accent-text">HUB</span></div>
+        <div class="nav-logo-box" onclick="window.location.href='index.html'">
+            <div class="logo-badge">B</div>
+            <div class="logo-text">BAZAAR<span>HUB</span></div>
         </div>
-        <div class="nav-links">
-            <a href="index.html" class="active accent-text">Shop Market</a>
+        <div class="nav-center">
+            <a href="index.html" class="accent-yellow">Home Catalog</a>
             <a href="checkout.html">Checkout Console</a>
-            <a href="#" style="color:var(--text-secondary); opacity:0.6; cursor:not-allowed;">My Orders</a>
+            <a href="admin.html" style="color: #ef4444;"><i class="fas fa-user-shield"></i> Admin Panel</a>
         </div>
         <div class="nav-right">
-            <div class="nav-cart" onclick="window.location.href='checkout.html'">
-                <i class="fas fa-shopping-bag"></i> <!-- Shopping bag icon used -->
-                <span id="cartCount" class="cart-count hidden">0</span>
+            <div class="cart-icon" onclick="window.location.href='checkout.html'">
+                <i class="fas fa-shopping-cart"></i>
+                <span id="cartCount" class="cart-count">0</span>
             </div>
-            <!-- Primary Marketing Button used for Logout -->
-            <button class="nav-logout" style="color:var(--danger); font-size:14px; font-weight:900;"><i class="fas fa-sign-out-alt"></i> EXIT</button>
+            <button id="logoutBtn" style="color: #ef4444; font-size: 14px; font-weight: bold;"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </div>
     </nav>
 
-    <!-- Main Content Container with fadeIn Animation -->
-    <main class="container">
-        <header style="margin-bottom: 50px;">
-            <p class="subheading">Official Marketplace Node</p>
-            <h1 class="heading-primary accent-text">Explore Current Pipeline</h1>
-            <p style="color:var(--text-secondary); font-size:15px; max-width:600px;">BazaarHub connects you to high-performance telemetry gear, secure communication modules, and standard operational equipment.</p>
-        </header>
-        
-        <!-- Interactive Product Grid (Rendered via JS) -->
-        <div id="productGrid" class="product-grid">
-            <!-- Loader State - JS will replace this -->
-            <div style="color:var(--text-secondary); text-align:center; grid-column: 1/-1; padding: 60px 0;">
-                <i class="fas fa-spinner fa-spin fa-2x"></i><br><br>
-                Connecting to cloud database streams...
+    <div class="container">
+        <h2 style="margin-bottom: 25px; text-transform: uppercase; font-size: 20px; letter-spacing: 1.5px; font-weight: 800;">Available Products Pipeline</h2>
+        <div id="productsGrid" class="grid">
             </div>
-        </div>
-    </main>
+    </div>
 
-    <!-- Project Javascript Module -->
     <script type="module" src="script.js"></script>
 </body>
 </html>
