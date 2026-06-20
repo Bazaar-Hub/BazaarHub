@@ -12,21 +12,21 @@
     <nav>
         <div class="nav-logo-box" onclick="window.location.href='index.html'">
             <div class="logo-badge">B</div>
-            <div class="logo-text">BAZAAR<span>HUB</span></div>
+            <div class="logo-text">BAZAAR<span class="accent-yellow">HUB</span></div>
         </div>
-        <button onclick="window.location.href='index.html'" class="form-btn bg-yellow" style="width:auto; margin-top:0; padding:8px 18px; font-size:12px; font-weight: bold;">← Return to Store</button>
+        <button onclick="window.location.href='index.html'" class="form-btn bg-yellow" style="width:auto; margin-top:0; padding:10px 22px; font-size:12px;">← Return to Store</button>
     </nav>
 
     <div class="container">
         <div class="checkout-grid">
             <div class="manifest-card">
-                <h2 style="font-size: 18px; margin-bottom:20px; font-weight: 800;" class="accent-yellow"><i class="fas fa-truck"></i> Shipping Manifest</h2>
+                <h2 style="font-size: 19px; margin-bottom:24px; font-weight: 800;" class="accent-yellow"><i class="fas fa-truck"></i> Shipping Manifest</h2>
                 <form id="checkoutForm">
                     <div class="input-group">
                         <label>Delivery Full Address</label>
                         <input type="text" id="custAddress" required placeholder="Apartment, Street name, Block address...">
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                         <div class="input-group">
                             <label>City</label>
                             <input type="text" id="custCity" required placeholder="Karachi">
@@ -36,15 +36,14 @@
                             <input type="text" id="custPhone" required placeholder="03001234567">
                         </div>
                     </div>
-                    <button type="submit" class="form-btn bg-yellow">CONFIRM & PLACE ORDER</button>
+                    <button type="submit" class="form-btn bg-yellow" style="margin-top: 15px;">CONFIRM & PLACE ORDER</button>
                 </form>
             </div>
 
             <div class="summary-card">
-                <h2 style="font-size: 18px; margin-bottom:20px; font-weight: 800;">Order Summary Basket</h2>
-                <div id="checkoutSummaryItemsContainer">
-                    </div>
-                <div style="display:flex; justify-content:space-between; margin-top: 25px; padding-top:18px; border-top:1px solid #1e2235; font-weight:900; font-size:18px;">
+                <h2 style="font-size: 19px; margin-bottom:24px; font-weight: 800;">Order Summary Basket</h2>
+                <div id="checkoutSummaryItemsContainer"></div>
+                <div style="display:flex; justify-content:space-between; margin-top: 30px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.06); font-weight:900; font-size:17px;">
                     <span>TOTAL AMOUNT DUE:</span>
                     <span class="accent-yellow" id="checkoutSummaryTotalDisplay">Rs. 0</span>
                 </div>
