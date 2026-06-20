@@ -113,8 +113,8 @@ function setupAppRealtimeStreams() {
                 <tr>
                     <td><b>Addr:</b> ${o.address}<br><b>Phone:</b> ${o.phone}</td>
                     <td>${o.itemsSummary}</td>
-                    <td class="accent-yellow" style="font-weight:800;">Rs. ${o.totalCost}</td>
-                    <td><span style="background:#1e2235; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:700; color:#facc15;">${o.status}</span></td>
+                    <td class="accent-yellow" style="font-weight:800; color:#facc15;">Rs. ${o.totalCost}</td>
+                    <td><span style="background:#1e2235; padding:6px 10px; border-radius:6px; font-size:11px; font-weight:700; color:#facc15; box-shadow: 0 0 10px rgba(250,204,21,0.15);">${o.status}</span></td>
                 </tr>
             `).join('');
         });
@@ -154,12 +154,14 @@ function renderCatalogUI() {
                 
                 // Micro-feedback UI alert animation
                 e.target.innerText = "ADDED TO BASKET! ✓";
-                e.target.style.backgroundColor = "#10b981";
+                e.target.style.background = "#10b981";
                 e.target.style.color = "#ffffff";
+                e.target.style.boxShadow = "0 0 15px rgba(16,185,129,0.4)";
                 setTimeout(() => {
                     e.target.innerText = "Add To Basket";
-                    e.target.style.backgroundColor = "#facc15";
+                    e.target.style.background = "linear-gradient(135deg, #fff293 0%, #facc15 50%, #b48c04 100%)";
                     e.target.style.color = "#000000";
+                    e.target.style.boxShadow = "0 4px 15px rgba(250, 204, 21, 0.2)";
                 }, 1500);
             }
         });
@@ -179,7 +181,7 @@ if (checkoutItemsWrap) {
     let priceSum = 0;
     checkoutItemsWrap.innerHTML = localCart.map(i => {
         priceSum += parseFloat(i.price);
-        return `<div class="summary-item"><span>${i.name}</span><span class="accent-yellow" style="font-weight:700;">Rs. ${i.price}</span></div>`;
+        return `<div class="summary-item"><span>${i.name}</span><span style="font-weight:700; color:#facc15;">Rs. ${i.price}</span></div>`;
     }).join('');
     
     const displayTotal = document.getElementById('checkoutSummaryTotalDisplay');
@@ -245,7 +247,7 @@ function renderAdminProducts() {
     if (!adminList) return;
 
     adminList.innerHTML = globalProducts.map(p => `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#11131f; padding:10px 14px; border-radius:8px; margin-bottom:10px; font-size:12px; border:1px solid #1e2235;">
+        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); padding:12px 16px; border-radius:10px; margin-bottom:10px; font-size:12.5px; border:1px solid rgba(255,255,255,0.04);">
             <span><b>${p.name}</b> (Rs. ${p.price})</span>
             <button class="deleteProductBtn" data-id="${p.id}" style="color:#ef4444; font-weight:bold; cursor:pointer;"><i class="fas fa-trash-alt"></i> Delete</button>
         </div>
