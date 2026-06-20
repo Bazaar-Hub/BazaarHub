@@ -9,18 +9,20 @@
 </head>
 <body>
 
+    <div id="popupToast" class="custom-toast"></div>
+
     <nav>
         <div class="nav-logo-box" onclick="window.location.href='index.html'">
             <div class="logo-badge">B</div>
             <div class="logo-text">BAZAAR<span>HUB</span></div>
         </div>
-        <button onclick="window.location.href='index.html'" class="form-btn bg-yellow" style="width:auto; margin-top:0; padding:8px 20px; font-size:12px; font-weight: 700;">← Return to Store</button>
+        <button onclick="window.location.href='index.html'" class="form-btn bg-yellow" style="width:auto; margin-top:0; padding:8px 24px; font-size:12px; font-weight: 700;">← Return to Store</button>
     </nav>
 
     <div class="container">
         <div class="checkout-grid">
             <div class="manifest-card">
-                <h2 style="font-size: 18px; margin-bottom:24px; font-weight: 800;" class="accent-yellow"><i class="fas fa-shipping-fast"></i> Logistics Dispatch Manifest</h2>
+                <h2 style="font-size: 18px; margin-bottom:26px; font-weight: 800;" class="accent-yellow"><i class="fas fa-shipping-fast"></i> Logistics Dispatch Manifest</h2>
                 <form id="checkoutForm">
                     <div class="input-group">
                         <label>Delivery Full Address</label>
@@ -42,9 +44,8 @@
 
             <div class="summary-card">
                 <h2 style="font-size: 18px; margin-bottom:24px; font-weight: 800;">Order Summary Basket</h2>
-                <div id="checkoutSummaryItemsContainer">
-                    </div>
-                <div style="display:flex; justify-content:space-between; margin-top: 30px; padding-top:20px; border-top:1px solid #141726; font-weight:900; font-size:18px;">
+                <div id="checkoutSummaryItemsContainer"></div>
+                <div style="display:flex; justify-content:space-between; margin-top: 30px; padding-top:20px; border-top:1px solid #131525; font-weight:900; font-size:18px;">
                     <span>TOTAL AMOUNT DUE:</span>
                     <span class="accent-yellow" id="checkoutSummaryTotalDisplay">Rs. 0</span>
                 </div>
@@ -54,4 +55,4 @@
 
     <script type="module" src="script.js"></script>
 </body>
-</html>s
+</html>
