@@ -599,3 +599,15 @@ function updateAdminStats() {
 }
 
 updateCartWidgetCount();
+
+// Floating WhatsApp chat button — shown on every page.
+// Replace the number below with your business WhatsApp number (country code, no +, no spaces).
+const WHATSAPP_NUMBER = "923001234567";
+const waBtn = document.createElement('a');
+waBtn.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi BazaarHub, I need help with an order.")}`;
+waBtn.target = "_blank";
+waBtn.rel = "noopener";
+waBtn.className = "whatsapp-float";
+waBtn.innerHTML = '<i class="fab fa-whatsapp"></i>';
+waBtn.setAttribute('aria-label', 'Chat with us on WhatsApp');
+document.body.appendChild(waBtn);

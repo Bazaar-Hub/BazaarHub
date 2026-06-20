@@ -16,6 +16,27 @@ A Firebase-powered storefront: product catalog, basket, checkout, and an admin c
 
 It already uses your existing Firebase project (`bazaarhubnew-79dee`) — the config in `script.js` doesn't need to change.
 
+## WhatsApp chat button
+
+A floating WhatsApp button now appears on every page. Open `script.js`, find this line near the bottom, and put in your real number (country code, no `+`, no spaces, no leading zero):
+
+```js
+const WHATSAPP_NUMBER = "923001234567";
+```
+
+## Why "admin" login isn't working
+
+There's no admin signup form on purpose — every new account is created with `role: "client"`. You make yourself admin by hand, and this is the part that's usually missed:
+
+1. Register/login normally first so your user document exists.
+2. Firebase Console → **Firestore Database → Data → `users` collection**.
+3. Find **your** document (the doc ID is your Firebase Auth UID — check Authentication tab if unsure which one is you).
+4. Change the `role` field from `client` to `admin` exactly (lowercase, no quotes typed twice, no trailing space).
+5. **Log out and log back in** on the site — the role is only re-checked at login, so staying logged in won't pick up the change.
+6. The "Admin Panel" link should now show in the nav, and `admin.html` should let you in.
+
+If it still fails: check that your Firestore rules (`firestore.rules`) are published, and that the field is literally named `role` (not `Role` or `userRole`).
+
 ## 1. Put it on GitHub
 
 ```bash
