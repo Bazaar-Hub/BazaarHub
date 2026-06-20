@@ -1,17 +1,16 @@
 // =========================================================================
-// BAZAARHUB ADVANCED DYNAMIC LIFETIME SECURITY & CLOUD FIRESTORE LOG ENGINE
+// BAZAARHUB ADVANCED INTERCONNECTED OPERATION LOGIC
 // =========================================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, collection, addDoc, deleteDoc, updateDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAPlpnfGWTiUQlyl2vH6uM_Ae6_EQ8YW5E",
   authDomain: "bazaarhubnew-79dee.firebaseapp.com",
   projectId: "bazaarhubnew-79dee",
   storageBucket: "bazaarhubnew-79dee.firebasestorage.app",
-  messagingSenderId: "452492018395",
-  appId: "1:452492018395:web:6c3cf8d956ce7fe45b42fe"
+  messagingSenderId: "452492018395",\n  appId: "1:452492018395:web:6c3cf8d956ce7fe45b42fe"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -19,60 +18,51 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 let globalProducts = [];
-let localCart = JSON.parse(localStorage.getItem('bazaarhub_cart')) || [];
+let localCart = JSON.parse(localStorage.getItem('bhub_cart')) || [];
 
-function showAnimatedPopup(message, iconClass = "fas fa-check-circle") {
-    const toast = document.getElementById('popupToast');
-    if(toast) {
-        toast.innerHTML = `<i class="${iconClass}" style="color: #facc15;"></i> <span>${message}</span>`;
-        toast.classList.remove('show');
-        void toast.offsetWidth; // Force hardware reset reflow
-        toast.classList.add('show');
-        setTimeout(() => { toast.classList.remove('show'); }, 2800);
-    } else {
-        alert(message);
-    }
-}
-
-// 1. Dual Authentication Tracker Security Router Guard
+// 1. LIFETIME ROUTER GATEWAY CONTROL
 onAuthStateChanged(auth, (user) => {
-    const currentPage = window.location.pathname;
+    const currentPath = window.location.pathname.split("/").pop();
+    
     if (user) {
-        if (currentPage.includes('auth.html')) {
+        // Agar user logged in hai aur auth page par hai to use seedha main page bhejein
+        if (currentPath === "auth.html" || currentPath === "") {
             window.location.href = "index.html";
         }
-        setupAppRealtimeStreams();
     } else {
-        if (!currentPage.includes('auth.html')) {
+        // Agar logged in nahi hai to use sirf auth.html par rehne dein
+        if (currentPath !== "auth.html") {
             window.location.href = "auth.html";
         }
     }
+    updateCartVisuals();
 });
 
-// 2. Account Registration Submissions 
+// 2. REGISTRATION CONTROLLER
 const regForm = document.getElementById('registerForm');
 if (regForm) {
     regForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const name = document.getElementById('regName').value.trim();
         const email = document.getElementById('regEmail').value.trim();
-        const phone = document.getElementById('regPhone').value.trim();
         const password = document.getElementById('regPass').value;
 
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             await setDoc(doc(db, "users", userCredential.user.uid), {
-                name: name, email: email, phone: phone, role: "client"
+                name: name,
+                email: email,
+                role: "client"
             });
-            showAnimatedPopup("REGISTERED SUCCESSFUL!");
-            setTimeout(() => { window.location.href = "index.html"; }, 1400);
+            alert("Account created successfully!");
+            window.location.href = "index.html";
         } catch (error) {
-            showAnimatedPopup(error.message, "fas fa-exclamation-triangle");
+            alert("Registration Fault: " + error.message);
         }
     });
 }
 
-// 3. User Login Authenticator Session 
+// 3. LOGIN INTERFACE CONTROLLER
 const logForm = document.getElementById('loginForm');
 if (logForm) {
     logForm.addEventListener('submit', async (e) => {
@@ -82,230 +72,160 @@ if (logForm) {
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            showAnimatedPopup("LOGIN SUCCESSFUL!");
-            setTimeout(() => { window.location.href = "index.html"; }, 1400);
+            alert("Welcome back!");
+            window.location.href = "index.html";
         } catch (error) {
-            showAnimatedPopup(error.message, "fas fa-exclamation-triangle");
+            alert("Access Denied: " + error.message);
         }
     });
 }
 
+// 4. LOGOUT ENGINE
 const logoutBtn = document.getElementById('logoutBtn');
 if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-        await signOut(auth);
-        window.location.href = "auth.html";
+    logoutBtn.addEventListener('click', () => {
+        signOut(auth).then(() => {
+            window.location.href = "auth.html";
+        });
     });
 }
 
-// 4. Firestore Stream Listeners Matrix
-function setupAppRealtimeStreams() {
-    // Sync Products Collection
+// 5. MARKET REALTIME PRODUCTS LISTENER
+const productsGrid = document.getElementById('productsGrid');
+if (productsGrid) {
     onSnapshot(collection(db, "products"), (snapshot) => {
-        globalProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderCatalogUI(globalProducts);
-        renderAdminProducts();
+        globalProducts = [];
+        snapshot.forEach(doc => {
+            globalProducts.push({ id: doc.id, ...doc.data() });
+        });
+        renderMarketplaceCatalog();
     });
-
-    // Sync Current Logged-In Client Orders List View Tab 
-    const userPersonalOrdersList = document.getElementById('userPersonalOrdersList');
-    if (userPersonalOrdersList && auth.currentUser) {
-        const userOrdersQuery = query(collection(db, "orders"), where("userUid", "==", auth.currentUser.email));
-        onSnapshot(userOrdersQuery, (snapshot) => {
-            if(snapshot.empty) {
-                userPersonalOrdersList.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#9ca3af;">No active checking logs found for your profile account.</td></tr>`;
-                return;
-            }
-            userPersonalOrdersList.innerHTML = snapshot.docs.map(docSnap => {
-                const data = docSnap.data();
-                return `
-                    <tr>
-                        <td style="font-family:monospace; color:#9ca3af;">${docSnap.id.substring(0,8)}...</td>
-                        <td><b>${data.itemsSummary || 'Products Array'}</b></td>
-                        <td class="accent-yellow" style="font-weight:700;">Rs. ${parseFloat(data.totalCost).toLocaleString()}</td>
-                        <td><span style="background:#14141c; padding:4px 10px; border-radius:6px; font-size:12px; border:1px solid #1f2937; color:#facc15;">${data.status}</span></td>
-                    </tr>
-                `;
-            }).join('');
-        });
-    }
-
-    // Full Admin Control Desk Monitor Stream
-    const adminOrdersList = document.getElementById('adminOrdersList');
-    if (adminOrdersList) {
-        onSnapshot(collection(db, "orders"), (snapshot) => {
-            adminOrdersList.innerHTML = snapshot.docs.map(docSnapshot => {
-                const o = docSnapshot.data();
-                const docId = docSnapshot.id;
-                return `
-                    <tr>
-                        <td><b>Client:</b> ${o.userUid || 'Guest'}<br><b>Addr:</b> ${o.address}</td>
-                        <td>${o.itemsSummary || 'Data entries'}</td>
-                        <td class="accent-yellow" style="font-weight:700;">Rs. ${parseFloat(o.totalCost).toLocaleString()}</td>
-                        <td><span style="color:#facc15; font-weight:700;">${o.status}</span></td>
-                        <td>
-                            <select class="orderWorkflowStateSelect" data-id="${docId}" style="margin:0; padding:4px; font-size:12px;">
-                                <option value="Pending Verification" ${o.status === 'Pending Verification' ? 'selected' : ''}>Pending</option>
-                                <option value="Placed" ${o.status === 'Placed' ? 'selected' : ''}>Placed</option>
-                                <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-                            </select>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-
-            document.querySelectorAll('.orderWorkflowStateSelect').forEach(select => {
-                select.addEventListener('change', async (e) => {
-                    const id = e.target.getAttribute('data-id');
-                    const value = e.target.value;
-                    try {
-                        await updateDoc(doc(db, "orders", id), { status: value });
-                        showAnimatedPopup("TRACKING STATUS UPDATED!");
-                    } catch(err) {
-                        showAnimatedPopup(err.message, "fas fa-exclamation-triangle");
-                    }
-                });
-            });
-        });
-    }
 }
 
-// 5. Build Dynamic Catalog Nodes 
-function renderCatalogUI(productsArray) {
-    const grid = document.getElementById('productsGrid');
-    if (!grid) return;
-
-    if (productsArray.length === 0) {
-        grid.innerHTML = `<p style="color:#9ca3af; text-align:center; grid-column:1/-1; padding:30px 0;">No active elements inside system grid view matrix.</p>`;
+function renderMarketplaceCatalog() {
+    if (!productsGrid) return;
+    if (globalProducts.length === 0) {
+        productsGrid.innerHTML = `<p style="color:#94a3b8; font-size:13px;">No assets inside the vault yet.</p>`;
         return;
     }
-
-    grid.innerHTML = productsArray.map(p => `
+    productsGrid.innerHTML = globalProducts.map(p => `
         <div class="product-card">
-            <img src="${p.image}" class="product-img" onerror="this.src='https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500'">
-            <div class="product-title">${p.name}</div>
-            <div class="product-desc">${p.description}</div>
-            <div class="product-price">Rs. ${parseFloat(p.price).toLocaleString()}</div>
-            <button class="form-btn bg-yellow addToCartBtn" data-id="${p.id}">Add To Basket</button>
+            <img src="${p.img}" class="product-img" alt="product"/>
+            <h3 style="font-size:15px; margin:12px 0 6px 0; font-weight:700;">${p.name}</h3>
+            <p style="color:#94a3b8; font-size:12px; height:36px; overflow:hidden; margin-bottom:12px;">${p.desc}</p>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:#facc15; font-weight:800; font-size:15px;">Rs. ${p.price}</span>
+                <button class="form-btn bg-yellow add-to-cart-btn" data-id="${p.id}" style="width:auto; padding:6px 12px; font-size:11px; border-radius:8px;">+ Add</button>
+            </div>
         </div>
     `).join('');
 
-    document.querySelectorAll('.addToCartBtn').forEach(btn => {
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const pId = e.target.getAttribute('data-id');
-            const item = globalProducts.find(x => x.id === pId);
-            if(item) {
+            const pid = e.target.getAttribute('data-id');
+            const item = globalProducts.find(prod => prod.id === pid);
+            if (item) {
                 localCart.push(item);
-                localStorage.setItem('bazaarhub_cart', JSON.stringify(localCart));
-                updateCounterDisplay();
-                showAnimatedPopup("ADDED TO BASKET!");
+                localStorage.setItem('bhub_cart', JSON.stringify(localCart));
+                updateCartVisuals();
+                alert(`${item.name} added to data basket!`);
             }
         });
     });
 }
 
-// Live Filtering Real-time Logic Handler
-const catalogSearch = document.getElementById('catalogSearch');
-if (catalogSearch) {
-    catalogSearch.addEventListener('input', (e) => {
-        const queryTerm = e.target.value.toLowerCase().trim();
-        const filtered = globalProducts.filter(p => 
-            p.name.toLowerCase().includes(queryTerm) || p.description.toLowerCase().includes(queryTerm)
-        );
-        renderCatalogUI(filtered);
-    });
-}
-
-function updateCounterDisplay() {
-    const counter = document.getElementById('cartCount');
-    if(counter) counter.innerText = localCart.length;
-}
-
-// 6. Transmit Checkout Array 
-const checkoutItemsWrap = document.getElementById('checkoutSummaryItemsContainer');
-if (checkoutItemsWrap) {
-    let priceSum = 0;
-    checkoutItemsWrap.innerHTML = localCart.map(i => {
-        priceSum += parseFloat(i.price);
-        return `<div class="summary-item"><span>${i.name}</span><span class="accent-yellow" style="font-weight:700;">Rs. ${parseFloat(i.price).toLocaleString()}</span></div>`;
-    }).join('');
-    
-    const displayTotal = document.getElementById('checkoutSummaryTotalDisplay');
-    if(displayTotal) displayTotal.innerText = "Rs. " + priceSum.toLocaleString();
-
-    const checkForm = document.getElementById('checkoutForm');
-    if(checkForm) {
-        checkForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if(localCart.length === 0) { showAnimatedPopup("Basket is currently empty.", "fas fa-exclamation-circle"); return; }
-
-            const orderPayload = {
-                userUid: auth.currentUser ? auth.currentUser.email : "GUEST",
-                address: document.getElementById('custAddress').value.trim(),
-                city: document.getElementById('custCity').value.trim(),
-                phone: document.getElementById('custPhone').value.trim(),
-                itemsSummary: localCart.map(i => i.name).join(', '),
-                totalCost: priceSum,
-                status: "Pending Verification",
-                timestamp: new Date().toISOString()
-            };
-
-            try {
-                await addDoc(collection(db, "orders"), orderPayload);
-                showAnimatedPopup("ORDER PLACED SUCCESSFULLY!");
-                localCart = [];
-                localStorage.removeItem('bazaarhub_cart');
-                setTimeout(() => { window.location.href = "index.html"; }, 1400);
-            } catch (err) {
-                showAnimatedPopup(err.message, "fas fa-exclamation-triangle");
-            }
-        });
-    }
-}
-
-// 7. Inject Node Entry via Admin Panel Form
+// 6. ADMINISTRATIVE ADD ASSET ROUTINE
 const addProductForm = document.getElementById('addProductForm');
 if (addProductForm) {
     addProductForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const payload = {
             name: document.getElementById('pName').value.trim(),
-            category: document.getElementById('pCategory').value.trim().toUpperCase(),
-            price: parseFloat(document.getElementById('pPrice').value),
-            image: document.getElementById('pImage').value.trim(),
-            description: document.getElementById('pDesc').value.trim()
+            price: Number(document.getElementById('pPrice').value),
+            img: document.getElementById('pImg').value.trim(),
+            desc: document.getElementById('pDesc').value.trim()
         };
-
         try {
             await addDoc(collection(db, "products"), payload);
-            showAnimatedPopup("ASSET INJECTED TO VAULT!");
+            alert("Asset successfully injected into the system database!");
             addProductForm.reset();
-        } catch(err) {
-            showAnimatedPopup(err.message, "fas fa-exclamation-triangle");
+        } catch (err) {
+            alert("Database Error: " + err.message);
         }
     });
 }
 
-function renderAdminProducts() {
-    const adminList = document.getElementById('adminProductsList');
-    if (!adminList) return;
-
-    adminList.innerHTML = globalProducts.map(p => `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#14141c; padding:10px 14px; border-radius:8px; margin-bottom:10px; font-size:13px; border:1px solid #1f2937;">
-            <span><b>${p.name}</b> <span class="accent-yellow" style="margin-left:6px;">Rs. ${parseFloat(p.price).toLocaleString()}</span></span>
-            <button class="deleteProductBtn" data-id="${p.id}" style="color:#f87171; font-weight:600; background:none; border:none; cursor:pointer;"><i class="fas fa-trash-alt"></i> Delete</button>
-        </div>
-    `).join('');
-
-    document.querySelectorAll('.deleteProductBtn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            const targetId = e.currentTarget.getAttribute('data-id');
-            if(confirm("Completely discard this product matrix module item node?")) {
-                await deleteDoc(doc(db, "products", targetId));
-                showAnimatedPopup("NODE DISCARDED.");
-            }
+// 7. BACKEND ORDERS LOGS DISPATCHER
+const adminOrdersList = document.getElementById('adminOrdersList');
+if (adminOrdersList) {
+    onSnapshot(collection(db, "orders"), (snapshot) => {
+        let ordersHtml = "";
+        snapshot.forEach(doc => {
+            const o = doc.data();
+            ordersHtml += `
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                    <td style="padding:12px; color:#e2e8f0;">${o.address}, ${o.city}</td>
+                    <td style="padding:12px; color:#94a3b8;">${o.phone}</td>
+                    <td style="padding:12px; color:#facc15; font-weight:700;">Received Process</td>
+                </tr>
+            `;
         });
+        adminOrdersList.innerHTML = ordersHtml || `<tr><td colspan="3" style="padding:15px; color:#94a3b8;">No incoming active orders.</td></tr>`;
     });
 }
 
-updateCounterDisplay();
+// 8. CHECKOUT CONSOLE MANAGER
+const checkSummaryItems = document.getElementById('checkoutSummaryItemsContainer');
+const checkSummaryTotal = document.getElementById('checkoutSummaryTotalDisplay');
+const checkoutForm = document.getElementById('checkoutForm');
+
+if (checkSummaryItems && checkSummaryTotal) {
+    if (localCart.length === 0) {
+        checkSummaryItems.innerHTML = `<p style="color:#94a3b8; font-size:13px; padding:10px 0;">Your dynamic basket terminal is empty.</p>`;
+    } else {
+        let total = 0;
+        checkSummaryItems.innerHTML = localCart.map(item => {
+            total += Number(item.price);
+            return `
+                <div style="display:flex; justify-content:space-between; font-size:13px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
+                    <span>${item.name}</span>
+                    <span style="color:#facc15;">Rs. ${item.price}</span>
+                </div>
+            `;
+        }).join('');
+        checkSummaryTotal.innerText = `Rs. ${total}`;
+    }
+}
+
+if (checkoutForm) {
+    checkoutForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (localCart.length === 0) {
+            alert("Cannot process! Cart pipeline has 0 assets.");
+            return;
+        }
+        const orderData = {
+            address: document.getElementById('custAddress').value.trim(),
+            city: document.getElementById('custCity').value.trim(),
+            phone: document.getElementById('custPhone').value.trim(),
+            itemsCount: localCart.length,
+            timestamp: new Date().toISOString()
+        };
+        try {
+            await addDoc(collection(db, "orders"), orderData);
+            alert("Order parameters transmitted successfully!");
+            localCart = [];
+            localStorage.removeItem('bhub_cart');
+            window.location.href = "index.html";
+        } catch (err) {
+            alert("Transmission Error: " + err.message);
+        }
+    });
+}
+
+function updateCartVisuals() {
+    const countDisplay = document.getElementById('cartCount');
+    if (countDisplay) {
+        countDisplay.innerText = localCart.length;
+    }
+}
