@@ -3,9 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BazaarHub - Premium Store Hub</title>
+    <title>BazaarHub - Master Integrated Platform</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css?v=2.0">
+    <link rel="stylesheet" href="style.css?v=2.1">
+    <style>
+        /* Hero Section Original Styles Built-in Safely */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.85)), url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200') center/cover;
+            padding: 50px 20px;
+            text-align: center;
+            border-bottom: 1px solid #1f2937;
+            margin-bottom: 30px;
+        }
+        .hero h1 { font-size: 28px; margin-bottom: 10px; font-weight: 800; }
+        .hero p { color: #9ca3af; font-size: 14px; margin-bottom: 20px; }
+        .hero-btn-group { display: flex; justify-content: center; gap: 10px; }
+        .hero-btn { padding: 10px 20px; border-radius: 6px; font-size: 13px; font-weight: 600; }
+        .bg-dark { background-color: #14141c; color: white; border: 1px solid #374151; }
+        
+        .section-title { font-size: 18px; text-transform: uppercase; margin-bottom: 20px; letter-spacing: 0.5px; font-weight: 700; border-left: 3px solid #facc15; padding-left: 10px; }
+        
+        /* Original Built-in Dynamic Review Section Blocks */
+        .reviews-scroll { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 40px; }
+        .review-card { background-color: #0b0b11; border: 1px solid #1f2937; border-radius: 10px; padding: 15px; min-width: 250px; flex-shrink: 0; }
+        .review-stars { color: #facc15; font-size: 12px; margin-bottom: 8px; }
+        .review-text { font-size: 12px; color: #d1d5db; italic; }
+        .review-user { font-size: 11px; color: #9ca3af; margin-top: 10px; font-weight: 600; }
+
+        footer { background-color: #000000; border-top: 1px solid #1f2937; padding: 30px 5%; margin-top: 40px; font-size: 13px; }
+        .footer-grid { display: grid; grid-template-columns: 1fr; gap: 25px; }
+        @media(min-width: 768px){ .footer-grid { grid-template-columns: repeat(3, 1fr); } }
+        .footer-col h3 { font-size: 15px; margin-bottom: 12px; color: #facc15; }
+        .footer-col p, .footer-col li { color: #9ca3af; font-size: 13px; list-style: none; margin-bottom: 8px;}
+        .social-icons { display: flex; gap: 15px; font-size: 22px; margin-top: 10px; }
+        .fa-facebook { color: #1877f2; } .fa-instagram { color: #e1306c; }
+
+        /* Floating Custom WhatsApp Card Widget Support Layout */
+        .whatsapp-widget { position: fixed; bottom: 25px; right: 25px; z-index: 9999; }
+        .whatsapp-trigger { background-color: #25d366; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 15px rgba(37,211,102,0.4); cursor: pointer; }
+        .whatsapp-card { position: absolute; bottom: 65px; right: 0; width: 280px; background: #0b0b11; border: 1px solid #1f2937; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden; display: none; }
+        .wa-header { background: #25d366; color: white; padding: 12px; font-size: 14px; font-weight: bold; display: flex; justify-content: space-between; }
+        .wa-body { padding: 15px; }
+        .wa-msg { background: #14141c; padding: 8px 12px; border-radius: 8px; font-size: 12px; margin-bottom: 12px; border: 1px solid #1f2937; }
+    </style>
 </head>
 <body>
 
@@ -17,24 +57,101 @@
             <div class="logo-text">BAZAAR<span>HUB</span></div>
         </div>
         <div class="nav-center">
-            <a href="index.html" class="accent-yellow">Home Catalog</a>
+            <a href="index.html" class="accent-yellow">Home</a>
             <a href="checkout.html">Checkout Console</a>
-            <a href="admin.html" style="color: #fca5a5;"><i class="fas fa-user-shield"></i> Admin Panel</a>
+            <a href="admin.html" style="color: #fca5a5;"><i class="fas fa-user-shield"></i> Admin Desk</a>
         </div>
         <div class="nav-right">
+            <div class="search-bar">
+                <input type="text" id="globalSearchInput" placeholder="Search catalog...">
+                <i class="fas fa-search"></i>
+            </div>
             <div class="cart-icon" onclick="window.location.href='checkout.html'">
                 <i class="fas fa-shopping-basket"></i>
                 <span id="cartCount" class="cart-count">0</span>
             </div>
-            <button id="logoutBtn" style="color: #f87171; font-size: 14px; font-weight: 700;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            <button id="logoutBtn" style="color: #f87171; font-size: 13px; font-weight: 600;"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </div>
     </nav>
 
-    <div class="container">
-        <h2 style="margin-bottom: 35px; text-transform: uppercase; font-size: 20px; letter-spacing: 1px; font-weight: 800;">Available System Vault Pipeline</h2>
-        <div id="productsGrid" class="grid"></div>
+    <div class="hero">
+        <h1>Welcome to BazaarHub Elite</h1>
+        <p>Discover premier tech components, custom infrastructure node configurations, and seamless delivery arrays pipelines.</p>
+        <div class="hero-btn-group">
+            <button class="hero-btn bg-yellow" onclick="document.getElementById('catalogHeading').scrollIntoView({behavior:'smooth'})">Explore Vault</button>
+            <button class="hero-btn bg-dark" onclick="window.location.href='checkout.html'">View Active Basket</button>
+        </div>
     </div>
 
-    <script type="module" src="script.js?v=2.0"></script>
+    <div class="container">
+        <h2 id="catalogHeading" class="section-title">Available System Vault Items</h2>
+        <div id="productsGrid" class="grid" style="margin-bottom: 45px;">
+            </div>
+
+        <h2 class="section-title">Verified Customer Telemetry Logs</h2>
+        <div class="reviews-scroll">
+            <div class="review-card">
+                <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <div class="review-text">"Outstanding asset delivery speeds! The premium headphone node architecture is flawlessly structured."</div>
+                <div class="review-user">- Ali Khan, Khi</div>
+            </div>
+            <div class="review-card">
+                <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <div class="review-text">"Extremely premium UI responsive handling. Session stays authenticated transparently cross browsers."</div>
+                <div class="review-user">- Zainab J., Lhr</div>
+            </div>
+            <div class="review-card">
+                <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <div class="review-text">"Highly secure, live Firestore order deployment tracking updates instant dynamically."</div>
+                <div class="review-user">- M. Bilal, Isb</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="whatsapp-widget">
+        <div class="whatsapp-card" id="whatsappChatCard">
+            <div class="wa-header">
+                <span><i class="fab fa-whatsapp"></i> BazaarHub Help Desk</span>
+                <i class="fas fa-times" onclick="toggleWhatsAppWidget()" style="cursor:pointer;"></i>
+            </div>
+            <div class="wa-body">
+                <div class="wa-msg">Hi there! Assalam-o-Alaikum. How can we support your structural deployment pipelines parameters today?</div>
+                <button class="form-btn bg-yellow" onclick="window.open('https://wa.me/923001234567?text=Hello%20BazaarHub%20Support%20Matrix', '_blank')" style="font-size:12px; padding:8px;"><i class="fab fa-whatsapp"></i> Transmit Secure Chat</button>
+            </div>
+        </div>
+        <div class="whatsapp-trigger" onclick="toggleWhatsAppWidget()">
+            <i class="fab fa-whatsapp"></i>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>BAZAARHUB</h3>
+                <p>Premium architectural infrastructure cataloging solution console provider arrays.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Quick Hyperlinks</h3>
+                <li><a href="index.html">Home catalog</a></li>
+                <li><a href="checkout.html">Checkout Module</a></li>
+                <li><a href="admin.html">Admin Dashboard</a></li>
+            </div>
+            <div class="footer-col">
+                <h3>Follow Dispatches</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="script.js?v=2.1"></script>
+    <script>
+        function toggleWhatsAppWidget() {
+            const card = document.getElementById('whatsappChatCard');
+            if(card) card.style.display = (card.style.display === 'block') ? 'none' : 'block';
+        }
+    </script>
 </body>
 </html>
