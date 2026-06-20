@@ -17,7 +17,7 @@
             <h1 id="authHeading">Welcome back</h1>
             <p class="auth-sub" id="authSub">Sign in to browse the bazaar and track your orders.</p>
 
-            <div class="auth-tabs" id="authTabs">
+            <div class="auth-tabs">
                 <button id="loginTab" class="tab-btn active" type="button">SIGN IN</button>
                 <button id="registerTab" class="tab-btn" type="button">REGISTER</button>
             </div>
@@ -49,6 +49,10 @@
                     <input type="email" id="regEmail" placeholder="name@domain.com" required>
                 </div>
                 <div class="input-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="regPhone" placeholder="03001234567" required>
+                </div>
+                <div class="input-group">
                     <label>Password</label>
                     <div class="input-wrap">
                         <input type="password" id="regPass" placeholder="Min 6 characters" required minlength="6">
@@ -57,34 +61,6 @@
                 </div>
                 <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-user-plus"></i> Create Account</button>
             </form>
-
-            <div id="verifyPanel" class="auth-form hidden">
-                <span class="eyebrow">ONE LAST STEP</span>
-                <p class="auth-sub" style="margin-top:8px;">We text a 6-digit code to your phone so we know orders are coming from a real person.</p>
-
-                <div id="verifyError" class="auth-error hidden"></div>
-
-                <div id="verifySendStep">
-                    <div class="input-group">
-                        <label>Mobile Number</label>
-                        <input type="tel" id="verifyPhone" placeholder="03001234567">
-                    </div>
-                    <button type="button" id="sendCodeBtn" class="btn btn-primary btn-block"><i class="fas fa-paper-plane"></i> Send Code</button>
-                </div>
-
-                <div id="verifyCodeStep" class="hidden">
-                    <div class="input-group">
-                        <label>6-Digit Code</label>
-                        <input type="text" id="otpCode" inputmode="numeric" maxlength="6" placeholder="123456">
-                    </div>
-                    <button type="button" id="confirmCodeBtn" class="btn btn-primary btn-block"><i class="fas fa-shield-halved"></i> Confirm &amp; Continue</button>
-                    <button type="button" id="resendCodeBtn" class="btn btn-ghost btn-block" style="margin-top:6px;">Use a different number</button>
-                </div>
-
-                <button type="button" id="verifySignOut" class="btn btn-ghost btn-block" style="margin-top:14px;">Not you? Sign out</button>
-            </div>
-
-            <div id="recaptcha-container"></div>
         </div>
     </div>
 

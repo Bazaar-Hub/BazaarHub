@@ -2,7 +2,7 @@
 // BAZAARHUB — FIREBASE AUTH, CATALOG, CHECKOUT & ADMIN CONSOLE
 // =========================================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, RecaptchaVerifier, linkWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -23,9 +23,6 @@ let globalOrders = [];
 let localCart = JSON.parse(localStorage.getItem('bazaarhub_cart')) || [];
 let activeCategory = 'All';
 let searchTerm = '';
-let currentUserProfile = { role: 'client', phoneVerified: false };
-let confirmationResult = null;
-let recaptchaVerifier = null;
 
 const STATUS_OPTIONS = ["Pending Dispatch", "Shipped", "Delivered", "Cancelled"];
 
@@ -113,14 +110,7 @@ function friendlyAuthError(error) {
         'auth/invalid-credential': 'Incorrect email or password.',
         'auth/email-already-in-use': 'An account already exists with that email.',
         'auth/weak-password': 'Password should be at least 6 characters.',
-        'auth/too-many-requests': 'Too many attempts. Please wait a moment and try again.',
-        'auth/invalid-phone-number': "That phone number doesn't look valid. Use a Pakistani mobile number like 03001234567.",
-        'auth/credential-already-in-use': 'This phone number is already verified on another account.',
-        'auth/captcha-check-failed': "Verification check failed — please try again.",
-        'auth/invalid-verification-code': "That code isn't right. Double-check and try again.",
-        'auth/code-expired': 'That code expired — request a new one.',
-        'auth/missing-verification-code': 'Enter the 6-digit code we texted you.',
-        'auth/provider-already-linked': 'This account already has a verified phone number.'
+        'auth/too-many-requests': 'Too many attempts. Please wait a moment and try again.'
     };
     return map[error.code] || error.message;
 }
@@ -140,58 +130,41 @@ function setupMobileNav() {
 setupMobileNav();
 
 // ==========================================
-// 2. GLOBAL AUTH MONITOR, ROUTE GUARD, ADMIN GUARD & PHONE-VERIFICATION GATE
+// 2. GLOBAL AUTH MONITOR, ROUTE GUARD & ADMIN GUARD
 // ==========================================
 onAuthStateChanged(auth, async (user) => {
     const currentPage = window.location.pathname;
 
-    if (!user) {
+    if (user) {
+        if (currentPage.includes('auth.html')) {
+            window.location.href = "index.html";
+            return;
+        }
+
+        let role = 'client';
+        try {
+            const userSnap = await getDoc(doc(db, "users", user.uid));
+            if (userSnap.exists()) role = userSnap.data().role || 'client';
+        } catch (err) {
+            console.error('Could not load user profile:', err);
+        }
+
+        document.querySelectorAll('.admin-only-link').forEach(el => {
+            el.classList.toggle('hidden', role !== 'admin');
+        });
+
+        if (currentPage.includes('admin.html') && role !== 'admin') {
+            showToast("That area is restricted to admins.", 'error');
+            window.location.href = "index.html";
+            return;
+        }
+
+        setupAppRealtimeStreams();
+    } else {
         if (!currentPage.includes('auth.html')) {
             window.location.href = "auth.html";
         }
-        return;
     }
-
-    let profile = { role: 'client', phoneVerified: false, phone: '' };
-    try {
-        const userSnap = await getDoc(doc(db, "users", user.uid));
-        if (userSnap.exists()) {
-            const d = userSnap.data();
-            profile = { role: d.role || 'client', phoneVerified: !!d.phoneVerified, phone: d.phone || '' };
-        }
-    } catch (err) {
-        console.error('Could not load user profile:', err);
-    }
-    currentUserProfile = profile;
-
-    // Admins are manually vetted in the Firebase console, so they skip the SMS gate.
-    const needsPhoneVerification = profile.role !== 'admin' && !profile.phoneVerified;
-
-    if (needsPhoneVerification) {
-        if (currentPage.includes('auth.html')) {
-            showVerifyPanel(profile.phone);
-        } else {
-            window.location.href = "auth.html";
-        }
-        return;
-    }
-
-    if (currentPage.includes('auth.html')) {
-        window.location.href = "index.html";
-        return;
-    }
-
-    document.querySelectorAll('.admin-only-link').forEach(el => {
-        el.classList.toggle('hidden', profile.role !== 'admin');
-    });
-
-    if (currentPage.includes('admin.html') && profile.role !== 'admin') {
-        showToast("That area is restricted to admins.", 'error');
-        window.location.href = "index.html";
-        return;
-    }
-
-    setupAppRealtimeStreams();
 });
 
 // ==========================================
@@ -204,6 +177,7 @@ if (regForm) {
         const submitBtn = regForm.querySelector('button[type="submit"]');
         const name = document.getElementById('regName').value.trim();
         const email = document.getElementById('regEmail').value.trim();
+        const phone = document.getElementById('regPhone').value.trim();
         const password = document.getElementById('regPass').value;
 
         hideAuthError('registerError');
@@ -212,9 +186,9 @@ if (regForm) {
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             await setDoc(doc(db, "users", userCredential.user.uid), {
-                name, email, phone: '', role: "client", phoneVerified: false
+                name, email, phone, role: "client"
             });
-            // onAuthStateChanged takes it from here and routes to phone verification.
+            window.location.href = "index.html";
         } catch (error) {
             restore();
             showAuthError('registerError', friendlyAuthError(error));
@@ -238,7 +212,7 @@ if (logForm) {
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            // onAuthStateChanged decides where to send them next (catalog or phone verification).
+            window.location.href = "index.html";
         } catch (error) {
             restore();
             showAuthError('loginError', friendlyAuthError(error));
@@ -262,111 +236,6 @@ if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
         await signOut(auth);
         window.location.href = "auth.html";
-    });
-}
-
-// ==========================================
-// 4b. PHONE VERIFICATION (mandatory — keeps fake accounts off the bazaar)
-// ==========================================
-function toE164Pakistan(raw) {
-    let digits = (raw || '').replace(/\D/g, '');
-    if (digits.startsWith('0')) digits = digits.slice(1);
-    if (digits.startsWith('92')) digits = digits.slice(2);
-    return '+92' + digits;
-}
-
-function showVerifyPanel(savedPhone) {
-    document.getElementById('authTabs')?.classList.add('hidden');
-    document.getElementById('loginForm')?.classList.add('hidden');
-    document.getElementById('registerForm')?.classList.add('hidden');
-    document.getElementById('verifyPanel')?.classList.remove('hidden');
-
-    const heading = document.getElementById('authHeading');
-    const sub = document.getElementById('authSub');
-    if (heading) heading.innerText = 'Verify your phone';
-    if (sub) sub.innerText = "You're almost in — just confirm your number.";
-
-    const phoneInput = document.getElementById('verifyPhone');
-    if (phoneInput && savedPhone && !phoneInput.value) phoneInput.value = savedPhone;
-
-    document.getElementById('verifyCodeStep')?.classList.add('hidden');
-    document.getElementById('verifySendStep')?.classList.remove('hidden');
-}
-
-const sendCodeBtn = document.getElementById('sendCodeBtn');
-if (sendCodeBtn) {
-    sendCodeBtn.addEventListener('click', async () => {
-        hideAuthError('verifyError');
-        const rawPhone = document.getElementById('verifyPhone').value.trim();
-        const e164 = toE164Pakistan(rawPhone);
-
-        if (!/^\+92\d{10}$/.test(e164)) {
-            showAuthError('verifyError', 'Enter a valid Pakistani mobile number, e.g. 03001234567.');
-            return;
-        }
-
-        const restore = setBtnLoading(sendCodeBtn, 'Sending…');
-        try {
-            if (!recaptchaVerifier) {
-                recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'invisible' });
-            }
-            confirmationResult = await linkWithPhoneNumber(auth.currentUser, e164, recaptchaVerifier);
-            document.getElementById('verifySendStep').classList.add('hidden');
-            document.getElementById('verifyCodeStep').classList.remove('hidden');
-            showToast('Code sent! Check your SMS inbox.', 'success');
-        } catch (error) {
-            try { recaptchaVerifier?.clear(); } catch (_) { /* no-op */ }
-            recaptchaVerifier = null;
-            showAuthError('verifyError', friendlyAuthError(error));
-        } finally {
-            restore();
-        }
-    });
-}
-
-const confirmCodeBtn = document.getElementById('confirmCodeBtn');
-if (confirmCodeBtn) {
-    confirmCodeBtn.addEventListener('click', async () => {
-        hideAuthError('verifyError');
-        const code = document.getElementById('otpCode').value.trim();
-        if (!code) {
-            showAuthError('verifyError', 'Enter the 6-digit code we texted you.');
-            return;
-        }
-
-        const restore = setBtnLoading(confirmCodeBtn, 'Confirming…');
-        try {
-            if (!confirmationResult) throw new Error('Request a code first.');
-            await confirmationResult.confirm(code);
-            // Force a fresh ID token so Firestore rules immediately see the verified phone claim.
-            await auth.currentUser.getIdToken(true);
-            await updateDoc(doc(db, "users", auth.currentUser.uid), {
-                phoneVerified: true,
-                phone: auth.currentUser.phoneNumber
-            });
-            showToast('Phone verified — welcome to BazaarHub!', 'success');
-            window.location.href = "index.html";
-        } catch (error) {
-            restore();
-            showAuthError('verifyError', friendlyAuthError(error));
-        }
-    });
-}
-
-const resendCodeBtn = document.getElementById('resendCodeBtn');
-if (resendCodeBtn) {
-    resendCodeBtn.addEventListener('click', () => {
-        confirmationResult = null;
-        document.getElementById('verifyCodeStep').classList.add('hidden');
-        document.getElementById('verifySendStep').classList.remove('hidden');
-    });
-}
-
-const verifySignOut = document.getElementById('verifySignOut');
-if (verifySignOut) {
-    verifySignOut.addEventListener('click', async () => {
-        await signOut(auth);
-        window.location.reload();
     });
 }
 

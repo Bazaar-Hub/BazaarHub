@@ -18,13 +18,6 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // True only once Firebase itself has confirmed a phone number via SMS OTP
-    // and linked it to this account. This comes from the signed ID token, so
-    // unlike a plain Firestore field, a client can't fake it by editing data.
-    function isPhoneVerified() {
-      return isSignedIn() && request.auth.token.phone_number != null;
-    }
-
     // Each user can read their own profile (needed for the admin-role check).
     // Only an existing admin can promote/demote roles — users can edit their
     // own name/phone but can't grant themselves admin access.
@@ -46,10 +39,8 @@ service cloud.firestore {
 
     // Customers can place an order and read only their own orders.
     // Only admins can read the full order list or update order status.
-    // Orders require a verified phone — this is what actually blocks fake orders.
     match /orders/{orderId} {
-      allow create: if isSignedIn() && isPhoneVerified()
-                    && request.resource.data.userUid == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.userUid == request.auth.uid;
       allow read: if isAdmin() || (isSignedIn() && resource.data.userUid == request.auth.uid);
       allow update, delete: if isAdmin();
     }
