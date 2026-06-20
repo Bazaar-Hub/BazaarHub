@@ -130,48 +130,30 @@ function setupMobileNav() {
 setupMobileNav();
 
 // ==========================================
-// 2. GLOBAL AUTH MONITOR, ROUTE GUARD & ADMIN GUARD
+// 2. GLOBAL AUTH MONITOR & ROUTE GUARD
+// Admin panel is protected by its own username/password gate (see admin.html).
+// Firebase Auth only guards non-admin pages.
 // ==========================================
 onAuthStateChanged(auth, async (user) => {
     const currentPage = window.location.pathname;
 
     if (user) {
+        // Redirect logged-in users away from auth page
         if (currentPage.includes('auth.html')) {
             window.location.href = "index.html";
             return;
         }
-
-        let role = 'client';
-        const ADMIN_EMAIL = "bazaarhub0111@gmail.com";
-        try {
-            const userSnap = await getDoc(doc(db, "users", user.uid));
-            if (userSnap.exists()) role = userSnap.data().role || 'client';
-            // Force admin role for designated admin email
-            if (user.email && user.email.toLowerCase() === ADMIN_EMAIL) {
-                role = 'admin';
-                if (!userSnap.exists() || userSnap.data().role !== 'admin') {
-                    await setDoc(doc(db, "users", user.uid), { role: 'admin', email: user.email }, { merge: true });
-                }
-            }
-        } catch (err) {
-            console.error('Could not load user profile:', err);
-            if (user.email && user.email.toLowerCase() === ADMIN_EMAIL) role = 'admin';
-        }
-
-        document.querySelectorAll('.admin-only-link').forEach(el => {
-            el.classList.toggle('hidden', role !== 'admin');
-        });
-
-        if (currentPage.includes('admin.html') && role !== 'admin') {
-            showToast("That area is restricted to admins.", 'error');
-            window.location.href = "index.html";
-            return;
-        }
-
+        // Admin panel has its own gate — Firebase only starts data streams here
         setupAppRealtimeStreams();
     } else {
-        if (!currentPage.includes('auth.html')) {
+        // Not logged in: redirect to auth, but allow admin.html (it has its own gate)
+        if (!currentPage.includes('auth.html') && !currentPage.includes('admin.html')) {
             window.location.href = "auth.html";
+        }
+        // On admin page while not Firebase-logged-in, still start streams
+        // so the gate can unlock and show real data
+        if (currentPage.includes('admin.html')) {
+            setupAppRealtimeStreams();
         }
     }
 });
@@ -194,9 +176,8 @@ if (regForm) {
 
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const assignedRole = email.toLowerCase() === "bazaarhub0111@gmail.com" ? "admin" : "client";
             await setDoc(doc(db, "users", userCredential.user.uid), {
-                name, email, phone, role: assignedRole
+                name, email, phone, role: "client"
             });
             window.location.href = "index.html";
         } catch (error) {

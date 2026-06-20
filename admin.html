@@ -12,17 +12,59 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<!-- ===================== ADMIN LOGIN GATE ===================== -->
+<div id="adminGate" class="admin-gate-overlay">
+    <div class="admin-gate-card">
+        <div class="admin-gate-logo">
+            <img src="logo.png" alt="BazaarHub">
+        </div>
+        <span class="eyebrow" style="display:block; text-align:center; margin-bottom:6px;">RESTRICTED ACCESS</span>
+        <h2 class="admin-gate-title">Admin Console</h2>
+        <p class="admin-gate-sub">Enter your owner credentials to continue.</p>
+
+        <div id="adminGateError" class="auth-error hidden" style="margin-bottom:14px;">
+            <i class="fas fa-circle-exclamation"></i><span id="adminGateErrorMsg">Invalid credentials.</span>
+        </div>
+
+        <div class="input-group">
+            <label>Username</label>
+            <input type="text" id="adminUsername" placeholder="Owner username" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="input-group">
+            <label>Password</label>
+            <div class="input-wrap">
+                <input type="password" id="adminPassword" placeholder="••••••••" autocomplete="off">
+                <button type="button" class="toggle-visibility" id="adminPassToggle"><i class="fas fa-eye"></i></button>
+            </div>
+        </div>
+
+        <button id="adminGateSubmit" class="btn btn-primary btn-block" style="margin-top:6px;">
+            <i class="fas fa-unlock-keyhole"></i> Unlock Panel
+        </button>
+
+        <button onclick="window.location.href='index.html'" class="btn btn-secondary btn-block" style="margin-top:10px;">
+            <i class="fas fa-arrow-left"></i> Back to Store
+        </button>
+
+        <p class="admin-gate-attempts" id="adminGateAttempts"></p>
+    </div>
+</div>
+
+<!-- ===================== ADMIN PANEL (hidden until unlocked) ===================== -->
+<div id="adminPanel" class="hidden">
 <div class="container" style="padding-top:30px;">
 
     <header class="admin-header">
         <div>
-            <span class="eyebrow">RESTRICTED · ADMIN ROLE ONLY</span>
+            <span class="eyebrow">RESTRICTED · OWNER ACCESS</span>
             <h1 class="accent-gold">Catalog &amp; Orders Console</h1>
             <p>Manage live inventory and track incoming customer orders.</p>
         </div>
         <div style="display:flex; gap:10px;">
             <button onclick="window.location.href='index.html'" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Exit to Store</button>
-            <button id="logoutBtn" class="btn btn-danger"><i class="fas fa-arrow-right-from-bracket"></i> Logout</button>
+            <button id="adminPanelLogout" class="btn btn-danger"><i class="fas fa-lock"></i> Lock Panel</button>
+            <button id="logoutBtn" class="btn btn-danger" style="display:none;"><i class="fas fa-arrow-right-from-bracket"></i> Logout</button>
         </div>
     </header>
 
@@ -104,7 +146,171 @@
         </div>
     </div>
 </div>
+</div><!-- end #adminPanel -->
 
-    <script type="module" src="script.js"></script>
+<script type="module" src="script.js"></script>
+
+<script>
+// =====================================================
+//  ADMIN GATE — username / password lock
+//  Credentials: OwnerBH / bh26-777!@
+// =====================================================
+(function () {
+    const ADMIN_USER = "OwnerBH";
+    const ADMIN_PASS = "bh26-777!@";
+    const SESSION_KEY = "bh_admin_unlocked";
+    const MAX_ATTEMPTS = 5;
+    const LOCKOUT_MS = 2 * 60 * 1000; // 2 minutes
+
+    const gate       = document.getElementById('adminGate');
+    const panel      = document.getElementById('adminPanel');
+    const submitBtn  = document.getElementById('adminGateSubmit');
+    const errorBox   = document.getElementById('adminGateError');
+    const errorMsg   = document.getElementById('adminGateErrorMsg');
+    const attemptsEl = document.getElementById('adminGateAttempts');
+    const userInput  = document.getElementById('adminUsername');
+    const passInput  = document.getElementById('adminPassword');
+    const passToggle = document.getElementById('adminPassToggle');
+
+    // Password visibility toggle
+    passToggle.addEventListener('click', () => {
+        const isPass = passInput.type === 'password';
+        passInput.type = isPass ? 'text' : 'password';
+        passToggle.querySelector('i').className = isPass ? 'fas fa-eye-slash' : 'fas fa-eye';
+    });
+
+    function showError(msg) {
+        errorMsg.textContent = msg;
+        errorBox.classList.remove('hidden');
+        errorBox.style.animation = 'none';
+        requestAnimationFrame(() => { errorBox.style.animation = ''; });
+    }
+
+    function hideError() {
+        errorBox.classList.add('hidden');
+    }
+
+    function unlockPanel() {
+        // Store unlock in sessionStorage so refreshing keeps it open during the tab session
+        sessionStorage.setItem(SESSION_KEY, '1');
+        gate.style.animation = 'fadeOut 0.35s ease forwards';
+        setTimeout(() => {
+            gate.classList.add('hidden');
+            panel.classList.remove('hidden');
+        }, 340);
+    }
+
+    function lockPanel() {
+        sessionStorage.removeItem(SESSION_KEY);
+        gate.classList.remove('hidden');
+        panel.classList.add('hidden');
+        gate.style.animation = '';
+        userInput.value = '';
+        passInput.value = '';
+        hideError();
+        attemptsEl.textContent = '';
+        userInput.focus();
+    }
+
+    // Lock panel button
+    document.getElementById('adminPanelLogout').addEventListener('click', lockPanel);
+
+    // If already unlocked this session, skip the gate
+    if (sessionStorage.getItem(SESSION_KEY) === '1') {
+        unlockPanel();
+        return;
+    }
+
+    // Focus username on load
+    setTimeout(() => userInput.focus(), 100);
+
+    // Attempt tracking
+    let attempts = parseInt(sessionStorage.getItem('bh_gate_attempts') || '0');
+    let lockUntil = parseInt(sessionStorage.getItem('bh_gate_lockuntil') || '0');
+
+    function checkLockout() {
+        const now = Date.now();
+        if (lockUntil && now < lockUntil) {
+            const secs = Math.ceil((lockUntil - now) / 1000);
+            submitBtn.disabled = true;
+            attemptsEl.textContent = `Too many attempts. Try again in ${secs}s.`;
+            attemptsEl.style.color = 'var(--terracotta-bright)';
+            return true;
+        }
+        if (lockUntil && now >= lockUntil) {
+            // Lockout expired
+            attempts = 0;
+            sessionStorage.removeItem('bh_gate_attempts');
+            sessionStorage.removeItem('bh_gate_lockuntil');
+            lockUntil = 0;
+            submitBtn.disabled = false;
+            attemptsEl.textContent = '';
+        }
+        return false;
+    }
+
+    // Countdown timer during lockout
+    let countdownInterval = null;
+    function startCountdown() {
+        clearInterval(countdownInterval);
+        countdownInterval = setInterval(() => {
+            if (!checkLockout()) {
+                clearInterval(countdownInterval);
+                attemptsEl.textContent = '';
+                submitBtn.disabled = false;
+                hideError();
+            }
+        }, 1000);
+    }
+
+    function handleLogin() {
+        if (checkLockout()) { startCountdown(); return; }
+
+        const user = userInput.value.trim();
+        const pass = passInput.value;
+
+        hideError();
+
+        if (user === ADMIN_USER && pass === ADMIN_PASS) {
+            // Success
+            attempts = 0;
+            sessionStorage.removeItem('bh_gate_attempts');
+            sessionStorage.removeItem('bh_gate_lockuntil');
+            submitBtn.innerHTML = '<i class="fas fa-circle-check"></i> Unlocking…';
+            submitBtn.disabled = true;
+            setTimeout(unlockPanel, 400);
+        } else {
+            attempts++;
+            sessionStorage.setItem('bh_gate_attempts', attempts);
+
+            const remaining = MAX_ATTEMPTS - attempts;
+
+            if (attempts >= MAX_ATTEMPTS) {
+                lockUntil = Date.now() + LOCKOUT_MS;
+                sessionStorage.setItem('bh_gate_lockuntil', lockUntil);
+                showError('Too many failed attempts. You are locked out for 2 minutes.');
+                attemptsEl.textContent = '';
+                startCountdown();
+            } else {
+                showError('Incorrect username or password.');
+                attemptsEl.textContent = `${remaining} attempt${remaining === 1 ? '' : 's'} remaining.`;
+                attemptsEl.style.color = remaining <= 2 ? 'var(--terracotta-bright)' : 'var(--text-faint)';
+            }
+
+            // Shake the card
+            const card = document.querySelector('.admin-gate-card');
+            card.style.animation = 'none';
+            requestAnimationFrame(() => { card.style.animation = 'gateShake 0.4s ease'; });
+
+            passInput.value = '';
+            passInput.focus();
+        }
+    }
+
+    submitBtn.addEventListener('click', handleLogin);
+    passInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); });
+    userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') passInput.focus(); });
+})();
+</script>
 </body>
 </html>
