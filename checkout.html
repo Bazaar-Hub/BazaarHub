@@ -3,55 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BazaarHub - Transmit Order Platform</title>
+    <title>BazaarHub - Secure Order Transmission Console</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <nav>
-        <div class="nav-logo-box" onclick="window.location.href='index.html'">
-            <div class="logo-badge">B</div>
-            <div class="logo-text">BAZAAR<span>HUB</span></div>
+    <!-- Minimalist Navigation for Checkout focus -->
+    <nav style="justify-content: space-between;">
+        <div class="nav-logo" onclick="window.location.href='index.html'">
+            <div class="logo-icon">B</div>
+            <div class="logo-text">BAZAAR<span class="accent-text">HUB</span></div>
         </div>
-        <button onclick="window.location.href='index.html'" class="form-btn bg-yellow" style="width:auto; margin-top:0; padding:8px 18px; font-size:12px; font-weight: bold;">← Return to Store</button>
+        <button onclick="window.location.href='index.html'" class="btn-primary" style="width:auto; padding:10px 20px; font-size:12px;">← Return to Market</button>
     </nav>
 
-    <div class="container">
-        <div class="checkout-grid">
-            <div class="manifest-card">
-                <h2 style="font-size: 18px; margin-bottom:20px; font-weight: 800;" class="accent-yellow"><i class="fas fa-truck"></i> Shipping Manifest</h2>
-                <form id="checkoutForm">
-                    <div class="input-group">
-                        <label>Delivery Full Address</label>
-                        <input type="text" id="custAddress" required placeholder="Apartment, Street name, Block address...">
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                        <div class="input-group">
-                            <label>City</label>
-                            <input type="text" id="custCity" required placeholder="Karachi">
-                        </div>
-                        <div class="input-group">
-                            <label>Contact Phone Number</label>
-                            <input type="text" id="custPhone" required placeholder="03001234567">
-                        </div>
-                    </div>
-                    <button type="submit" class="form-btn bg-yellow">CONFIRM & PLACE ORDER</button>
-                </form>
+    <div class="container" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 40px; align-items: start;">
+        
+        <!-- Cart Manifest Panel -->
+        <section style="background-color:var(--bg-card); border:1px solid var(--border-bright); border-radius:24px; padding:35px; animation:fadeInScale var(--transition-slow) forwards;">
+            <header style="border-bottom: 2px solid var(--border-dim); padding-bottom: 15px; margin-bottom: 25px; display:flex; justify-content:space-between; align-items:center;">
+                <h2 style="font-size: 20px; font-weight: 900;" class="accent-text"><i class="fas fa-satellite-dish"></i> BHA BASKET MANIFEST</h2>
+                <span id="itemCountDisplay" style="font-size:13px; font-weight:700; color:var(--text-secondary);"></span>
+            </header>
+            
+            <div id="checkoutSummaryItemsContainer">
+                <!-- Cart items will be injected here by JS -->
+                <p style="color:var(--text-secondary); text-align:center; padding: 40px 0; font-weight:700;">Your operational basket is currently empty.</p>
             </div>
+            
+            <div style="display:flex; justify-content:space-between; margin-top: 30px; padding-top:20px; border-top:2px solid var(--border-bright); font-weight:900; font-size:18px;">
+                <span>GRAND TOTAL PKR:</span>
+                <span class="accent-text" id="checkoutSummaryTotalDisplay">0</span>
+            </div>
+        </section>
 
-            <div class="summary-card">
-                <h2 style="font-size: 18px; margin-bottom:20px; font-weight: 800;">Order Summary Basket</h2>
-                <div id="checkoutSummaryItemsContainer">
-                    </div>
-                <div style="display:flex; justify-content:space-between; margin-top: 25px; padding-top:18px; border-top:1px solid #1e2235; font-weight:900; font-size:18px;">
-                    <span>TOTAL AMOUNT DUE:</span>
-                    <span class="accent-yellow" id="checkoutSummaryTotalDisplay">Rs. 0</span>
+        <!-- Shipping Manifest Panel -->
+        <section style="background-color:var(--bg-card); border:1px solid var(--border-bright); border-radius:24px; padding:35px; animation:fadeInScale var(--transition-slow) 0.1s forwards; opacity:0;">
+            <header style="border-bottom: 2px solid var(--border-dim); padding-bottom: 15px; margin-bottom: 25px;">
+                <h2 style="font-size: 20px; font-weight: 900;"><i class="fas fa-truck-loading"></i> SHIPPING PROTOCOL DATA</h2>
+            </header>
+            <form id="checkoutForm">
+                <div class="input-group">
+                    <input type="text" id="custAddress" required placeholder=" ">
+                    <label>Operational Delivery Address</label>
                 </div>
-            </div>
-        </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                    <div class="input-group">
+                        <input type="text" id="custCity" required placeholder=" ">
+                        <label>Sector City (e.g., Karachi)</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="tel" id="custPhone" required placeholder=" ">
+                        <label>Contact Sequence Number</label>
+                    </div>
+                </div>
+                <!-- Marketing High-Impact Button -->
+                <button type="submit" class="btn-primary" style="margin-top: 15px;">TRANSMIT SECURE ORDER</button>
+            </form>
+        </section>
+
     </div>
 
-    <script type="module" src="script.js"></script>
+    <script type="module">
+        import { addDoc, collection } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+        // Import our existing script logic, but some checkout logic needs unique handling.
+        import "./script.js"; // This runs the global logic, auth monitors etc.
+        // We'll also import the firebase db object already initialized in script.js (tricky with ES modules, often requires a third config file, but for simplicity here we assume access or redefine).
+
+        // If you can't reuse initialized DB object across modules easily without a dedicated config module, redefine minimal init here or move all checkout specific logic into main script.js for easier context.
+        // For this final response structure, I have placed core checkout logic into main script.js as it simplifies the final structure for you. The script.js will handle rendering and submission for `checkout.html`.
+
+        // --- Core Checkout UI Syncing (Runs inside main script context typically) ---
+        // (Moved this into script.js section in previous step)
+    </script>
 </body>
 </html>
