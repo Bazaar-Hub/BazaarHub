@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BazaarHub — My Orders</title>
+    <link rel="icon" href="assets/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav>
+        <div class="nav-logo-box" onclick="window.location.href='index.html'">
+            <div class="logo-badge"><img src="assets/logo.png" alt="BazaarHub logo"></div>
+            <div class="logo-text">BAZAAR<span>HUB</span></div>
+        </div>
+        <div class="nav-center">
+            <a href="index.html">Home</a>
+            <a href="shop.html">Shop</a>
+            <a href="orders.html" class="accent-gold">My Orders</a>
+            <a href="contact.html">Contact Us</a>
+            <a href="admin.html" class="admin-only-link hidden" id="adminNavLink" style="color: var(--terracotta-bright);"><i class="fas fa-user-shield"></i> Admin Panel</a>
+        </div>
+        <div class="nav-right">
+            <div class="cart-icon" onclick="window.location.href='checkout.html'">
+                <i class="fas fa-basket-shopping"></i>
+                <span id="cartCount" class="cart-count">0</span>
+            </div>
+            <button id="logoutBtn" class="icon-btn"><i class="fas fa-arrow-right-from-bracket"></i> Logout</button>
+            <button class="nav-toggle" id="navToggle" aria-label="Open menu"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-panel">
+            <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu"><i class="fas fa-xmark"></i></button>
+            <a href="index.html">Home</a>
+            <a href="shop.html">Shop</a>
+            <a href="orders.html">My Orders</a>
+            <a href="contact.html">Contact Us</a>
+            <a href="admin.html" class="admin-only-link hidden">Admin Panel</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section-head">
+            <div>
+                <span class="eyebrow">YOUR ACCOUNT</span>
+                <h2>My Orders</h2>
+            </div>
+        </div>
+
+        <div class="admin-card" style="margin-bottom:0;">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Items</th>
+                            <th>Delivery Address</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="myOrdersList">
+                        <tr><td colspan="5" class="text-muted" style="text-align:center; padding:30px 0;">Loading your orders…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-bottom" style="border-top:none; padding-top:0;">
+                <span>© 2026 BazaarHub. All rights reserved.</span>
+                <a href="shop.html" class="accent-gold">Continue shopping →</a>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
