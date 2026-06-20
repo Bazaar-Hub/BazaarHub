@@ -3,54 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BazaarHub - Transmit Order Platform</title>
+    <title>BazaarHub - Checkout Logistics Pipeline</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.2">
 </head>
 <body>
 
-    <nav>
+    <div id="popupToast" class="custom-toast"></div>
+
+    <nav style="padding: 12px 4%;">
         <div class="nav-logo-box" onclick="window.location.href='index.html'">
             <div class="logo-badge">B</div>
-            <div class="logo-text">BAZAAR<span class="accent-yellow">HUB</span></div>
+            <div class="logo-text">bazaar<span>Hub</span></div>
         </div>
-        <button onclick="window.location.href='index.html'" class="form-btn bg-yellow" style="width:auto; margin-top:0; padding:10px 22px; font-size:12px;">← Return to Store</button>
+        <button onclick="window.location.href='index.html'" class="form-btn bg-yellow" style="width:auto; margin-top:0; padding:6px 14px; font-size:12px;">← Return to Hub</button>
     </nav>
 
     <div class="container">
         <div class="checkout-grid">
             <div class="manifest-card">
-                <h2 style="font-size: 19px; margin-bottom:24px; font-weight: 800;" class="accent-yellow"><i class="fas fa-truck"></i> Shipping Manifest</h2>
+                <h2 style="font-size: 16px; margin-bottom: 20px; font-weight:700;" class="accent-yellow"><i class="fas fa-truck" style="margin-right:8px;"></i> Logistics Dispatch Manifest</h2>
                 <form id="checkoutForm">
                     <div class="input-group">
                         <label>Delivery Full Address</label>
                         <input type="text" id="custAddress" required placeholder="Apartment, Street name, Block address...">
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                         <div class="input-group">
                             <label>City</label>
-                            <input type="text" id="custCity" required placeholder="Karachi">
+                            <input type="text" id="custCity" required placeholder="e.g. Karachi">
                         </div>
                         <div class="input-group">
-                            <label>Contact Phone Number</label>
-                            <input type="text" id="custPhone" required placeholder="03001234567">
+                            <label>Telemetry Phone Linked</label>
+                            <input type="tel" id="custPhone" required placeholder="03001234567">
                         </div>
                     </div>
-                    <button type="submit" class="form-btn bg-yellow" style="margin-top: 15px;">CONFIRM & PLACE ORDER</button>
+                    
+                    <button type="submit" class="form-btn bg-yellow" style="margin-top: 10px;">CONFIRM & TRANSMIT ORDER</button>
                 </form>
             </div>
 
             <div class="summary-card">
-                <h2 style="font-size: 19px; margin-bottom:24px; font-weight: 800;">Order Summary Basket</h2>
+                <h2 style="font-size: 16px; margin-bottom: 20px; font-weight:700;">Order Summary Basket</h2>
                 <div id="checkoutSummaryItemsContainer"></div>
-                <div style="display:flex; justify-content:space-between; margin-top: 30px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.06); font-weight:900; font-size:17px;">
-                    <span>TOTAL AMOUNT DUE:</span>
+                
+                <div style="display:flex; justify-content:space-between; margin-top: 25px; padding-top:15px; border-top:1px solid #1f2937; font-weight:800; font-size:16px;">
+                    <span>TOTAL DUE AMOUNT:</span>
                     <span class="accent-yellow" id="checkoutSummaryTotalDisplay">Rs. 0</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <script type="module" src="script.js"></script>
+    <script type="module" src="script.js?v=2.2"></script>
 </body>
 </html>
