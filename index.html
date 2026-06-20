@@ -16,7 +16,7 @@
 
     <nav>
         <div class="nav-logo-box" onclick="window.location.href='index.html'">
-            <div class="logo-badge"><img src="logo.png" alt="BazaarHub logo"></div>
+            <div class="logo-badge"><img src="assets/logo.png" alt="BazaarHub logo"></div>
             <div class="logo-text">BAZAAR<span>HUB</span></div>
         </div>
         <div class="nav-center">
@@ -62,26 +62,13 @@
     <div class="container">
         <div class="section-head">
             <div>
-                <span class="eyebrow">WHY BAZAARHUB</span>
-                <h2>Shopping made simple</h2>
+                <span class="eyebrow">TODAY'S PICKS</span>
+                <h2>Featured Products</h2>
             </div>
         </div>
-        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
-            <div class="admin-card" style="text-align:center;">
-                <i class="fas fa-truck-fast" style="font-size:28px; color:var(--gold);"></i>
-                <h3 style="margin:14px 0 8px;">Fast Delivery</h3>
-                <p class="text-muted" style="font-size:14px;">Quick dispatch across Karachi, with live order tracking.</p>
-            </div>
-            <div class="admin-card" style="text-align:center;">
-                <i class="fas fa-shield-halved" style="font-size:28px; color:var(--gold);"></i>
-                <h3 style="margin:14px 0 8px;">Secure Checkout</h3>
-                <p class="text-muted" style="font-size:14px;">Your account and orders are protected end to end.</p>
-            </div>
-            <div class="admin-card" style="text-align:center;">
-                <i class="fas fa-headset" style="font-size:28px; color:var(--gold);"></i>
-                <h3 style="margin:14px 0 8px;">Real Support</h3>
-                <p class="text-muted" style="font-size:14px;">Reach our team directly over WhatsApp, anytime.</p>
-            </div>
+        <div id="featuredProductsGrid" class="grid"></div>
+        <div style="text-align:center; margin-top:30px;">
+            <a href="shop.html" class="btn btn-primary"><i class="fas fa-store"></i> Show More</a>
         </div>
     </div>
 

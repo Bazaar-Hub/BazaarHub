@@ -250,6 +250,7 @@ function setupAppRealtimeStreams() {
     onSnapshot(collection(db, "products"), (snapshot) => {
         globalProducts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
         renderCatalogUI();
+        renderFeaturedProducts();
         renderAdminProducts();
         updateAdminStats();
     });
@@ -379,6 +380,60 @@ function renderCatalogUI() {
     `).join('');
 
     document.querySelectorAll('.addToCartBtn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const triggerBtn = e.currentTarget;
+            const pId = triggerBtn.getAttribute('data-id');
+            const item = globalProducts.find(x => x.id === pId);
+            if (item) {
+                localCart.push(item);
+                localStorage.setItem('bazaarhub_cart', JSON.stringify(localCart));
+                updateCartWidgetCount();
+                showToast(`${item.name} added to your basket.`, 'success');
+
+                const original = triggerBtn.innerHTML;
+                triggerBtn.innerHTML = '<i class="fas fa-check"></i> Added';
+                triggerBtn.disabled = true;
+                setTimeout(() => {
+                    triggerBtn.innerHTML = original;
+                    triggerBtn.disabled = false;
+                }, 1200);
+            }
+        });
+    });
+}
+
+function renderFeaturedProducts() {
+    const grid = document.getElementById('featuredProductsGrid');
+    if (!grid) return;
+
+    if (globalProducts.length === 0) {
+        grid.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-store-slash"></i>
+                <h3>The stalls are empty right now</h3>
+                <p>No products have been added to the bazaar yet. Check back soon.</p>
+            </div>`;
+        return;
+    }
+
+    const featured = globalProducts.slice(0, 4);
+
+    grid.innerHTML = featured.map(p => `
+        <div class="product-card">
+            <div class="product-img-wrap">
+                <img src="${p.image}" class="product-img" alt="${p.name}" loading="lazy">
+                <span class="product-category">${p.category || 'General'}</span>
+            </div>
+            <div class="product-title">${p.name}</div>
+            <div class="product-desc">${p.description}</div>
+            <div class="product-footer">
+                <span class="price-tag">Rs ${parseFloat(p.price).toLocaleString()}</span>
+            </div>
+            <button class="btn btn-primary addToCartBtn" data-id="${p.id}"><i class="fas fa-basket-shopping"></i> Add to Basket</button>
+        </div>
+    `).join('');
+
+    grid.querySelectorAll('.addToCartBtn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const triggerBtn = e.currentTarget;
             const pId = triggerBtn.getAttribute('data-id');
