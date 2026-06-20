@@ -1,9 +1,9 @@
 // =========================================================================
-// FIREBASE LIFETIME MULTI-DEVICE AUTH & LOGISTICS ENGINE (FULL & INTEGRATED)
+// FIREBASE LIFETIME MULTI-DEVICE LOGIN & REGISTER SYSTEM (INTERCONNECTED)
 // =========================================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, collection, addDoc, deleteDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAPlpnfGWTiUQlyl2vH6uM_Ae6_EQ8YW5E",
@@ -21,22 +21,12 @@ const db = getFirestore(app);
 let globalProducts = [];
 let localCart = JSON.parse(localStorage.getItem('bazaarhub_cart')) || [];
 
-// Custom System Toast Trigger Engine
-function showAnimatedPopup(message, iconClass = "fas fa-check-circle") {
-    const toast = document.getElementById('popupToast');
-    if(toast) {
-        toast.innerHTML = `<i class="${iconClass}" style="color: #facc15;"></i> <span>${message}</span>`;
-        toast.classList.remove('show');
-        void toast.offsetWidth; // Restart CSS transition iteration
-        toast.classList.add('show');
-    } else {
-        alert(message);
-    }
-}
-
-// 1. Session Gate Keeper Monitor Engine
+// ==========================================
+// 1. GLOBAL AUTH MONITOR & REDIRECT LOOPS GUARD
+// ==========================================
 onAuthStateChanged(auth, (user) => {
     const currentPage = window.location.pathname;
+
     if (user) {
         if (currentPage.includes('auth.html')) {
             window.location.href = "index.html";
@@ -49,7 +39,9 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// 2. Database Save Register Handler
+// ==========================================
+// 2. DIRECT REGISTRATION PIPELINE (NO OTP)
+// ==========================================
 const regForm = document.getElementById('registerForm');
 if (regForm) {
     regForm.addEventListener('submit', async (e) => {
@@ -62,17 +54,22 @@ if (regForm) {
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             await setDoc(doc(db, "users", userCredential.user.uid), {
-                name: name, email: email, phone: phone, role: "client"
+                name: name,
+                email: email,
+                phone: phone,
+                role: "client"
             });
-            showAnimatedPopup("REGISTERED SUCCESSFUL!");
-            setTimeout(() => { window.location.href = "index.html"; }, 1500);
+            alert("Account successfully created without verification!");
+            window.location.href = "index.html"; 
         } catch (error) {
-            showAnimatedPopup("Failed: " + error.message, "fas fa-exclamation-triangle");
+            alert("Registration Failed: " + error.message);
         }
     });
 }
 
-// 3. Login Flow Processor
+// ==========================================
+// 3. SECURE LOGIN PIPELINE PROCESS
+// ==========================================
 const logForm = document.getElementById('loginForm');
 if (logForm) {
     logForm.addEventListener('submit', async (e) => {
@@ -82,10 +79,10 @@ if (logForm) {
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            showAnimatedPopup("LOGIN SUCCESSED!");
-            setTimeout(() => { window.location.href = "index.html"; }, 1500);
+            alert("Login Successful!");
+            window.location.href = "index.html"; 
         } catch (error) {
-            showAnimatedPopup("Failed: " + error.message, "fas fa-exclamation-triangle");
+            alert("Login Failed: " + error.message);
         }
     });
 }
@@ -98,65 +95,47 @@ if (logoutBtn) {
     });
 }
 
-// 4. Secure Firestore Pipelines Synchronizer
+// ==========================================
+// 4. REALTIME CLOUD CHANNELS DATA PIPELINE
+// ==========================================
 function setupAppRealtimeStreams() {
     onSnapshot(collection(db, "products"), (snapshot) => {
         globalProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderCatalogUI(globalProducts);
+        renderCatalogUI();
         renderAdminProducts();
     });
 
     const adminOrdersList = document.getElementById('adminOrdersList');
     if (adminOrdersList) {
         onSnapshot(collection(db, "orders"), (snapshot) => {
-            adminOrdersList.innerHTML = snapshot.docs.map(docSnapshot => {
-                const o = docSnapshot.data();
-                const docId = docSnapshot.id;
-                return `
-                    <tr>
-                        <td><b>M:</b> ${o.userUid || 'Client'}<br><b>A:</b> ${o.address}</td>
-                        <td>${o.itemsSummary || 'Components'}</td>
-                        <td style="font-weight:700; color:#facc15;">Rs. ${parseFloat(o.totalCost).toLocaleString()}</td>
-                        <td>
-                            <select class="orderStatusSelectWorkflow" data-id="${docId}" style="margin:0; padding:5px; font-size:11px; background:#14141c; color:white; border-color:#374151;">
-                                <option value="Pending Verification" ${o.status === 'Pending Verification' ? 'selected' : ''}>Pending</option>
-                                <option value="Placed" ${o.status === 'Placed' ? 'selected' : ''}>Placed</option>
-                                <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-                            </select>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-
-            document.querySelectorAll('.orderStatusSelectWorkflow').forEach(selectElement => {
-                selectElement.addEventListener('change', async (event) => {
-                    const targetId = event.target.getAttribute('data-id');
-                    const updatedValue = event.target.value;
-                    try {
-                        await updateDoc(doc(db, "orders", targetId), { status: updatedValue });
-                        showAnimatedPopup("WORKFLOW UPDATE SAVED!");
-                    } catch(err) {
-                        showAnimatedPopup(err.message, "fas fa-exclamation-triangle");
-                    }
-                });
-            });
+            const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            adminOrdersList.innerHTML = orders.map(o => `
+                <tr>
+                    <td><b>Addr:</b> ${o.address}<br><b>Phone:</b> ${o.phone}</td>
+                    <td>${o.itemsSummary}</td>
+                    <td class="accent-yellow" style="font-weight:800;">Rs. ${o.totalCost}</td>
+                    <td><span style="background:#1e2235; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:700; color:#facc15;">${o.status}</span></td>
+                </tr>
+            `).join('');
         });
     }
 }
 
-// 5. Render Core UI & Search Logic Pipeline 
-function renderCatalogUI(productsArray) {
+// ==========================================
+// 5. CATALOG UI INTERACTIVE RENDERERS
+// ==========================================
+function renderCatalogUI() {
     const grid = document.getElementById('productsGrid');
     if (!grid) return;
 
-    if (productsArray.length === 0) {
-        grid.innerHTML = `<p style="color:#9ca3af; text-align:center; grid-column:1/-1; padding:40px 0;">No active elements found inside system workspace grid layout.</p>`;
+    if (globalProducts.length === 0) {
+        grid.innerHTML = `<p style="color:#9ca3af; text-align:center; grid-column: 1/-1; padding: 40px 0;">No products deployed inside cloud pipeline.</p>`;
         return;
     }
 
-    grid.innerHTML = productsArray.map(p => `
+    grid.innerHTML = globalProducts.map(p => `
         <div class="product-card">
-            <img src="${p.image}" class="product-img" onerror="this.src='https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500'">
+            <img src="${p.image}" class="product-img">
             <div class="product-title">${p.name}</div>
             <div class="product-desc">${p.description}</div>
             <div class="product-price">Rs. ${parseFloat(p.price).toLocaleString()}</div>
@@ -172,22 +151,18 @@ function renderCatalogUI(productsArray) {
                 localCart.push(item);
                 localStorage.setItem('bazaarhub_cart', JSON.stringify(localCart));
                 updateCartWidgetCount();
-                showAnimatedPopup("ADDED TO BASKET!");
+                
+                // Micro-feedback UI alert animation
+                e.target.innerText = "ADDED TO BASKET! ✓";
+                e.target.style.backgroundColor = "#10b981";
+                e.target.style.color = "#ffffff";
+                setTimeout(() => {
+                    e.target.innerText = "Add To Basket";
+                    e.target.style.backgroundColor = "#facc15";
+                    e.target.style.color = "#000000";
+                }, 1500);
             }
         });
-    });
-}
-
-// Original Built-In Input Live Filter Logic Handler
-const searchInput = document.getElementById('globalSearchInput');
-if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-        const queryTerm = e.target.value.toLowerCase().trim();
-        const filtered = globalProducts.filter(p => 
-            p.name.toLowerCase().includes(queryTerm) || 
-            p.description.toLowerCase().includes(queryTerm)
-        );
-        renderCatalogUI(filtered);
     });
 }
 
@@ -196,13 +171,15 @@ function updateCartWidgetCount() {
     if(counter) counter.innerText = localCart.length;
 }
 
-// 6. Transmit Checkout Dispatch Orders
+// ==========================================
+// 6. ORDER PROCESSING MATRIX
+// ==========================================
 const checkoutItemsWrap = document.getElementById('checkoutSummaryItemsContainer');
 if (checkoutItemsWrap) {
     let priceSum = 0;
     checkoutItemsWrap.innerHTML = localCart.map(i => {
         priceSum += parseFloat(i.price);
-        return `<div class="summary-item"><span>${i.name}</span><span class="accent-yellow" style="font-weight:700;">Rs. ${parseFloat(i.price).toLocaleString()}</span></div>`;
+        return `<div class="summary-item"><span>${i.name}</span><span class="accent-yellow" style="font-weight:700;">Rs. ${i.price}</span></div>`;
     }).join('');
     
     const displayTotal = document.getElementById('checkoutSummaryTotalDisplay');
@@ -212,33 +189,35 @@ if (checkoutItemsWrap) {
     if(checkForm) {
         checkForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(localCart.length === 0) { showAnimatedPopup("Basket is empty.", "fas fa-exclamation-circle"); return; }
+            if(localCart.length === 0) { alert("Your basket matrix is empty."); return; }
 
             const orderPayload = {
-                userUid: auth.currentUser ? auth.currentUser.email : "GUEST",
+                userUid: auth.currentUser ? auth.currentUser.uid : "GUEST",
                 address: document.getElementById('custAddress').value.trim(),
                 city: document.getElementById('custCity').value.trim(),
                 phone: document.getElementById('custPhone').value.trim(),
                 itemsSummary: localCart.map(i => i.name).join(', '),
                 totalCost: priceSum,
-                status: "Pending Verification",
+                status: "Pending Dispatch",
                 timestamp: new Date().toISOString()
             };
 
             try {
                 await addDoc(collection(db, "orders"), orderPayload);
-                showAnimatedPopup("ORDER PLACED SUCCESSFULLY!");
+                alert("Order successfully transmitted directly to cloud dashboard pipeline!");
                 localCart = [];
                 localStorage.removeItem('bazaarhub_cart');
-                setTimeout(() => { window.location.href = "index.html"; }, 1500);
+                window.location.href = "index.html";
             } catch (err) {
-                showAnimatedPopup(err.message, "fas fa-exclamation-triangle");
+                alert("Order Registry Error: " + err.message);
             }
         });
     }
 }
 
-// 7. Admin Catalog Form Handlers Matrix
+// ==========================================
+// 7. ADMIN TERMINAL CONTROL PARAMETERS
+// ==========================================
 const addProductForm = document.getElementById('addProductForm');
 if (addProductForm) {
     addProductForm.addEventListener('submit', async (e) => {
@@ -253,10 +232,10 @@ if (addProductForm) {
 
         try {
             await addDoc(collection(db, "products"), payload);
-            showAnimatedPopup("ASSET INJECTED TO VAULT!");
+            alert("Asset parameters injected perfectly!");
             addProductForm.reset();
         } catch(err) {
-            showAnimatedPopup(err.message, "fas fa-exclamation-triangle");
+            alert("Database write error: " + err.message);
         }
     });
 }
@@ -266,18 +245,18 @@ function renderAdminProducts() {
     if (!adminList) return;
 
     adminList.innerHTML = globalProducts.map(p => `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#14141c; padding:10px 14px; border-radius:8px; margin-bottom:10px; font-size:13px; border:1px solid #1f2937;">
-            <span><b>${p.name}</b> <span class="accent-yellow" style="margin-left:6px;">Rs. ${parseFloat(p.price).toLocaleString()}</span></span>
-            <button class="deleteProductBtn" data-id="${p.id}" style="color:#f87171; font-weight:600;"><i class="fas fa-trash-alt"></i> Delete</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#11131f; padding:10px 14px; border-radius:8px; margin-bottom:10px; font-size:12px; border:1px solid #1e2235;">
+            <span><b>${p.name}</b> (Rs. ${p.price})</span>
+            <button class="deleteProductBtn" data-id="${p.id}" style="color:#ef4444; font-weight:bold; cursor:pointer;"><i class="fas fa-trash-alt"></i> Delete</button>
         </div>
     `).join('');
 
     document.querySelectorAll('.deleteProductBtn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             const targetId = e.currentTarget.getAttribute('data-id');
-            if(confirm("Completely discard this product matrix module item node?")) {
+            if(confirm("Are you sure you want to delete this product?")) {
                 await deleteDoc(doc(db, "products", targetId));
-                showAnimatedPopup("NODE DISCARDED.");
+                alert("Product asset deleted from Cloud database.");
             }
         });
     });
