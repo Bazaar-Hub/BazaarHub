@@ -1,79 +1,58 @@
 /* =========================================================================
-   BAZAARHUB ULTRA-PREMIUM PRODUCTION THEME MATRIX
-   Matches: c0641457-9a25-4300-a88c-c6e557175f58.jpg, 
-            532e9655-8ef7-43bb-bfac-24a31b541bfc.jpg, 
-            dfb60bfe-5910-4730-960e-c378fff4290e.jpg
+   BAZAARHUB CENTRAL ARCHITECTURE STYLING MATRIX
    ========================================================================= */
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 body {
     background-color: #050508;
-    /* Clean grid matrix background tracking across entire canvas screen overlay */
     background-image: 
-        linear-gradient(rgba(10, 10, 16, 0.95), rgba(6, 6, 10, 0.98)),
-        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-    background-size: 100% 100%, 45px 45px, 45px 45px;
+        linear-gradient(rgba(10, 10, 16, 0.96), rgba(6, 6, 10, 0.98)),
+        linear-gradient(to right, rgba(250, 204, 21, 0.015) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(250, 204, 21, 0.015) 1px, transparent 1px);
+    background-size: 100% 100%, 35px 35px, 35px 35px;
     color: #ffffff;
     min-height: 100vh;
     overflow-x: hidden;
+    line-height: 1.5;
 }
 
-/* Custom Notification Alert Toast Master Node */
-.custom-toast {
-    position: fixed;
-    top: -100px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(10, 10, 16, 0.96);
-    border: 1px solid #ffcc00;
-    box-shadow: 0 0 20px rgba(255, 204, 0, 0.25);
-    padding: 14px 35px;
-    border-radius: 50px;
-    z-index: 99999;
-    font-weight: 700;
-    font-size: 13px;
-    letter-spacing: 0.5px;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-.custom-toast.show {
-    top: 30px;
+a {
+    color: inherit;
+    text-decoration: none;
 }
 
-/* =========================================================================
-   NAVBAR COMPONENT MODULE (Matches dfb60bfe-5910-4730-960e-c378fff4290e.jpg)
-   ========================================================================= */
+/* NAVBAR PLATFORM */
 nav {
     background-color: rgba(5, 5, 8, 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 6%;
+    padding: 18px 5%;
     position: sticky;
     top: 0;
     z-index: 1000;
 }
 
-.nav-left {
+.nav-logo-box {
     display: flex;
     align-items: center;
     gap: 10px;
     cursor: pointer;
 }
 
-.nav-logo-badge {
-    background-color: #ffcc00;
+.logo-badge {
+    background-color: #facc15;
     color: #000000;
     font-weight: 900;
     width: 32px;
@@ -83,349 +62,266 @@ nav {
     justify-content: center;
     border-radius: 8px;
     font-size: 18px;
-    box-shadow: 0 0 15px rgba(255, 204, 0, 0.35);
+    box-shadow: 0 0 15px rgba(250, 204, 21, 0.3);
 }
 
-.nav-logo-text {
+.logo-text {
     font-size: 20px;
     font-weight: 900;
     letter-spacing: 1.5px;
-    text-transform: uppercase;
+}
+
+.logo-text span {
+    color: #facc15;
 }
 
 .nav-center {
     display: flex;
     align-items: center;
-    gap: 32px;
+    gap: 28px;
 }
 
 .nav-center a {
     font-size: 13px;
     font-weight: 600;
     color: #94a3b8;
-    text-decoration: none;
-    transition: color 0.2s ease;
     position: relative;
-    padding-bottom: 6px;
+    padding-bottom: 4px;
 }
 
 .nav-center a:hover, 
-.nav-center a.active {
+.nav-center a.accent-yellow {
     color: #ffffff;
 }
 
-/* Exact Underline Indicator Element */
-.nav-center a.active::after {
+.nav-center a.accent-yellow::after {
     content: '';
     position: absolute;
     bottom: -2px;
-    left: 15%;
-    width: 70%;
+    left: 10%;
+    width: 80%;
     height: 2px;
-    background-color: #1e40af; /* Deep Blue Accent Indicator Row Line */
+    background-color: #facc15;
     border-radius: 2px;
 }
 
 .nav-right {
     display: flex;
     align-items: center;
-    gap: 22px;
+    gap: 20px;
 }
 
-.search-node-input {
-    background-color: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 20px;
-    padding: 7px 18px;
+.cart-icon {
+    position: relative;
+    cursor: pointer;
+    font-size: 18px;
+    color: #94a3b8;
+}
+
+.cart-icon:hover {
     color: #ffffff;
-    font-size: 12px;
-    width: 170px;
-    transition: all 0.3s ease;
 }
 
-.search-node-input:focus {
-    outline: none;
-    border-color: rgba(255, 204, 0, 0.5);
-    background-color: rgba(255, 255, 255, 0.06);
+.cart-count {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 10px;
 }
 
-/* =========================================================================
-   AUTHENTICATION LAYOUT FRAMEWORK (Matches 532e9655-8ef7-43bb-bfac-24a31b541bfc.jpg)
-   ========================================================================= */
-.auth-container {
+/* AUTH UI WRAPPER */
+.auth-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 85px);
-    padding: 50px 24px;
+    min-height: calc(100vh - 80px);
+    padding: 40px 20px;
 }
 
 .auth-card {
-    background: linear-gradient(135deg, rgba(22, 22, 33, 0.75) 0%, rgba(13, 13, 20, 0.9) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 40px;
-    padding: 50px 40px;
+    background: linear-gradient(135deg, rgba(22, 22, 33, 0.8) 0%, rgba(13, 13, 20, 0.95) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 32px;
+    padding: 45px 35px;
     width: 100%;
-    max-width: 460px;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    text-align: center;
-    position: relative;
-    overflow: hidden;
+    max-width: 450px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
 }
 
-/* Card Glow Corners */
-.auth-card::before {
-    content: '';
-    position: absolute;
-    top: -10%;
-    left: -10%;
-    width: 40%;
-    height: 40%;
-    background: radial-gradient(circle, rgba(255, 204, 0, 0.12) 0%, transparent 70%);
-    pointer-events: none;
+.auth-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 6px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
-.auth-header h1 {
-    font-size: 34px;
-    font-weight: 900;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #ffffff;
-}
-
-.auth-header h1 span {
-    color: #ffcc00;
-    text-shadow: 0 0 20px rgba(255, 204, 0, 0.35);
-}
-
-.auth-subtitle {
-    color: #8a8a9e;
-    font-size: 13px;
-    margin-top: 10px;
-    margin-bottom: 35px;
-    font-weight: 500;
-}
-
-.input-block {
-    text-align: left;
-    margin-bottom: 22px;
-}
-
-.input-block label {
+.tab-btn {
+    padding: 12px;
     font-size: 12px;
-    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #94a3b8;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-radius: 12px;
+}
+
+.tab-btn.active {
+    background: #facc15;
+    color: #000000;
+    box-shadow: 0 4px 15px rgba(250, 204, 21, 0.2);
+}
+
+.input-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    font-size: 12px;
+    color: #94a3b8;
     font-weight: 600;
     display: block;
-    margin-bottom: 8px;
-    letter-spacing: 0.3px;
+    margin-bottom: 6px;
 }
 
-.input-block input, 
-.input-block textarea {
+.input-group input, 
+.input-group textarea,
+.input-group select {
     width: 100%;
     background-color: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
-    padding: 14px 20px;
+    border-radius: 12px;
+    padding: 12px 16px;
     color: #ffffff;
     font-size: 14px;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.input-block input:focus, 
-.input-block textarea:focus {
+.input-group input:focus,
+.input-group textarea:focus {
     outline: none;
-    border-color: rgba(255, 204, 0, 0.6);
-    background-color: rgba(255, 255, 255, 0.06);
-    box-shadow: 0 0 12px rgba(255, 204, 0, 0.05);
+    border-color: #facc15;
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* Master Action Button with Radial/Linear Glow Integration */
-.matrix-btn {
+.form-btn {
     width: 100%;
-    background: #ffcc00;
-    color: #000000;
+    padding: 14px;
     font-weight: 700;
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 16px;
-    border: none;
-    border-radius: 18px;
-    cursor: pointer;
-    margin-top: 12px;
-    box-shadow: 0 5px 25px rgba(255, 204, 0, 0.25);
-    transition: all 0.3s ease;
-}
-
-.matrix-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(255, 204, 0, 0.45);
-}
-
-.auth-toggle-text {
     font-size: 13px;
-    color: #8a8a9e;
-    margin-top: 28px;
-    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 14px;
+    cursor: pointer;
+    border: none;
+    display: inline-block;
+    text-align: center;
 }
 
-.auth-toggle-text a {
-    color: #ffcc00;
-    text-decoration: none;
-    font-weight: 600;
-    margin-left: 3px;
+.bg-yellow {
+    background: #facc15;
+    color: #000000;
+    box-shadow: 0 5px 20px rgba(250, 204, 21, 0.2);
 }
 
-.auth-toggle-text a:hover {
-    text-decoration: underline;
+.bg-yellow:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(250, 204, 21, 0.35);
 }
 
-/* =========================================================================
-   CONTACT US / SUPPORT DESKS VIEW (Matches c0641457-9a25-4300-a88c-c6e557175f58.jpg)
-   ========================================================================= */
+/* SUPPORT LAYOUTS */
 .support-wrapper {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 35px;
-    max-width: 1200px;
-    margin: 50px auto;
-    padding: 0 25px;
+    gap: 30px;
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
 }
 
-@media (min-width: 900px) {
-    .support-wrapper {
-        grid-template-columns: 1fr 1fr;
-    }
+@media (min-width: 850px) {
+    .support-wrapper { grid-template-columns: 1fr 1fr; }
 }
 
 .support-card {
     background-color: rgba(15, 15, 24, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.04);
-    border-radius: 28px;
-    padding: 45px 40px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+    border-radius: 24px;
+    padding: 35px;
 }
 
-.support-section-title {
-    font-size: 17px;
-    font-weight: 700;
-    color: #ffcc00;
-    margin-bottom: 28px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-transform: capitalize;
-    letter-spacing: 0.3px;
-}
-
-.support-card p {
-    color: #8a8a9e;
-    font-size: 13px;
-    line-height: 1.6;
-    margin-bottom: 35px;
-}
-
-.info-row {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    margin-bottom: 26px;
-    font-size: 14px;
-    color: #e2e8f0;
-}
-
-.info-row i {
-    color: #ffcc00;
-    width: 20px;
+.support-title {
     font-size: 16px;
-    text-align: center;
+    font-weight: 700;
+    color: #facc15;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
 }
 
-/* Social System Action Triggers with Exact Visual Mockup Gradients */
 .dispatch-btn {
     width: 100%;
-    padding: 16px;
-    border-radius: 16px;
+    padding: 14px;
+    border-radius: 12px;
     font-weight: 700;
     font-size: 13px;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 10px;
     color: #ffffff;
-    margin-bottom: 18px;
+    margin-bottom: 15px;
     border: none;
     cursor: pointer;
-    transition: all 0.25s ease;
 }
 
-.dispatch-btn:hover {
-    transform: scale(1.015);
-    filter: brightness(1.1);
-}
+.btn-fb { background: linear-gradient(90deg, #1d4ed8, #2563eb); }
+.btn-ig { background: linear-gradient(90deg, #ca1f7b, #ff4b2b, #facc15); }
+.btn-wa { background: linear-gradient(90deg, #059669, #10b981); }
 
-.btn-fb { 
-    background: linear-gradient(90deg, #1d4ed8 0%, #2563eb 100%); 
-    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.2);
-}
-
-.btn-ig { 
-    background: linear-gradient(90deg, #ca1f7b 0%, #ff4b2b 50%, #ffcc00 100%); 
-    box-shadow: 0 4px 20px rgba(255, 75, 43, 0.2);
-}
-
-.btn-wa { 
-    background: linear-gradient(90deg, #059669 0%, #10b981 100%); 
-    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2);
-}
-
-/* Floating WhatsApp Quick-Action Node Widget */
+/* FLOATING WIDGET */
 .floating-whatsapp-widget {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
+    bottom: 25px;
+    right: 25px;
+    width: 55px;
+    height: 55px;
     background-color: #25d366;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 8px 30px rgba(37, 211, 102, 0.4);
+    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.45);
     cursor: pointer;
     z-index: 999;
-    transition: transform 0.3s ease;
 }
 
-.floating-whatsapp-widget:hover {
-    transform: scale(1.1) rotate(8deg);
-}
-
-.floating-whatsapp-widget i {
-    color: #ffffff;
-    font-size: 30px;
-}
-
-/* Notification Alert Red Dot Badge on Floating Button */
 .floating-whatsapp-widget::after {
     content: '';
     position: absolute;
     top: 2px;
     right: 2px;
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     background-color: #ef4444;
     border: 2px solid #ffffff;
     border-radius: 50%;
 }
 
-/* Global Hidden Helpers */
-.hidden { 
-    display: none !important; 
-}
+/* GENERAL APP STRUCTURE */
+.container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
+.hidden { display: none !important; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 25px; }
+.product-card { background: #0d0d14; border: 1px solid #1e2235; border-radius: 16px; padding: 15px; overflow: hidden; }
+.product-img { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; }
+.checkout-grid { display: grid; grid-template-columns: 1fr; gap: 25px; }
+@media (min-width: 768px) { .checkout-grid { grid-template-columns: 1.6fr 1fr; } }
