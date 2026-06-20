@@ -142,11 +142,20 @@ onAuthStateChanged(auth, async (user) => {
         }
 
         let role = 'client';
+        const ADMIN_EMAIL = "bazaarhub0111@gmail.com";
         try {
             const userSnap = await getDoc(doc(db, "users", user.uid));
             if (userSnap.exists()) role = userSnap.data().role || 'client';
+            // Force admin role for designated admin email
+            if (user.email && user.email.toLowerCase() === ADMIN_EMAIL) {
+                role = 'admin';
+                if (!userSnap.exists() || userSnap.data().role !== 'admin') {
+                    await setDoc(doc(db, "users", user.uid), { role: 'admin', email: user.email }, { merge: true });
+                }
+            }
         } catch (err) {
             console.error('Could not load user profile:', err);
+            if (user.email && user.email.toLowerCase() === ADMIN_EMAIL) role = 'admin';
         }
 
         document.querySelectorAll('.admin-only-link').forEach(el => {
@@ -185,8 +194,9 @@ if (regForm) {
 
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const assignedRole = email.toLowerCase() === "bazaarhub0111@gmail.com" ? "admin" : "client";
             await setDoc(doc(db, "users", userCredential.user.uid), {
-                name, email, phone, role: "client"
+                name, email, phone, role: assignedRole
             });
             window.location.href = "index.html";
         } catch (error) {

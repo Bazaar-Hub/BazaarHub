@@ -1407,3 +1407,231 @@ footer p, footer span { color: #a89c7c; }
 @media (min-width: 980px) {
     .hero h1 { max-width: 18ch; }
 }
+
+/* =========================================================================
+   ENHANCED ANIMATIONS
+   ========================================================================= */
+@keyframes floatUp {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+}
+
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(232, 178, 61, 0); }
+    50% { box-shadow: 0 0 18px 6px rgba(232, 178, 61, 0.22); }
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-24px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(24px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.92); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes navLinkPop {
+    0% { transform: translateY(0); }
+    40% { transform: translateY(-3px); }
+    100% { transform: translateY(0); }
+}
+
+@keyframes badgePop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+
+@keyframes heroOrb {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.18; }
+    50% { transform: scale(1.15) rotate(10deg); opacity: 0.28; }
+}
+
+@keyframes logoSpin {
+    0% { transform: rotateY(0deg); }
+    100% { transform: rotateY(360deg); }
+}
+
+@keyframes underlineSlide {
+    from { transform: scaleX(0); transform-origin: left; }
+    to { transform: scaleX(1); transform-origin: left; }
+}
+
+/* Nav logo hover spin */
+.nav-logo-box:hover .logo-badge img {
+    animation: logoSpin 0.7s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Cart count badge pop on update */
+.cart-count.pop {
+    animation: badgePop 0.35s ease;
+}
+
+/* Hero orb animation */
+.hero::before {
+    animation: heroOrb 6s ease-in-out infinite;
+}
+
+.hero::after {
+    animation: heroOrb 8s ease-in-out infinite reverse;
+}
+
+/* Product card stagger on load */
+.product-card:nth-child(1) { animation-delay: 0.05s; }
+.product-card:nth-child(2) { animation-delay: 0.10s; }
+.product-card:nth-child(3) { animation-delay: 0.15s; }
+.product-card:nth-child(4) { animation-delay: 0.20s; }
+.product-card:nth-child(5) { animation-delay: 0.25s; }
+.product-card:nth-child(6) { animation-delay: 0.30s; }
+.product-card:nth-child(7) { animation-delay: 0.35s; }
+.product-card:nth-child(8) { animation-delay: 0.40s; }
+
+/* Stat cards animate in */
+.stat-card {
+    animation: scaleIn 0.4s ease both;
+}
+.stat-card:nth-child(1) { animation-delay: 0.05s; }
+.stat-card:nth-child(2) { animation-delay: 0.12s; }
+.stat-card:nth-child(3) { animation-delay: 0.19s; }
+.stat-card:nth-child(4) { animation-delay: 0.26s; }
+
+/* Stat value count-up feel */
+.stat-value {
+    transition: transform 0.3s ease;
+}
+.stat-card:hover .stat-value {
+    transform: scale(1.06);
+    color: var(--gold-bright);
+}
+
+/* Admin card slide in */
+.admin-card {
+    animation: slideInLeft 0.45s ease both;
+}
+
+/* Button press ripple effect */
+.btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.15);
+    opacity: 0;
+    border-radius: inherit;
+    transition: opacity 0.2s ease;
+}
+
+.btn:active::after {
+    opacity: 1;
+}
+
+/* Floating logo badge on hero pages */
+.logo-badge {
+    transition: transform 0.3s ease;
+}
+
+.nav-logo-box:hover .logo-badge {
+    transform: scale(1.08);
+}
+
+/* Nav link entrance animation */
+.nav-center a {
+    animation: slideInLeft 0.4s ease both;
+}
+.nav-center a:nth-child(1) { animation-delay: 0.05s; }
+.nav-center a:nth-child(2) { animation-delay: 0.10s; }
+.nav-center a:nth-child(3) { animation-delay: 0.15s; }
+.nav-center a:nth-child(4) { animation-delay: 0.20s; }
+.nav-center a:nth-child(5) { animation-delay: 0.25s; }
+
+/* WhatsApp button float animation */
+.whatsapp-float {
+    animation: floatUp 3s ease-in-out infinite;
+}
+
+/* Auth card entrance */
+.auth-card {
+    animation: scaleIn 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+}
+
+/* Chip hover bounce */
+.chip {
+    transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease, transform 0.18s ease;
+}
+.chip:hover {
+    transform: translateY(-2px);
+}
+.chip.active {
+    animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* Inventory rows stagger in */
+.inventory-row {
+    animation: slideInRight 0.35s ease both;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.inventory-row:hover {
+    transform: translateX(3px);
+    background-color: var(--surface);
+}
+
+/* Status badge pulse for pending */
+.status-pending {
+    animation: pulseGlow 2.5s ease-in-out infinite;
+}
+
+/* Table row slide in */
+tbody tr {
+    animation: fadeInUp 0.35s ease both;
+}
+
+/* Search bar focus glow */
+.search-bar {
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.search-bar:focus-within {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(232, 178, 61, 0.15), var(--shadow-card);
+}
+
+/* Price tag shimmer on hover */
+.price-tag {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.product-card:hover .price-tag {
+    transform: scale(1.04);
+    box-shadow: 0 4px 12px rgba(232, 178, 61, 0.3);
+}
+
+/* Footer entrance */
+footer {
+    animation: fadeInUp 0.5s ease both;
+}
+
+/* Mobile nav panel links */
+.mobile-nav-panel a {
+    animation: slideInRight 0.3s ease both;
+}
+.mobile-nav-panel a:nth-child(1) { animation-delay: 0.05s; }
+.mobile-nav-panel a:nth-child(2) { animation-delay: 0.10s; }
+.mobile-nav-panel a:nth-child(3) { animation-delay: 0.15s; }
+.mobile-nav-panel a:nth-child(4) { animation-delay: 0.20s; }
+
+/* Stepper dot pulse on active */
+.stepper .step.active .dot {
+    animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* Checkout card entrance */
+.manifest-card { animation: slideInLeft 0.5s ease both; }
+.summary-card { animation: slideInRight 0.5s ease both; }
