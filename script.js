@@ -130,6 +130,33 @@ function setupMobileNav() {
 setupMobileNav();
 
 // ==========================================
+// 1b. SMOOTH PAGE TRANSITIONS
+// Fades the current page out before following an internal link,
+// so navigating between pages feels like one app instead of separate
+// documents. Respects new tabs, external links, and modified clicks.
+// ==========================================
+function setupPageTransitions() {
+    const PREFERS_REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (PREFERS_REDUCED) return;
+
+    document.addEventListener('click', (e) => {
+        const link = e.target.closest('a[href]');
+        if (!link) return;
+
+        const href = link.getAttribute('href');
+        const isInternalHtml = href && href.endsWith('.html') && !href.startsWith('http');
+        const isModifiedClick = e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button === 1;
+
+        if (!isInternalHtml || link.target === '_blank' || isModifiedClick) return;
+
+        e.preventDefault();
+        document.body.classList.add('page-exit');
+        setTimeout(() => { window.location.href = href; }, 170);
+    });
+}
+setupPageTransitions();
+
+// ==========================================
 // 2. GLOBAL AUTH MONITOR & ROUTE GUARD
 // Admin panel is protected by its own username/password gate (see admin.html).
 // Firebase Auth only guards non-admin pages.

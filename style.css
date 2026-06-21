@@ -135,6 +135,28 @@ h1, h2, h3 {
 }
 
 /* =========================================================================
+   PAGE TRANSITIONS (cross-page nav, see script.js)
+   ========================================================================= */
+body { animation: pageEnter 0.32s cubic-bezier(0.25, 0.8, 0.25, 1) both; }
+
+@keyframes pageEnter {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+body.page-exit {
+    animation: pageExit 0.18s ease both;
+}
+
+@keyframes pageExit {
+    to { opacity: 0; transform: translateY(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body, body.page-exit { animation: none; }
+}
+
+/* =========================================================================
    TYPE & LAYOUT UTILITIES
    ========================================================================= */
 .eyebrow {
@@ -200,7 +222,7 @@ input:focus, textarea:focus, select:focus {
     outline: none;
     border-color: var(--gold);
     box-shadow: 0 0 0 3px rgba(232, 178, 61, 0.15);
-    background-color: #221c12;
+    background-color: var(--surface);
 }
 
 label {
