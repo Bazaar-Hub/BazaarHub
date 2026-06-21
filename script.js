@@ -172,6 +172,7 @@ onAuthStateChanged(auth, async (user) => {
         }
         // Admin panel has its own gate — Firebase only starts data streams here
         setupAppRealtimeStreams();
+        prefillCheckoutFromProfile(user);
     } else {
         // Not logged in: redirect to auth, but allow admin.html (it has its own gate)
         if (!currentPage.includes('auth.html') && !currentPage.includes('admin.html')) {
@@ -184,6 +185,22 @@ onAuthStateChanged(auth, async (user) => {
         }
     }
 });
+
+async function prefillCheckoutFromProfile(user) {
+    const nameField = document.getElementById('custName');
+    const emailField = document.getElementById('custEmail');
+    const phoneField = document.getElementById('custPhone');
+    if (!nameField && !emailField) return;
+    try {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if (snap.exists()) {
+            const data = snap.data();
+            if (nameField && !nameField.value) nameField.value = data.name || '';
+            if (phoneField && !phoneField.value) phoneField.value = data.phone || '';
+        }
+    } catch (err) { /* non-critical, ignore */ }
+    if (emailField && !emailField.value) emailField.value = user.email || '';
+}
 
 // ==========================================
 // 3. REGISTRATION
@@ -303,15 +320,19 @@ function renderMyOrders(orders) {
 
     const sorted = [...orders].sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
 
-    myOrdersList.innerHTML = sorted.map(o => `
+    myOrdersList.innerHTML = sorted.map(o => {
+        const itemsHtml = (o.items && o.items.length)
+            ? o.items.map(i => `${i.name} <span class="text-muted">x${i.qty}</span>`).join('<br>')
+            : (o.itemsSummary || '');
+        return `
         <tr>
             <td class="order-meta" style="font-family:var(--font-mono); font-size:12px;">#${o.id.slice(-6).toUpperCase()}</td>
-            <td class="order-meta">${o.itemsSummary || ''}</td>
+            <td class="order-meta">${itemsHtml}</td>
             <td class="order-meta">${o.address || ''}, ${o.city || ''}</td>
             <td class="accent-gold" style="font-weight:800; font-family:var(--font-mono);">Rs ${parseFloat(o.totalCost || 0).toLocaleString()}</td>
             <td><span class="status-badge ${statusClass(o.status)}">${o.status}</span></td>
         </tr>
-    `).join('');
+    `}).join('');
 }
 
 // ==========================================
@@ -403,9 +424,7 @@ function renderCatalogUI() {
             const pId = triggerBtn.getAttribute('data-id');
             const item = globalProducts.find(x => x.id === pId);
             if (item) {
-                localCart.push(item);
-                localStorage.setItem('bazaarhub_cart', JSON.stringify(localCart));
-                updateCartWidgetCount();
+                addItemToCart(item);
                 showToast(`${item.name} added to your basket.`, 'success');
 
                 const original = triggerBtn.innerHTML;
@@ -457,9 +476,7 @@ function renderFeaturedProducts() {
             const pId = triggerBtn.getAttribute('data-id');
             const item = globalProducts.find(x => x.id === pId);
             if (item) {
-                localCart.push(item);
-                localStorage.setItem('bazaarhub_cart', JSON.stringify(localCart));
-                updateCartWidgetCount();
+                addItemToCart(item);
                 showToast(`${item.name} added to your basket.`, 'success');
 
                 const original = triggerBtn.innerHTML;
@@ -488,7 +505,19 @@ function setupCatalogControls() {
 setupCatalogControls();
 
 function updateCartWidgetCount() {
-    document.querySelectorAll('#cartCount').forEach(counter => counter.innerText = localCart.length);
+    const totalQty = localCart.reduce((sum, i) => sum + (i.qty || 1), 0);
+    document.querySelectorAll('#cartCount').forEach(counter => counter.innerText = totalQty);
+}
+
+function addItemToCart(item) {
+    const existing = localCart.find(i => i.id === item.id);
+    if (existing) {
+        existing.qty = (existing.qty || 1) + 1;
+    } else {
+        localCart.push({ ...item, qty: 1 });
+    }
+    localStorage.setItem('bazaarhub_cart', JSON.stringify(localCart));
+    updateCartWidgetCount();
 }
 
 // ==========================================
@@ -496,23 +525,74 @@ function updateCartWidgetCount() {
 // ==========================================
 const checkoutItemsWrap = document.getElementById('checkoutSummaryItemsContainer');
 if (checkoutItemsWrap) {
-    let priceSum = 0;
 
-    if (localCart.length === 0) {
-        checkoutItemsWrap.innerHTML = `
-            <div class="cart-empty">
-                <i class="fas fa-basket-shopping"></i>
-                <p>Your basket is empty.<br><a href="index.html" class="accent-gold">Browse the bazaar →</a></p>
-            </div>`;
-    } else {
-        checkoutItemsWrap.innerHTML = localCart.map(i => {
-            priceSum += parseFloat(i.price);
-            return `<div class="summary-item"><span class="item-name">${i.name}</span><span class="accent-gold" style="font-weight:700;">Rs ${parseFloat(i.price).toLocaleString()}</span></div>`;
-        }).join('');
+    function recalcCartTotal() {
+        return localCart.reduce((sum, i) => sum + (parseFloat(i.price) * (i.qty || 1)), 0);
     }
 
-    const displayTotal = document.getElementById('checkoutSummaryTotalDisplay');
-    if (displayTotal) displayTotal.innerText = "Rs " + priceSum.toLocaleString();
+    function renderCheckoutItems() {
+        const displayTotal = document.getElementById('checkoutSummaryTotalDisplay');
+
+        if (localCart.length === 0) {
+            checkoutItemsWrap.innerHTML = `
+                <div class="cart-empty">
+                    <i class="fas fa-basket-shopping"></i>
+                    <p>Your basket is empty.<br><a href="index.html" class="accent-gold">Browse the bazaar →</a></p>
+                </div>`;
+            if (displayTotal) displayTotal.innerText = "Rs 0";
+            return;
+        }
+
+        checkoutItemsWrap.innerHTML = localCart.map((i, idx) => `
+            <div class="summary-item" data-idx="${idx}">
+                <span class="item-name">${i.name}</span>
+                <div class="qty-stepper">
+                    <button type="button" class="qtyMinusBtn" data-idx="${idx}" aria-label="Decrease quantity"><i class="fas fa-minus"></i></button>
+                    <span class="qty-value">${i.qty || 1}</span>
+                    <button type="button" class="qtyPlusBtn" data-idx="${idx}" aria-label="Increase quantity"><i class="fas fa-plus"></i></button>
+                </div>
+                <span class="accent-gold" style="font-weight:700; min-width:90px; text-align:right;">Rs ${(parseFloat(i.price) * (i.qty || 1)).toLocaleString()}</span>
+                <button type="button" class="cart-item-remove" data-idx="${idx}" aria-label="Remove item"><i class="fas fa-trash-alt"></i></button>
+            </div>
+        `).join('');
+
+        if (displayTotal) displayTotal.innerText = "Rs " + recalcCartTotal().toLocaleString();
+
+        checkoutItemsWrap.querySelectorAll('.qtyPlusBtn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                localCart[idx].qty = (localCart[idx].qty || 1) + 1;
+                persistCartAndRerender();
+            });
+        });
+        checkoutItemsWrap.querySelectorAll('.qtyMinusBtn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                const current = localCart[idx].qty || 1;
+                if (current <= 1) {
+                    localCart.splice(idx, 1);
+                } else {
+                    localCart[idx].qty = current - 1;
+                }
+                persistCartAndRerender();
+            });
+        });
+        checkoutItemsWrap.querySelectorAll('.cart-item-remove').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                localCart.splice(idx, 1);
+                persistCartAndRerender();
+            });
+        });
+    }
+
+    function persistCartAndRerender() {
+        localStorage.setItem('bazaarhub_cart', JSON.stringify(localCart));
+        updateCartWidgetCount();
+        renderCheckoutItems();
+    }
+
+    renderCheckoutItems();
 
     const checkForm = document.getElementById('checkoutForm');
     if (checkForm) {
@@ -525,13 +605,25 @@ if (checkoutItemsWrap) {
                 return;
             }
 
+            const totalCost = recalcCartTotal();
+            const orderItems = localCart.map(i => ({
+                productId: i.id || null,
+                name: i.name,
+                price: parseFloat(i.price),
+                qty: i.qty || 1,
+                lineTotal: parseFloat(i.price) * (i.qty || 1)
+            }));
+
             const orderPayload = {
                 userUid: auth.currentUser ? auth.currentUser.uid : "GUEST",
+                customerName: document.getElementById('custName').value.trim(),
+                customerEmail: document.getElementById('custEmail').value.trim(),
                 address: document.getElementById('custAddress').value.trim(),
                 city: document.getElementById('custCity').value.trim(),
                 phone: document.getElementById('custPhone').value.trim(),
-                itemsSummary: localCart.map(i => i.name).join(', '),
-                totalCost: priceSum,
+                items: orderItems,
+                itemsSummary: orderItems.map(i => `${i.name} x${i.qty}`).join(', '),
+                totalCost,
                 status: "Pending Dispatch",
                 timestamp: new Date().toISOString()
             };
@@ -542,6 +634,7 @@ if (checkoutItemsWrap) {
                 await addDoc(collection(db, "orders"), orderPayload);
                 localCart = [];
                 localStorage.removeItem('bazaarhub_cart');
+                updateCartWidgetCount();
                 showToast("Order placed! Track it any time from My Orders.", 'success');
                 setTimeout(() => { window.location.href = "orders.html"; }, 1100);
             } catch (err) {
@@ -555,16 +648,152 @@ if (checkoutItemsWrap) {
 // ==========================================
 // 8. ADMIN — PRODUCT MANAGEMENT
 // ==========================================
+
+// ---- 8a. Image upload: read a local file, downscale + compress it in
+// the browser via canvas, and hand back a data URL small enough to store
+// directly on the Firestore product doc (no Storage bucket needed). ----
+function readAndCompressImage(file, maxDim = 1000, quality = 0.82) {
+    return new Promise((resolve, reject) => {
+        if (!file.type.startsWith('image/')) {
+            reject(new Error('Please choose an image file (JPG, PNG, or WEBP).'));
+            return;
+        }
+        if (file.size > 12 * 1024 * 1024) {
+            reject(new Error('That image is too large — please pick one under 12MB.'));
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                let { width, height } = img;
+                if (width > maxDim || height > maxDim) {
+                    if (width > height) { height = Math.round((height / width) * maxDim); width = maxDim; }
+                    else { width = Math.round((width / height) * maxDim); height = maxDim; }
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.onerror = () => reject(new Error('Could not read that image.'));
+            img.src = e.target.result;
+        };
+        reader.onerror = () => reject(new Error('Could not read that file.'));
+        reader.readAsDataURL(file);
+    });
+}
+
+let uploadedProductImage = null;
+let resetProductImageField = () => {};
+
+function setupProductImageUpload() {
+    const fileInput  = document.getElementById('pImageFile');
+    const box        = document.getElementById('imgUploadBox');
+    const prompt     = document.getElementById('imgUploadPrompt');
+    const previewImg = document.getElementById('imgUploadPreview');
+    const clearBtn   = document.getElementById('imgUploadClear');
+    const urlToggle  = document.getElementById('imgUrlToggle');
+    const urlInput   = document.getElementById('pImageUrl');
+    if (!fileInput || !box) return;
+
+    async function handleFile(file) {
+        if (!file) return;
+        try {
+            box.classList.add('dragover');
+            const dataUrl = await readAndCompressImage(file);
+            uploadedProductImage = dataUrl;
+            previewImg.src = dataUrl;
+            previewImg.classList.remove('hidden');
+            prompt.classList.add('hidden');
+            clearBtn.classList.remove('hidden');
+        } catch (err) {
+            showToast(err.message, 'error');
+            fileInput.value = '';
+        } finally {
+            box.classList.remove('dragover');
+        }
+    }
+
+    function clearPreview() {
+        uploadedProductImage = null;
+        fileInput.value = '';
+        previewImg.classList.add('hidden');
+        previewImg.src = '';
+        prompt.classList.remove('hidden');
+        clearBtn.classList.add('hidden');
+        urlInput.value = '';
+        urlInput.classList.add('hidden');
+        box.classList.remove('hidden');
+        urlToggle.textContent = 'Paste an image link instead';
+    }
+    resetProductImageField = clearPreview;
+
+    box.addEventListener('click', () => fileInput.click());
+    box.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); } });
+    fileInput.addEventListener('change', () => handleFile(fileInput.files[0]));
+
+    ['dragenter', 'dragover'].forEach(evt => box.addEventListener(evt, (e) => { e.preventDefault(); box.classList.add('dragover'); }));
+    ['dragleave'].forEach(evt => box.addEventListener(evt, (e) => { e.preventDefault(); box.classList.remove('dragover'); }));
+    box.addEventListener('drop', (e) => {
+        e.preventDefault();
+        box.classList.remove('dragover');
+        const file = e.dataTransfer.files && e.dataTransfer.files[0];
+        if (file) handleFile(file);
+    });
+
+    clearBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        uploadedProductImage = null;
+        fileInput.value = '';
+        previewImg.classList.add('hidden');
+        previewImg.src = '';
+        prompt.classList.remove('hidden');
+        clearBtn.classList.add('hidden');
+    });
+
+    urlToggle.addEventListener('click', () => {
+        const switchingToUrl = urlInput.classList.contains('hidden');
+        if (switchingToUrl) {
+            urlInput.classList.remove('hidden');
+            box.classList.add('hidden');
+            urlToggle.textContent = 'Upload a photo instead';
+        } else {
+            urlInput.classList.add('hidden');
+            box.classList.remove('hidden');
+            urlToggle.textContent = 'Paste an image link instead';
+        }
+    });
+}
+setupProductImageUpload();
+
+function getProductImageValue() {
+    const urlInput = document.getElementById('pImageUrl');
+    if (urlInput && !urlInput.classList.contains('hidden')) {
+        return urlInput.value.trim();
+    }
+    return uploadedProductImage || '';
+}
+
+// ---- 8b. Save product ----
 const addProductForm = document.getElementById('addProductForm');
 if (addProductForm) {
     addProductForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const submitBtn = document.getElementById('formSubmitBtn');
+        const imageValue = getProductImageValue();
+
+        if (!imageValue) {
+            showToast('Please add a product photo — upload one or paste a link.', 'error');
+            return;
+        }
+
         const payload = {
             name: document.getElementById('pName').value.trim(),
             category: document.getElementById('pCategory').value.trim(),
             price: parseFloat(document.getElementById('pPrice').value),
-            image: document.getElementById('pImage').value.trim(),
+            image: imageValue,
             description: document.getElementById('pDesc').value.trim()
         };
 
@@ -573,6 +802,7 @@ if (addProductForm) {
             await addDoc(collection(db, "products"), payload);
             showToast(`"${payload.name}" was added to the catalog.`, 'success');
             addProductForm.reset();
+            resetProductImageField();
         } catch (err) {
             showToast("Couldn't save the product: " + err.message, 'error');
         } finally {
@@ -650,16 +880,21 @@ function renderAdminOrders() {
     if (!adminOrdersList) return;
 
     if (globalOrders.length === 0) {
-        adminOrdersList.innerHTML = `<tr><td colspan="4" class="text-muted" style="text-align:center; padding:30px 0;">No orders have come in yet.</td></tr>`;
+        adminOrdersList.innerHTML = `<tr><td colspan="5" class="text-muted" style="text-align:center; padding:30px 0;">No orders have come in yet.</td></tr>`;
         return;
     }
 
     const sorted = [...globalOrders].sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
 
-    adminOrdersList.innerHTML = sorted.map(o => `
+    adminOrdersList.innerHTML = sorted.map(o => {
+        const itemsHtml = (o.items && o.items.length)
+            ? o.items.map(i => `${i.name} <span class="text-muted">x${i.qty}</span>`).join('<br>')
+            : (o.itemsSummary || '');
+        return `
         <tr>
+            <td class="order-meta"><b>${o.customerName || 'Guest'}</b><br>${o.customerEmail || ''}</td>
             <td class="order-meta"><b>${o.city || ''}</b><br>${o.address || ''}<br>${o.phone || ''}</td>
-            <td class="order-meta">${o.itemsSummary || ''}</td>
+            <td class="order-meta">${itemsHtml}</td>
             <td class="accent-gold" style="font-weight:800; font-family:var(--font-mono);">Rs ${parseFloat(o.totalCost || 0).toLocaleString()}</td>
             <td>
                 <span class="status-badge ${statusClass(o.status)}" style="margin-bottom:6px; display:inline-flex;">${o.status}</span>
@@ -668,7 +903,7 @@ function renderAdminOrders() {
                 </select>
             </td>
         </tr>
-    `).join('');
+    `}).join('');
 
     adminOrdersList.querySelectorAll('.orderStatusSelect').forEach(sel => {
         sel.addEventListener('change', async (e) => {

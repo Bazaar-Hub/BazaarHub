@@ -104,8 +104,19 @@
                     <input type="number" id="pPrice" placeholder="e.g. 3500" min="0" step="1" required>
                 </div>
                 <div class="input-group">
-                    <label>Image URL</label>
-                    <input type="url" id="pImage" placeholder="https://images.unsplash.com/…" required>
+                    <label>Product Image</label>
+                    <div class="img-upload" id="imgUploadBox" tabindex="0">
+                        <input type="file" id="pImageFile" accept="image/png, image/jpeg, image/webp" hidden>
+                        <div class="img-upload-prompt" id="imgUploadPrompt">
+                            <i class="fas fa-cloud-arrow-up"></i>
+                            <span>Click to upload, or drag a photo here</span>
+                            <small>JPG, PNG or WEBP — from your phone or PC</small>
+                        </div>
+                        <img id="imgUploadPreview" class="img-upload-preview hidden" alt="Product preview">
+                        <button type="button" id="imgUploadClear" class="img-upload-clear hidden" aria-label="Remove image"><i class="fas fa-xmark"></i></button>
+                    </div>
+                    <button type="button" id="imgUrlToggle" class="img-url-toggle">Paste an image link instead</button>
+                    <input type="url" id="pImageUrl" class="hidden" placeholder="https://images.unsplash.com/…" style="margin-top:8px;">
                 </div>
                 <div class="input-group">
                     <label>Description</label>
@@ -133,6 +144,7 @@
                     <table>
                         <thead>
                             <tr>
+                                <th>Customer</th>
                                 <th>Delivery Info</th>
                                 <th>Items</th>
                                 <th>Cost</th>
