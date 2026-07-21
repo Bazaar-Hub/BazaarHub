@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BazaarHub — Contact Us</title>
+    <link rel="icon" href="logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav>
+        <div class="nav-logo-box" onclick="window.location.href='index.html'">
+            <div class="logo-badge"><img src="logo.png" alt="BazaarHub logo"></div>
+            <div class="logo-text">BAZAAR<span>HUB</span></div>
+        </div>
+        <div class="nav-center">
+            <a href="index.html">Home</a>
+            <a href="shop.html">Shop</a>
+            <a href="orders.html">My Orders</a>
+            <a href="contact.html" class="accent-gold">Contact Us</a>
+            <a href="admin.html" class="admin-only-link hidden" id="adminNavLink" style="color: var(--terracotta-bright);"><i class="fas fa-user-shield"></i> Admin Panel</a>
+        </div>
+        <div class="nav-right">
+            <div class="cart-icon" onclick="window.location.href='checkout.html'">
+                <i class="fas fa-basket-shopping"></i>
+                <span id="cartCount" class="cart-count">0</span>
+            </div>
+            <button id="logoutBtn" class="icon-btn"><i class="fas fa-arrow-right-from-bracket"></i> Logout</button>
+            <button class="nav-toggle" id="navToggle" aria-label="Open menu"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-panel">
+            <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu"><i class="fas fa-xmark"></i></button>
+            <a href="index.html">Home</a>
+            <a href="shop.html">Shop</a>
+            <a href="orders.html">My Orders</a>
+            <a href="contact.html">Contact Us</a>
+            <a href="admin.html" class="admin-only-link hidden">Admin Panel</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section-head" style="justify-content:center; text-align:center; flex-direction:column;">
+            <span class="eyebrow">WE'RE HERE TO HELP</span>
+            <h2>Contact Us</h2>
+        </div>
+
+        <div class="checkout-grid">
+            <div class="manifest-card">
+                <h2 class="card-title accent-gold"><i class="fas fa-circle-info"></i> Get in Touch</h2>
+                <p class="text-muted" style="margin-bottom: 18px; font-size: 14.5px;">Questions about an order, a product, or your account? Reach our team directly.</p>
+                <div style="display:flex; flex-direction:column; gap:16px;">
+                    <div style="display:flex; gap:12px; align-items:center;">
+                        <i class="fas fa-envelope" style="color:var(--gold); width:20px;"></i>
+                        <span>bazaarhub0111@gmail.com</span>
+                    </div>
+                    <div style="display:flex; gap:12px; align-items:center;">
+                        <i class="fas fa-phone" style="color:var(--gold); width:20px;"></i>
+                        <span>+92 334 9857192</span>
+                    </div>
+                    <div style="display:flex; gap:12px; align-items:center;">
+                        <i class="fas fa-location-dot" style="color:var(--gold); width:20px;"></i>
+                        <span>Gulshan-e-Mazdoor, Karachi, Sindh, Pakistan</span>
+                    </div>
+                    <div style="display:flex; gap:12px; align-items:center;">
+                        <i class="fas fa-truck" style="color:var(--gold); width:20px;"></i>
+                        <span>Delivery currently available in Karachi only</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <h2 class="card-title"><i class="fas fa-share-nodes"></i> Follow & Message Us</h2>
+                <p class="text-muted" style="margin-bottom: 18px; font-size: 14.5px;">Connect on social, or chat with us live on WhatsApp for the fastest response.</p>
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <a href="https://www.instagram.com/bazaarhub0111/" target="_blank" rel="noopener" class="btn" style="background:linear-gradient(135deg,#f58529,#dd2a7b,#8134af); color:#fff;"><i class="fab fa-instagram"></i> Follow on Instagram</a>
+                    <a href="https://wa.me/923349857192" target="_blank" rel="noopener" class="btn" style="background:#25d366; color:#fff;"><i class="fab fa-whatsapp"></i> Chat on WhatsApp</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-bottom" style="border-top:none; padding-top:0;">
+                <span>© 2026 BazaarHub. All rights reserved.</span>
+                <a href="index.html" class="accent-gold">← Back to Home</a>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BazaarHub — Shop More, Get More</title>
+    <meta name="description" content="BazaarHub is your one-stop online marketplace — browse the catalog, add to your basket, and get it delivered.">
+    <link rel="icon" href="logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav>
+        <div class="nav-logo-box" onclick="window.location.href='index.html'">
+            <div class="logo-badge"><img src="logo.png" alt="BazaarHub logo"></div>
+            <div class="logo-text">BAZAAR<span>HUB</span></div>
+        </div>
+        <div class="nav-center">
+            <a href="index.html" class="accent-gold">Home</a>
+            <a href="shop.html">Shop</a>
+            <a href="orders.html">My Orders</a>
+            <a href="contact.html">Contact Us</a>
+            <a href="admin.html" class="admin-only-link hidden" id="adminNavLink" style="color: var(--terracotta-bright);"><i class="fas fa-user-shield"></i> Admin Panel</a>
+        </div>
+        <div class="nav-right">
+            <div class="cart-icon" onclick="window.location.href='checkout.html'">
+                <i class="fas fa-basket-shopping"></i>
+                <span id="cartCount" class="cart-count">0</span>
+            </div>
+            <button id="logoutBtn" class="icon-btn"><i class="fas fa-arrow-right-from-bracket"></i> Logout</button>
+            <button class="nav-toggle" id="navToggle" aria-label="Open menu"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-panel">
+            <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu"><i class="fas fa-xmark"></i></button>
+            <a href="index.html">Home</a>
+            <a href="shop.html">Shop</a>
+            <a href="orders.html">My Orders</a>
+            <a href="contact.html">Contact Us</a>
+            <a href="admin.html" class="admin-only-link hidden">Admin Panel</a>
+        </div>
+    </div>
+
+    <section class="hero">
+        <div class="hero-inner">
+            <span class="eyebrow">BAZAARHUB · SHOP MORE, GET MORE</span>
+            <h1>Everything you need, <em>all in one marketplace.</em></h1>
+            <p>Fashion, electronics, home essentials and more — browse live inventory, add it to your basket, and check out in minutes. Delivered straight to your door.</p>
+            <div style="display:flex; gap:14px; margin-top:24px; flex-wrap:wrap;">
+                <a href="shop.html" class="btn btn-primary"><i class="fas fa-store"></i> Start Shopping</a>
+                <a href="contact.html" class="btn btn-secondary"><i class="fas fa-headset"></i> Talk to Us</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="section-head">
+            <div>
+                <span class="eyebrow">TODAY'S PICKS</span>
+                <h2>Featured Products</h2>
+            </div>
+        </div>
+        <div id="featuredProductsGrid" class="grid"></div>
+        <div style="text-align:center; margin-top:30px;">
+            <a href="shop.html" class="btn btn-primary"><i class="fas fa-store"></i> Show More</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <div class="nav-logo-box">
+                        <div class="logo-badge"><img src="logo.png" alt="BazaarHub logo"></div>
+                        <div class="logo-text">BAZAAR<span>HUB</span></div>
+                    </div>
+                    <p>Your one-stop online marketplace — shop more, get more.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-col">
+                        <h4>Shop</h4>
+                        <a href="shop.html">Catalog</a>
+                        <a href="checkout.html">Checkout</a>
+                        <a href="orders.html">My Orders</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Account</h4>
+                        <a href="auth.html">Sign in</a>
+                        <a href="contact.html">Contact Us</a>
+                        <span>Karachi delivery only</span>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2026 BazaarHub. All rights reserved.</span>
+                <span>Built in Karachi, Pakistan.</span>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
