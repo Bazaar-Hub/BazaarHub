@@ -196,14 +196,30 @@ function showAdminDenied() {
     }
 }
 
+// Safety net: no matter what triggers a redirect, never let this page send
+// the browser to the same destination more than once in a row. This makes
+// reload loops structurally impossible, even if something upstream (a stale
+// cached file, an unusual hosting path, a Firebase hiccup) tries to redirect
+// repeatedly.
+function safeRedirect(destination) {
+    const lastRedirect = sessionStorage.getItem('bh_last_redirect');
+    if (lastRedirect === destination) {
+        console.warn('BazaarHub: blocked a repeat redirect to', destination, '— staying put to avoid a reload loop.');
+        return;
+    }
+    sessionStorage.setItem('bh_last_redirect', destination);
+    window.location.href = destination;
+}
+
 onAuthStateChanged(auth, async (user) => {
     const currentPage = window.location.pathname;
     const isAdminPage = currentPage.includes('admin.html');
 
     if (user) {
+        sessionStorage.removeItem('bh_last_redirect');
         // Redirect logged-in users away from auth page
         if (currentPage.includes('auth.html')) {
-            window.location.href = "index.html";
+            safeRedirect("index.html");
             return;
         }
 
@@ -227,7 +243,9 @@ onAuthStateChanged(auth, async (user) => {
         // but don't redirect if we're already on the login page (that caused
         // an infinite reload loop).
         if (!currentPage.includes('auth.html')) {
-            window.location.href = "auth.html";
+            safeRedirect("auth.html");
+        } else {
+            sessionStorage.removeItem('bh_last_redirect');
         }
     }
 });
