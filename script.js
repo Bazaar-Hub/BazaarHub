@@ -257,10 +257,18 @@ async function prefillCheckoutFromProfile(user) {
         if (snap.exists()) {
             const data = snap.data();
             if (nameField && !nameField.value) nameField.value = data.name || '';
-            if (phoneField && !phoneField.value) phoneField.value = data.phone || '';
+            if (phoneField && data.phone) {
+                phoneField.value = data.phone;
+                phoneField.readOnly = true;
+                phoneField.title = "This is the phone number on your account.";
+            }
         }
     } catch (err) { /* non-critical, ignore */ }
-    if (emailField && !emailField.value) emailField.value = user.email || '';
+    if (emailField && user.email) {
+        emailField.value = user.email;
+        emailField.readOnly = true;
+        emailField.title = "This is the email on your account.";
+    }
 }
 
 // ==========================================
@@ -349,6 +357,7 @@ function setupAppRealtimeStreams() {
         renderFeaturedProducts();
         renderAdminProducts();
         updateAdminStats();
+        renderProductDetail();
     });
 
     const adminOrdersList = document.getElementById('adminOrdersList');
@@ -466,15 +475,17 @@ function renderCatalogUI() {
 
     grid.innerHTML = filtered.map(p => `
         <div class="product-card">
-            <div class="product-img-wrap">
-                <img src="${p.image}" class="product-img" alt="${p.name}" loading="lazy">
-                <span class="product-category">${p.category || 'General'}</span>
-            </div>
-            <div class="product-title">${p.name}</div>
-            <div class="product-desc">${p.description}</div>
-            <div class="product-footer">
-                <span class="price-tag">Rs ${parseFloat(p.price).toLocaleString()}</span>
-            </div>
+            <a href="product.html?id=${p.id}" class="product-card-link">
+                <div class="product-img-wrap">
+                    <img src="${p.image}" class="product-img" alt="${p.name}" loading="lazy">
+                    <span class="product-category">${p.category || 'General'}</span>
+                </div>
+                <div class="product-title">${p.name}</div>
+                <div class="product-desc">${p.description}</div>
+                <div class="product-footer">
+                    <span class="price-tag">Rs ${parseFloat(p.price).toLocaleString()}</span>
+                </div>
+            </a>
             <button class="btn btn-primary addToCartBtn" data-id="${p.id}"><i class="fas fa-basket-shopping"></i> Add to Basket</button>
         </div>
     `).join('');
@@ -518,15 +529,17 @@ function renderFeaturedProducts() {
 
     grid.innerHTML = featured.map(p => `
         <div class="product-card">
-            <div class="product-img-wrap">
-                <img src="${p.image}" class="product-img" alt="${p.name}" loading="lazy">
-                <span class="product-category">${p.category || 'General'}</span>
-            </div>
-            <div class="product-title">${p.name}</div>
-            <div class="product-desc">${p.description}</div>
-            <div class="product-footer">
-                <span class="price-tag">Rs ${parseFloat(p.price).toLocaleString()}</span>
-            </div>
+            <a href="product.html?id=${p.id}" class="product-card-link">
+                <div class="product-img-wrap">
+                    <img src="${p.image}" class="product-img" alt="${p.name}" loading="lazy">
+                    <span class="product-category">${p.category || 'General'}</span>
+                </div>
+                <div class="product-title">${p.name}</div>
+                <div class="product-desc">${p.description}</div>
+                <div class="product-footer">
+                    <span class="price-tag">Rs ${parseFloat(p.price).toLocaleString()}</span>
+                </div>
+            </a>
             <button class="btn btn-primary addToCartBtn" data-id="${p.id}"><i class="fas fa-basket-shopping"></i> Add to Basket</button>
         </div>
     `).join('');
@@ -549,6 +562,93 @@ function renderFeaturedProducts() {
                 }, 1200);
             }
         });
+    });
+}
+
+// ==========================================
+// 5b. PRODUCT DETAIL PAGE (PDP)
+// ==========================================
+let pdpQty = 1;
+
+function renderProductDetail() {
+    const wrap = document.getElementById('pdpContent');
+    if (!wrap) return; // not on product.html
+
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('id');
+    const product = globalProducts.find(p => p.id === productId);
+
+    if (!product) {
+        // Still loading (products stream hasn't populated yet) vs genuinely missing
+        if (globalProducts.length === 0) return; // wait for data
+        wrap.innerHTML = `
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <i class="fas fa-basket-shopping"></i>
+                <h3>Product not found</h3>
+                <p>This item may have been removed. <a href="shop.html" class="accent-gold">Browse the catalog →</a></p>
+            </div>`;
+        return;
+    }
+
+    const breadcrumbName = document.getElementById('pdpBreadcrumbName');
+    if (breadcrumbName) breadcrumbName.innerText = product.name;
+    document.title = `BazaarHub — ${product.name}`;
+
+    wrap.innerHTML = `
+        <div class="pdp-image-wrap">
+            <img src="${product.image}" alt="${product.name}">
+        </div>
+        <div>
+            <span class="pdp-category">${product.category || 'General'}</span>
+            <h1 class="pdp-title">${product.name}</h1>
+            <div class="pdp-price">Rs ${parseFloat(product.price).toLocaleString()}</div>
+            <p class="pdp-desc">${product.description || ''}</p>
+
+            <div class="pdp-qty-row">
+                <span class="pdp-qty-label">Quantity</span>
+                <div class="pdp-qty-control">
+                    <button type="button" id="pdpQtyMinus">−</button>
+                    <span id="pdpQtyValue">1</span>
+                    <button type="button" id="pdpQtyPlus">+</button>
+                </div>
+            </div>
+
+            <div class="pdp-actions">
+                <button class="btn btn-secondary" id="pdpAddToCart"><i class="fas fa-basket-shopping"></i> Add to Basket</button>
+                <button class="btn btn-primary" id="pdpBuyNow"><i class="fas fa-bolt"></i> Buy Now</button>
+            </div>
+
+            <div class="pdp-trust-row">
+                <div class="pdp-trust-item"><i class="fas fa-shield-halved"></i> Verified Seller</div>
+                <div class="pdp-trust-item"><i class="fas fa-truck-fast"></i> Karachi Delivery</div>
+                <div class="pdp-trust-item"><i class="fas fa-headset"></i> Order Support</div>
+                <div class="pdp-trust-item"><i class="fas fa-lock"></i> Secure Checkout</div>
+            </div>
+        </div>
+    `;
+
+    pdpQty = 1;
+    const qtyValue = document.getElementById('pdpQtyValue');
+    document.getElementById('pdpQtyMinus').addEventListener('click', () => {
+        if (pdpQty > 1) { pdpQty--; qtyValue.innerText = pdpQty; }
+    });
+    document.getElementById('pdpQtyPlus').addEventListener('click', () => {
+        pdpQty++; qtyValue.innerText = pdpQty;
+    });
+
+    document.getElementById('pdpAddToCart').addEventListener('click', (e) => {
+        for (let i = 0; i < pdpQty; i++) addItemToCart(product);
+        showToast(`${product.name} added to your basket.`, 'success');
+        const btn = e.currentTarget;
+        const original = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> Added';
+        btn.disabled = true;
+        setTimeout(() => { btn.innerHTML = original; btn.disabled = false; }, 1200);
+    });
+
+    document.getElementById('pdpBuyNow').addEventListener('click', () => {
+        for (let i = 0; i < pdpQty; i++) addItemToCart(product);
+        window.location.href = "checkout.html";
     });
 }
 
