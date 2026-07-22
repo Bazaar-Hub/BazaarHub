@@ -158,20 +158,17 @@ setupPageTransitions();
 
 // ==========================================
 // 2. GLOBAL AUTH MONITOR & ROUTE GUARD
-// Admin panel is protected by real Firebase Auth + a Firestore "role"
-// field on the user's document (role === "admin"). There is no separate
-// username/password gate anymore — the admin signs in through the same
-// auth.html login form as everyone else, and access is granted only if
-// their account is flagged as admin in Firestore.
+// Admin access is granted purely by which Firebase Auth account is signed
+// in — there's no separate visible "admin login" and no Firestore lookup
+// involved, so nothing about who is admin is exposed to regular customers.
+// Firebase Auth verifies the password server-side, so this is safe even
+// though the admin email is readable in this file.
 // ==========================================
+const ADMIN_EMAIL = "bazaarhub0111@gmail.com";
+
 async function isAdminUser(user) {
-    if (!user) return false;
-    try {
-        const snap = await getDoc(doc(db, "users", user.uid));
-        return snap.exists() && snap.data().role === "admin";
-    } catch (err) {
-        return false;
-    }
+    if (!user || !user.email) return false;
+    return user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 }
 
 function setAdminNavVisible(visible) {

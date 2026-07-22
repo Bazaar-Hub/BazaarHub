@@ -14,12 +14,12 @@
 <body>
 
 <!-- ===================== ADMIN ACCESS GATE ===================== -->
-<!-- Real security lives in Firebase: this overlay just reflects the
-     result of the role check that script.js performs after Firebase
-     Auth confirms who is signed in. Nothing here can be bypassed by
-     viewing page source, because access is decided server-side by
-     Firestore rules + the user's role field, not by any code shipped
-     to the browser. -->
+<!-- Real security lives in Firebase Auth: this overlay just reflects
+     whether the signed-in account matches the admin email, which
+     script.js checks after Firebase confirms who is signed in. Nothing
+     here can be bypassed by viewing page source — knowing the admin
+     email doesn't let anyone in without the matching password, which
+     Firebase verifies server-side. -->
 <div id="adminGate" class="admin-gate-overlay">
     <div class="admin-gate-card">
         <div class="admin-gate-logo">
