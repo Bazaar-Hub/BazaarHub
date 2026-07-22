@@ -487,6 +487,7 @@ function renderCatalogUI() {
                 </div>
             </a>
             <button class="btn btn-primary addToCartBtn" data-id="${p.id}"><i class="fas fa-basket-shopping"></i> Add to Basket</button>
+            <a href="product.html?id=${p.id}" class="btn btn-secondary" style="margin-top:8px;"><i class="fas fa-circle-info"></i> View Details</a>
         </div>
     `).join('');
 
@@ -541,6 +542,7 @@ function renderFeaturedProducts() {
                 </div>
             </a>
             <button class="btn btn-primary addToCartBtn" data-id="${p.id}"><i class="fas fa-basket-shopping"></i> Add to Basket</button>
+            <a href="product.html?id=${p.id}" class="btn btn-secondary" style="margin-top:8px;"><i class="fas fa-circle-info"></i> View Details</a>
         </div>
     `).join('');
 
