@@ -72,7 +72,11 @@
 
     <div class="admin-layout">
         <div class="admin-card">
-            <h2 class="admin-card-title">Add a Product</h2>
+            <h2 class="admin-card-title" id="productFormTitle">Add a Product</h2>
+            <div id="editingBanner" class="editing-banner hidden">
+                <i class="fas fa-pen"></i> <span>Editing <b id="editingBannerName"></b></span>
+                <button type="button" id="cancelEditBtn" class="btn btn-ghost btn-sm"><i class="fas fa-xmark"></i> Cancel</button>
+            </div>
             <form id="addProductForm">
                 <div class="input-group">
                     <label>Product Name</label>
@@ -83,28 +87,45 @@
                     <input type="text" id="pCategory" placeholder="e.g. Electronics" required>
                 </div>
                 <div class="input-group">
-                    <label>Price (PKR)</label>
+                    <label id="pPriceLabel">Price (PKR)</label>
                     <input type="number" id="pPrice" placeholder="e.g. 3500" min="0" step="1" required>
+                    <small class="text-muted" id="pPriceHint" style="display:block; margin-top:4px; font-size:11.5px;"></small>
                 </div>
+
                 <div class="input-group">
-                    <label>Product Image</label>
+                    <label>Product Photos</label>
+                    <div class="img-gallery-grid" id="imgGalleryGrid"></div>
                     <div class="img-upload" id="imgUploadBox" tabindex="0">
-                        <input type="file" id="pImageFile" accept="image/png, image/jpeg, image/webp" hidden>
+                        <input type="file" id="pImageFile" accept="image/png, image/jpeg, image/webp" multiple hidden>
                         <div class="img-upload-prompt" id="imgUploadPrompt">
                             <i class="fas fa-cloud-arrow-up"></i>
-                            <span>Click to upload, or drag a photo here</span>
-                            <small>JPG, PNG or WEBP — from your phone or PC</small>
+                            <span>Click to upload, or drag photos here</span>
+                            <small>JPG, PNG or WEBP — add as many as you like</small>
                         </div>
-                        <img id="imgUploadPreview" class="img-upload-preview hidden" alt="Product preview">
-                        <button type="button" id="imgUploadClear" class="img-upload-clear hidden" aria-label="Remove image"><i class="fas fa-xmark"></i></button>
                     </div>
                     <button type="button" id="imgUrlToggle" class="img-url-toggle">Paste an image link instead</button>
-                    <input type="url" id="pImageUrl" class="hidden" placeholder="https://images.unsplash.com/…" style="margin-top:8px;">
+                    <div id="imgUrlRow" class="hidden" style="display:flex; gap:8px; margin-top:8px;">
+                        <input type="url" id="pImageUrl" placeholder="https://images.unsplash.com/…" style="flex:1;">
+                        <button type="button" id="imgUrlAddBtn" class="btn btn-secondary btn-sm">Add</button>
+                    </div>
                 </div>
+
                 <div class="input-group">
                     <label>Description</label>
                     <textarea id="pDesc" rows="3" placeholder="Key features and specifications…" required></textarea>
                 </div>
+
+                <div class="input-group">
+                    <label class="variant-toggle-row">
+                        <input type="checkbox" id="hasVariantsToggle">
+                        <span>This product comes in different options (e.g. colors) — each can have its own price</span>
+                    </label>
+                    <div id="variantsBuilder" class="hidden">
+                        <div id="variantsList"></div>
+                        <button type="button" id="addVariantBtn" class="btn btn-secondary btn-sm" style="margin-top:8px;"><i class="fas fa-circle-plus"></i> Add Option</button>
+                    </div>
+                </div>
+
                 <button type="submit" id="formSubmitBtn" class="btn btn-primary btn-block"><i class="fas fa-circle-plus"></i> Save Product</button>
             </form>
         </div>
@@ -118,7 +139,7 @@
                         <input type="text" id="adminProductSearch" placeholder="Search inventory…">
                     </div>
                 </div>
-                <div id="adminProductsList" style="max-height: 260px; overflow-y: auto; padding-right: 5px;"></div>
+                <div id="adminProductsList" style="max-height: 320px; overflow-y: auto; padding-right: 5px;"></div>
             </div>
 
             <div class="admin-card" style="margin-bottom:0;">

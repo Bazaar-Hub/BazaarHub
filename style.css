@@ -366,6 +366,245 @@ label {
 }
 
 /* =========================================================================
+   ADMIN — MULTI-PHOTO GALLERY
+   ========================================================================= */
+.img-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(74px, 1fr));
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.img-gallery-thumb {
+    position: relative;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    border: 1.5px solid var(--border);
+    background: var(--surface-2);
+    animation: scaleIn 0.25s ease both;
+}
+
+.img-gallery-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.img-gallery-thumb .gallery-thumb-remove {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(20, 16, 8, 0.7);
+    color: #fff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+}
+
+.img-gallery-thumb .gallery-thumb-remove:hover {
+    background: var(--terracotta-bright, #b8432f);
+}
+
+.img-gallery-thumb .gallery-thumb-cover {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 2px 0;
+    background: rgba(217, 156, 31, 0.9);
+    color: var(--ink);
+}
+
+/* =========================================================================
+   ADMIN — EDIT BANNER
+   ========================================================================= */
+.editing-banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(232, 178, 61, 0.14);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    margin-bottom: 16px;
+    font-size: 12.5px;
+    color: var(--text-muted);
+}
+
+.editing-banner .btn { margin-left: auto; }
+
+/* =========================================================================
+   ADMIN — VARIANTS BUILDER
+   ========================================================================= */
+.variant-toggle-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.variant-toggle-row input[type="checkbox"] {
+    margin-top: 3px;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--gold);
+    flex-shrink: 0;
+}
+
+#variantsBuilder {
+    margin-top: 14px;
+    padding: 12px;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface-2);
+}
+
+.variant-row {
+    display: grid;
+    grid-template-columns: 44px 1.3fr 0.85fr 1fr auto;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+@media (max-width: 640px) {
+    .variant-row {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: "thumb thumb" "label label" "price select" "remove remove";
+    }
+    .variant-row .variant-thumb-preview { grid-area: thumb; width: 100%; height: 90px; }
+    .variant-row .variant-label-input { grid-area: label; }
+    .variant-row .variant-price-input { grid-area: price; }
+    .variant-row .variant-image-select { grid-area: select; }
+    .variant-row .variant-remove-btn { grid-area: remove; justify-self: end; }
+}
+
+.variant-row:last-child { margin-bottom: 0; }
+
+.variant-row select,
+.variant-row input {
+    width: 100%;
+    padding: 9px 10px;
+    font-size: 12.5px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--font-body);
+}
+
+.variant-row .variant-thumb-preview {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    border: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.variant-row .variant-remove-btn {
+    background: transparent;
+    border: none;
+    color: var(--terracotta-bright, #b8432f);
+    padding: 6px;
+}
+
+/* =========================================================================
+   PRODUCT DETAIL PAGE — PHOTO THUMBNAILS & VARIANT SWATCHES
+   ========================================================================= */
+.pdp-thumbs {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.pdp-thumb {
+    width: 62px;
+    height: 62px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 2px solid transparent;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.15s ease, border-color 0.15s ease;
+}
+
+.pdp-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.pdp-thumb:hover { opacity: 1; }
+
+.pdp-thumb.active {
+    border-color: var(--gold);
+    opacity: 1;
+}
+
+.pdp-variant-row {
+    margin: 18px 0;
+}
+
+.pdp-variant-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    display: block;
+}
+
+.pdp-variant-options {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.pdp-variant-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px 7px 7px;
+    border-radius: 999px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text);
+    transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
+}
+
+.pdp-variant-chip img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.pdp-variant-chip:hover { transform: translateY(-1px); }
+
+.pdp-variant-chip.active {
+    border-color: var(--gold);
+    background: rgba(232, 178, 61, 0.14);
+    color: var(--ink);
+}
+
+/* =========================================================================
    BUTTONS
    ========================================================================= */
 .btn {

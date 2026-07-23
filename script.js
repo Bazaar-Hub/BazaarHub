@@ -419,6 +419,19 @@ function renderSkeleton(grid, count = 6) {
     `).join('');
 }
 
+function productCoverImage(p) {
+    return (p.images && p.images.length) ? p.images[0] : p.image;
+}
+
+function productPriceLabel(p) {
+    const hasVariants = p.variants && p.variants.length > 0;
+    if (!hasVariants) return `Rs ${parseFloat(p.price).toLocaleString()}`;
+    const prices = p.variants.map(v => parseFloat(v.price)).filter(n => !isNaN(n));
+    if (!prices.length) return `Rs ${parseFloat(p.price).toLocaleString()}`;
+    const min = Math.min(...prices);
+    return `From Rs ${min.toLocaleString()}`;
+}
+
 function getCategories() {
     const set = new Set(globalProducts.map(p => (p.category || 'General').trim()).filter(Boolean));
     return ['All', ...Array.from(set)];
@@ -477,16 +490,18 @@ function renderCatalogUI() {
         <div class="product-card">
             <a href="product.html?id=${p.id}" class="product-card-link">
                 <div class="product-img-wrap">
-                    <img src="${p.image}" class="product-img" alt="${p.name}" loading="lazy">
+                    <img src="${productCoverImage(p)}" class="product-img" alt="${p.name}" loading="lazy">
                     <span class="product-category">${p.category || 'General'}</span>
                 </div>
                 <div class="product-title">${p.name}</div>
                 <div class="product-desc">${p.description}</div>
                 <div class="product-footer">
-                    <span class="price-tag">Rs ${parseFloat(p.price).toLocaleString()}</span>
+                    <span class="price-tag">${productPriceLabel(p)}</span>
                 </div>
             </a>
-            <button class="btn btn-primary addToCartBtn" data-id="${p.id}"><i class="fas fa-basket-shopping"></i> Add to Basket</button>
+            ${p.variants && p.variants.length
+                ? `<a href="product.html?id=${p.id}" class="btn btn-primary"><i class="fas fa-sliders"></i> Choose Option</a>`
+                : `<button class="btn btn-primary addToCartBtn" data-id="${p.id}"><i class="fas fa-basket-shopping"></i> Add to Basket</button>`}
             <a href="product.html?id=${p.id}" class="btn btn-secondary" style="margin-top:8px;"><i class="fas fa-circle-info"></i> View Details</a>
         </div>
     `).join('');
@@ -532,16 +547,18 @@ function renderFeaturedProducts() {
         <div class="product-card">
             <a href="product.html?id=${p.id}" class="product-card-link">
                 <div class="product-img-wrap">
-                    <img src="${p.image}" class="product-img" alt="${p.name}" loading="lazy">
+                    <img src="${productCoverImage(p)}" class="product-img" alt="${p.name}" loading="lazy">
                     <span class="product-category">${p.category || 'General'}</span>
                 </div>
                 <div class="product-title">${p.name}</div>
                 <div class="product-desc">${p.description}</div>
                 <div class="product-footer">
-                    <span class="price-tag">Rs ${parseFloat(p.price).toLocaleString()}</span>
+                    <span class="price-tag">${productPriceLabel(p)}</span>
                 </div>
             </a>
-            <button class="btn btn-primary addToCartBtn" data-id="${p.id}"><i class="fas fa-basket-shopping"></i> Add to Basket</button>
+            ${p.variants && p.variants.length
+                ? `<a href="product.html?id=${p.id}" class="btn btn-primary"><i class="fas fa-sliders"></i> Choose Option</a>`
+                : `<button class="btn btn-primary addToCartBtn" data-id="${p.id}"><i class="fas fa-basket-shopping"></i> Add to Basket</button>`}
             <a href="product.html?id=${p.id}" class="btn btn-secondary" style="margin-top:8px;"><i class="fas fa-circle-info"></i> View Details</a>
         </div>
     `).join('');
@@ -596,15 +613,39 @@ function renderProductDetail() {
     if (breadcrumbName) breadcrumbName.innerText = product.name;
     document.title = `BazaarHub — ${product.name}`;
 
+    const images = (product.images && product.images.length) ? product.images : [product.image];
+    const hasVariants = product.variants && product.variants.length > 0;
+    let selectedVariant = hasVariants ? product.variants[0] : null;
+    let activeImageSrc = (hasVariants && selectedVariant.imgIdx !== null && selectedVariant.imgIdx !== undefined && images[selectedVariant.imgIdx])
+        ? images[selectedVariant.imgIdx]
+        : images[0];
+
     wrap.innerHTML = `
         <div class="pdp-image-wrap">
-            <img src="${product.image}" alt="${product.name}">
+            <img id="pdpMainImage" src="${activeImageSrc}" alt="${product.name}">
         </div>
         <div>
             <span class="pdp-category">${product.category || 'General'}</span>
             <h1 class="pdp-title">${product.name}</h1>
-            <div class="pdp-price">Rs ${parseFloat(product.price).toLocaleString()}</div>
+            <div class="pdp-price" id="pdpPrice">Rs ${parseFloat(hasVariants ? selectedVariant.price : product.price).toLocaleString()}</div>
+
+            ${images.length > 1 ? `
+            <div class="pdp-thumbs" id="pdpThumbs">
+                ${images.map((src, i) => `<div class="pdp-thumb${src === activeImageSrc ? ' active' : ''}" data-src="${src}"><img src="${src}" alt="Photo ${i + 1}"></div>`).join('')}
+            </div>` : ''}
+
             <p class="pdp-desc">${product.description || ''}</p>
+
+            ${hasVariants ? `
+            <div class="pdp-variant-row">
+                <span class="pdp-variant-label">Choose an option</span>
+                <div class="pdp-variant-options" id="pdpVariantOptions">
+                    ${product.variants.map((v, i) => {
+                        const vImg = (v.imgIdx !== null && v.imgIdx !== undefined && images[v.imgIdx]) ? images[v.imgIdx] : images[0];
+                        return `<button type="button" class="pdp-variant-chip${i === 0 ? ' active' : ''}" data-idx="${i}"><img src="${vImg}" alt=""> ${v.label} · Rs ${parseFloat(v.price).toLocaleString()}</button>`;
+                    }).join('')}
+                </div>
+            </div>` : ''}
 
             <div class="pdp-qty-row">
                 <span class="pdp-qty-label">Quantity</span>
@@ -629,6 +670,37 @@ function renderProductDetail() {
         </div>
     `;
 
+    const mainImage = document.getElementById('pdpMainImage');
+    const thumbsWrap = document.getElementById('pdpThumbs');
+    if (thumbsWrap) {
+        thumbsWrap.querySelectorAll('.pdp-thumb').forEach(thumb => {
+            thumb.addEventListener('click', () => {
+                thumbsWrap.querySelectorAll('.pdp-thumb').forEach(t => t.classList.remove('active'));
+                thumb.classList.add('active');
+                mainImage.src = thumb.getAttribute('data-src');
+            });
+        });
+    }
+
+    const variantOptions = document.getElementById('pdpVariantOptions');
+    const priceEl = document.getElementById('pdpPrice');
+    if (variantOptions) {
+        variantOptions.querySelectorAll('.pdp-variant-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                variantOptions.querySelectorAll('.pdp-variant-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                const idx = parseInt(chip.getAttribute('data-idx'));
+                selectedVariant = product.variants[idx];
+                priceEl.innerText = `Rs ${parseFloat(selectedVariant.price).toLocaleString()}`;
+                const vImg = (selectedVariant.imgIdx !== null && selectedVariant.imgIdx !== undefined && images[selectedVariant.imgIdx]) ? images[selectedVariant.imgIdx] : images[0];
+                mainImage.src = vImg;
+                if (thumbsWrap) {
+                    thumbsWrap.querySelectorAll('.pdp-thumb').forEach(t => t.classList.toggle('active', t.getAttribute('data-src') === vImg));
+                }
+            });
+        });
+    }
+
     pdpQty = 1;
     const qtyValue = document.getElementById('pdpQtyValue');
     document.getElementById('pdpQtyMinus').addEventListener('click', () => {
@@ -639,7 +711,7 @@ function renderProductDetail() {
     });
 
     document.getElementById('pdpAddToCart').addEventListener('click', (e) => {
-        for (let i = 0; i < pdpQty; i++) addItemToCart(product);
+        for (let i = 0; i < pdpQty; i++) addItemToCart(product, selectedVariant);
         showToast(`${product.name} added to your basket.`, 'success');
         const btn = e.currentTarget;
         const original = btn.innerHTML;
@@ -649,7 +721,7 @@ function renderProductDetail() {
     });
 
     document.getElementById('pdpBuyNow').addEventListener('click', () => {
-        for (let i = 0; i < pdpQty; i++) addItemToCart(product);
+        for (let i = 0; i < pdpQty; i++) addItemToCart(product, selectedVariant);
         window.location.href = "checkout.html";
     });
 }
@@ -672,12 +744,30 @@ function updateCartWidgetCount() {
     document.querySelectorAll('#cartCount').forEach(counter => counter.innerText = totalQty);
 }
 
-function addItemToCart(item) {
-    const existing = localCart.find(i => i.id === item.id);
+// `variant`, if provided, is one entry from product.variants: { label, price, imgIdx }.
+// Cart line items are keyed by product id + variant label so different colors
+// of the same product stack as separate lines instead of merging together.
+function addItemToCart(product, variant = null) {
+    const cartKey = variant ? `${product.id}::${variant.label}` : product.id;
+    const displayName = variant ? `${product.name} — ${variant.label}` : product.name;
+    const price = variant ? parseFloat(variant.price) : parseFloat(product.price);
+    const image = (variant && variant.imgIdx !== null && variant.imgIdx !== undefined && product.images && product.images[variant.imgIdx])
+        ? product.images[variant.imgIdx]
+        : productCoverImage(product);
+
+    const existing = localCart.find(i => i.cartKey === cartKey);
     if (existing) {
         existing.qty = (existing.qty || 1) + 1;
     } else {
-        localCart.push({ ...item, qty: 1 });
+        localCart.push({
+            cartKey,
+            id: product.id,
+            name: displayName,
+            price,
+            image,
+            variantLabel: variant ? variant.label : null,
+            qty: 1
+        });
     }
     localStorage.setItem('bazaarhub_cart', JSON.stringify(localCart));
     updateCartWidgetCount();
@@ -772,6 +862,7 @@ if (checkoutItemsWrap) {
             const orderItems = localCart.map(i => ({
                 productId: i.id || null,
                 name: i.name,
+                variant: i.variantLabel || null,
                 price: parseFloat(i.price),
                 qty: i.qty || 1,
                 lineTotal: parseFloat(i.price) * (i.qty || 1)
@@ -848,124 +939,342 @@ function readAndCompressImage(file, maxDim = 1000, quality = 0.82) {
     });
 }
 
-let uploadedProductImage = null;
+// productImages holds every photo for the product being added/edited, in
+// the order they'll be shown. The first photo is always the "cover" photo
+// used on the shop grid and as the default image on the product page.
+let productImages = [];
 let resetProductImageField = () => {};
+let renderImageGallery = () => {};
 
 function setupProductImageUpload() {
     const fileInput  = document.getElementById('pImageFile');
     const box        = document.getElementById('imgUploadBox');
-    const prompt     = document.getElementById('imgUploadPrompt');
-    const previewImg = document.getElementById('imgUploadPreview');
-    const clearBtn   = document.getElementById('imgUploadClear');
+    const galleryGrid = document.getElementById('imgGalleryGrid');
     const urlToggle  = document.getElementById('imgUrlToggle');
+    const urlRow     = document.getElementById('imgUrlRow');
     const urlInput   = document.getElementById('pImageUrl');
+    const urlAddBtn  = document.getElementById('imgUrlAddBtn');
     if (!fileInput || !box) return;
 
-    async function handleFile(file) {
-        if (!file) return;
-        try {
-            box.classList.add('dragover');
-            const dataUrl = await readAndCompressImage(file);
-            uploadedProductImage = dataUrl;
-            previewImg.src = dataUrl;
-            previewImg.classList.remove('hidden');
-            prompt.classList.add('hidden');
-            clearBtn.classList.remove('hidden');
-        } catch (err) {
-            showToast(err.message, 'error');
-            fileInput.value = '';
-        } finally {
-            box.classList.remove('dragover');
+    function renderGallery() {
+        if (!galleryGrid) return;
+        galleryGrid.innerHTML = productImages.map((src, idx) => `
+            <div class="img-gallery-thumb">
+                <img src="${src}" alt="Product photo ${idx + 1}">
+                <button type="button" class="gallery-thumb-remove" data-idx="${idx}" aria-label="Remove photo"><i class="fas fa-xmark"></i></button>
+                ${idx === 0 ? '<div class="gallery-thumb-cover">Cover</div>' : ''}
+            </div>
+        `).join('');
+        galleryGrid.querySelectorAll('.gallery-thumb-remove').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                productImages.splice(idx, 1);
+                renderGallery();
+                refreshAllVariantImagePickers();
+            });
+        });
+        // Refresh variant image dropdowns any time the gallery changes.
+        refreshAllVariantImagePickers();
+    }
+    renderImageGallery = renderGallery;
+
+    async function handleFiles(fileList) {
+        const files = Array.from(fileList || []);
+        if (!files.length) return;
+        box.classList.add('dragover');
+        for (const file of files) {
+            try {
+                const dataUrl = await readAndCompressImage(file);
+                productImages.push(dataUrl);
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
         }
+        box.classList.remove('dragover');
+        fileInput.value = '';
+        renderGallery();
     }
 
-    function clearPreview() {
-        uploadedProductImage = null;
+    function clearAll() {
+        productImages = [];
         fileInput.value = '';
-        previewImg.classList.add('hidden');
-        previewImg.src = '';
-        prompt.classList.remove('hidden');
-        clearBtn.classList.add('hidden');
-        urlInput.value = '';
-        urlInput.classList.add('hidden');
-        box.classList.remove('hidden');
+        if (urlInput) urlInput.value = '';
+        if (urlRow) urlRow.classList.add('hidden');
         urlToggle.textContent = 'Paste an image link instead';
+        renderGallery();
     }
-    resetProductImageField = clearPreview;
+    resetProductImageField = clearAll;
 
     box.addEventListener('click', () => fileInput.click());
     box.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); } });
-    fileInput.addEventListener('change', () => handleFile(fileInput.files[0]));
+    fileInput.addEventListener('change', () => handleFiles(fileInput.files));
 
     ['dragenter', 'dragover'].forEach(evt => box.addEventListener(evt, (e) => { e.preventDefault(); box.classList.add('dragover'); }));
     ['dragleave'].forEach(evt => box.addEventListener(evt, (e) => { e.preventDefault(); box.classList.remove('dragover'); }));
     box.addEventListener('drop', (e) => {
         e.preventDefault();
         box.classList.remove('dragover');
-        const file = e.dataTransfer.files && e.dataTransfer.files[0];
-        if (file) handleFile(file);
-    });
-
-    clearBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        uploadedProductImage = null;
-        fileInput.value = '';
-        previewImg.classList.add('hidden');
-        previewImg.src = '';
-        prompt.classList.remove('hidden');
-        clearBtn.classList.add('hidden');
+        if (e.dataTransfer.files && e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
     });
 
     urlToggle.addEventListener('click', () => {
-        const switchingToUrl = urlInput.classList.contains('hidden');
+        const switchingToUrl = urlRow.classList.contains('hidden');
         if (switchingToUrl) {
-            urlInput.classList.remove('hidden');
-            box.classList.add('hidden');
-            urlToggle.textContent = 'Upload a photo instead';
+            urlRow.classList.remove('hidden');
+            urlToggle.textContent = 'Hide link field';
         } else {
-            urlInput.classList.add('hidden');
-            box.classList.remove('hidden');
+            urlRow.classList.add('hidden');
             urlToggle.textContent = 'Paste an image link instead';
         }
     });
+
+    urlAddBtn.addEventListener('click', () => {
+        const val = urlInput.value.trim();
+        if (!val) return;
+        productImages.push(val);
+        urlInput.value = '';
+        renderGallery();
+    });
+
+    renderGallery();
 }
 setupProductImageUpload();
 
-function getProductImageValue() {
-    const urlInput = document.getElementById('pImageUrl');
-    if (urlInput && !urlInput.classList.contains('hidden')) {
-        return urlInput.value.trim();
-    }
-    return uploadedProductImage || '';
+function getProductImagesValue() {
+    return productImages.slice();
 }
 
-// ---- 8b. Save product ----
+// ==========================================
+// 8c. ADMIN — VARIANTS BUILDER (e.g. dial colors with their own price)
+// ==========================================
+let productVariants = []; // [{ id, label, price, imgIdx }]
+let renderVariantsList = () => {};
+
+function refreshAllVariantImagePickers() {
+    document.querySelectorAll('.variant-image-select').forEach(sel => {
+        const currentVal = sel.value;
+        sel.innerHTML = `<option value="">Use cover photo</option>` + productImages.map((src, i) =>
+            `<option value="${i}">Photo ${i + 1}</option>`
+        ).join('');
+        if (currentVal && productImages[parseInt(currentVal)]) sel.value = currentVal;
+    });
+}
+
+function setupVariantsBuilder() {
+    const toggle = document.getElementById('hasVariantsToggle');
+    const builder = document.getElementById('variantsBuilder');
+    const list = document.getElementById('variantsList');
+    const addBtn = document.getElementById('addVariantBtn');
+    const priceLabel = document.getElementById('pPriceLabel');
+    const priceHint = document.getElementById('pPriceHint');
+    if (!toggle || !builder || !list) return;
+
+    let variantSeq = 0;
+
+    function updatePriceFieldHint() {
+        const priceInput = document.getElementById('pPrice');
+        const hasVariants = toggle.checked && productVariants.length > 0;
+        if (priceLabel) priceLabel.textContent = hasVariants ? 'Price (auto)' : 'Price (PKR)';
+        if (priceHint) priceHint.textContent = hasVariants
+            ? 'Shown as "From Rs …" on the shop — set each option\'s own price below.'
+            : '';
+        if (priceInput) {
+            if (hasVariants) {
+                const validPrices = productVariants.map(v => parseFloat(v.price)).filter(n => !isNaN(n));
+                priceInput.value = validPrices.length ? Math.min(...validPrices) : '';
+                priceInput.readOnly = true;
+                priceInput.required = false;
+            } else {
+                priceInput.readOnly = false;
+                priceInput.required = true;
+            }
+        }
+    }
+
+    function render() {
+        list.innerHTML = productVariants.map(v => `
+            <div class="variant-row" data-vid="${v.id}">
+                <img class="variant-thumb-preview" src="${(v.imgIdx !== '' && productImages[v.imgIdx]) ? productImages[v.imgIdx] : (productImages[0] || 'logo.png')}" alt="">
+                <input type="text" class="variant-label-input" placeholder="e.g. Black Dial" value="${v.label || ''}">
+                <input type="number" class="variant-price-input" placeholder="Price (PKR)" min="0" step="1" value="${v.price ?? ''}">
+                <select class="variant-image-select" id="sel-${v.id}"></select>
+                <button type="button" class="variant-remove-btn" aria-label="Remove option"><i class="fas fa-trash-alt"></i></button>
+            </div>
+        `).join('');
+
+        refreshAllVariantImagePickers();
+
+        list.querySelectorAll('.variant-row').forEach(row => {
+            const vid = row.getAttribute('data-vid');
+            const variant = productVariants.find(v => v.id === vid);
+            const sel = row.querySelector('.variant-image-select');
+            if (sel && variant) sel.value = variant.imgIdx;
+
+            row.querySelector('.variant-label-input').addEventListener('input', (e) => { variant.label = e.target.value; });
+            row.querySelector('.variant-price-input').addEventListener('input', (e) => { variant.price = e.target.value; updatePriceFieldHint(); });
+            sel.addEventListener('change', (e) => {
+                variant.imgIdx = e.target.value;
+                const thumb = row.querySelector('.variant-thumb-preview');
+                thumb.src = (variant.imgIdx !== '' && productImages[variant.imgIdx]) ? productImages[variant.imgIdx] : (productImages[0] || 'logo.png');
+            });
+            row.querySelector('.variant-remove-btn').addEventListener('click', () => {
+                productVariants = productVariants.filter(v => v.id !== vid);
+                render();
+                updatePriceFieldHint();
+            });
+        });
+        updatePriceFieldHint();
+    }
+    renderVariantsList = render;
+
+    toggle.addEventListener('change', () => {
+        builder.classList.toggle('hidden', !toggle.checked);
+        if (toggle.checked && productVariants.length === 0) {
+            productVariants.push({ id: 'v' + (++variantSeq), label: '', price: '', imgIdx: '' });
+            render();
+        }
+        updatePriceFieldHint();
+    });
+
+    addBtn.addEventListener('click', () => {
+        productVariants.push({ id: 'v' + (++variantSeq), label: '', price: '', imgIdx: '' });
+        render();
+    });
+
+    render();
+}
+setupVariantsBuilder();
+
+function resetVariantsField() {
+    productVariants = [];
+    const toggle = document.getElementById('hasVariantsToggle');
+    const builder = document.getElementById('variantsBuilder');
+    if (toggle) toggle.checked = false;
+    if (builder) builder.classList.add('hidden');
+    renderVariantsList();
+}
+
+// ---- 8b. Save product (add new, or update the one being edited) ----
+let editingProductId = null;
+
+function enterEditMode(product) {
+    editingProductId = product.id;
+
+    document.getElementById('pName').value = product.name || '';
+    document.getElementById('pCategory').value = product.category || '';
+    document.getElementById('pDesc').value = product.description || '';
+
+    productImages = (product.images && product.images.length) ? product.images.slice() : (product.image ? [product.image] : []);
+    renderImageGallery();
+
+    const hasVariants = !!(product.variants && product.variants.length);
+    const toggle = document.getElementById('hasVariantsToggle');
+    const builder = document.getElementById('variantsBuilder');
+    if (hasVariants) {
+        productVariants = product.variants.map((v, i) => ({
+            id: 'v' + i + '_' + Date.now(),
+            label: v.label || '',
+            price: v.price ?? '',
+            imgIdx: (typeof v.imgIdx === 'number' && productImages[v.imgIdx] !== undefined) ? String(v.imgIdx) : ''
+        }));
+        toggle.checked = true;
+        builder.classList.remove('hidden');
+        document.getElementById('pPrice').value = product.price ?? '';
+    } else {
+        productVariants = [];
+        toggle.checked = false;
+        builder.classList.add('hidden');
+        document.getElementById('pPrice').value = product.price ?? '';
+    }
+    renderVariantsList();
+
+    document.getElementById('productFormTitle').innerText = 'Edit Product';
+    const banner = document.getElementById('editingBanner');
+    document.getElementById('editingBannerName').innerText = product.name || '';
+    banner.classList.remove('hidden');
+
+    const submitBtn = document.getElementById('formSubmitBtn');
+    submitBtn.innerHTML = '<i class="fas fa-floppy-disk"></i> Update Product';
+
+    document.getElementById('addProductForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function exitEditMode() {
+    editingProductId = null;
+    document.getElementById('addProductForm').reset();
+    resetProductImageField();
+    resetVariantsField();
+    document.getElementById('productFormTitle').innerText = 'Add a Product';
+    document.getElementById('editingBanner').classList.add('hidden');
+    document.getElementById('formSubmitBtn').innerHTML = '<i class="fas fa-circle-plus"></i> Save Product';
+}
+
+const cancelEditBtn = document.getElementById('cancelEditBtn');
+if (cancelEditBtn) cancelEditBtn.addEventListener('click', exitEditMode);
+
 const addProductForm = document.getElementById('addProductForm');
 if (addProductForm) {
     addProductForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const submitBtn = document.getElementById('formSubmitBtn');
-        const imageValue = getProductImageValue();
+        const images = getProductImagesValue();
 
-        if (!imageValue) {
-            showToast('Please add a product photo — upload one or paste a link.', 'error');
+        if (!images.length) {
+            showToast('Please add at least one product photo — upload one or paste a link.', 'error');
+            return;
+        }
+
+        const toggle = document.getElementById('hasVariantsToggle');
+        const useVariants = toggle && toggle.checked;
+
+        // Clean up variants: drop empty rows, require a label + valid price on the rest.
+        let cleanVariants = [];
+        if (useVariants) {
+            cleanVariants = productVariants
+                .filter(v => v.label && v.label.trim())
+                .map(v => ({
+                    label: v.label.trim(),
+                    price: parseFloat(v.price),
+                    imgIdx: v.imgIdx !== '' ? parseInt(v.imgIdx) : null
+                }));
+            for (const v of cleanVariants) {
+                if (isNaN(v.price)) {
+                    showToast(`Please set a price for the "${v.label}" option.`, 'error');
+                    return;
+                }
+            }
+            if (cleanVariants.length === 0) {
+                showToast('Add at least one option (e.g. a color) with a name and price, or turn off "different options".', 'error');
+                return;
+            }
+        }
+
+        const basePrice = parseFloat(document.getElementById('pPrice').value);
+        if (isNaN(basePrice)) {
+            showToast('Please enter a price.', 'error');
             return;
         }
 
         const payload = {
             name: document.getElementById('pName').value.trim(),
             category: document.getElementById('pCategory').value.trim(),
-            price: parseFloat(document.getElementById('pPrice').value),
-            image: imageValue,
+            price: useVariants ? Math.min(...cleanVariants.map(v => v.price)) : basePrice,
+            image: images[0],
+            images,
+            variants: cleanVariants,
             description: document.getElementById('pDesc').value.trim()
         };
 
-        const restore = setBtnLoading(submitBtn, 'Saving…');
+        const restore = setBtnLoading(submitBtn, editingProductId ? 'Updating…' : 'Saving…');
         try {
-            await addDoc(collection(db, "products"), payload);
-            showToast(`"${payload.name}" was added to the catalog.`, 'success');
-            addProductForm.reset();
-            resetProductImageField();
+            if (editingProductId) {
+                await updateDoc(doc(db, "products", editingProductId), payload);
+                showToast(`"${payload.name}" was updated.`, 'success');
+            } else {
+                await addDoc(collection(db, "products"), payload);
+                showToast(`"${payload.name}" was added to the catalog.`, 'success');
+            }
+            exitEditMode();
         } catch (err) {
             showToast("Couldn't save the product: " + err.message, 'error');
         } finally {
@@ -987,18 +1296,35 @@ function renderAdminProducts() {
         return;
     }
 
-    adminList.innerHTML = items.map(p => `
+    adminList.innerHTML = items.map(p => {
+        const cover = (p.images && p.images[0]) || p.image;
+        const hasVariants = p.variants && p.variants.length > 0;
+        const priceLine = hasVariants
+            ? `From Rs ${parseFloat(p.price).toLocaleString()} · ${p.variants.length} option${p.variants.length > 1 ? 's' : ''}`
+            : `Rs ${parseFloat(p.price).toLocaleString()}`;
+        return `
         <div class="inventory-row">
             <div class="inv-left">
-                <img src="${p.image}" alt="${p.name}">
+                <img src="${cover}" alt="${p.name}">
                 <div class="inv-info">
                     <div class="inv-name">${p.name}</div>
-                    <div class="inv-price">Rs ${parseFloat(p.price).toLocaleString()} · ${p.category || 'General'}</div>
+                    <div class="inv-price">${priceLine} · ${p.category || 'General'}</div>
                 </div>
             </div>
-            <button class="btn btn-ghost deleteProductBtn" data-id="${p.id}" data-name="${p.name}"><i class="fas fa-trash-alt"></i></button>
+            <div style="display:flex; gap:6px;">
+                <button class="btn btn-ghost editProductBtn" data-id="${p.id}" aria-label="Edit product"><i class="fas fa-pen"></i></button>
+                <button class="btn btn-ghost deleteProductBtn" data-id="${p.id}" data-name="${p.name}" aria-label="Delete product"><i class="fas fa-trash-alt"></i></button>
+            </div>
         </div>
-    `).join('');
+    `}).join('');
+
+    adminList.querySelectorAll('.editProductBtn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const targetId = e.currentTarget.getAttribute('data-id');
+            const product = globalProducts.find(x => x.id === targetId);
+            if (product) enterEditMode(product);
+        });
+    });
 
     adminList.querySelectorAll('.deleteProductBtn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
@@ -1013,6 +1339,7 @@ function renderAdminProducts() {
             try {
                 await deleteDoc(doc(db, "products", targetId));
                 showToast(`"${targetName}" was deleted.`, 'success');
+                if (editingProductId === targetId) exitEditMode();
             } catch (err) {
                 showToast("Couldn't delete the product: " + err.message, 'error');
             }
