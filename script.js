@@ -1103,13 +1103,24 @@ function updateAdminStats() {
 updateCartWidgetCount();
 
 // Floating WhatsApp chat button — shown on every page.
-// Replace the number below with your business WhatsApp number (country code, no +, no spaces).
-const WHATSAPP_NUMBER = "923001234567";
-const waBtn = document.createElement('a');
-waBtn.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi BazaarHub, I need help with an order.")}`;
-waBtn.target = "_blank";
-waBtn.rel = "noopener";
+// WhatsApp support is temporarily unavailable (no number set up yet), so the
+// button just informs the customer instead of opening a chat. Once a number
+// is ready, swap this back to an <a href="https://wa.me/..."> link.
+const waBtn = document.createElement('button');
+waBtn.type = "button";
 waBtn.className = "whatsapp-float";
 waBtn.innerHTML = '<i class="fab fa-whatsapp"></i>';
 waBtn.setAttribute('aria-label', 'Chat with us on WhatsApp');
+waBtn.addEventListener('click', () => {
+    showToast("WhatsApp is currently unavailable — please order via our Instagram or the website.", 'info');
+});
 document.body.appendChild(waBtn);
+
+// Contact page's "Chat on WhatsApp" button — same temporary unavailability message.
+const contactWaBtn = document.getElementById('contactWhatsappBtn');
+if (contactWaBtn) {
+    contactWaBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        showToast("WhatsApp is currently unavailable — please order via our Instagram or the website.", 'info');
+    });
+}
