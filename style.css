@@ -388,7 +388,7 @@ label {
 .img-gallery-thumb img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
 }
 
@@ -512,7 +512,7 @@ label {
     width: 44px;
     height: 44px;
     border-radius: var(--radius-sm);
-    object-fit: cover;
+    object-fit: contain;
     border: 1px solid var(--border);
     background: var(--surface);
 }
@@ -545,7 +545,7 @@ label {
     transition: opacity 0.15s ease, border-color 0.15s ease;
 }
 
-.pdp-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pdp-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; background: var(--surface-2); }
 
 .pdp-thumb:hover { opacity: 1; }
 
